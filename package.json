@@ -14,5 +14,11 @@
     "start:api": "npm run start:dev --workspace=sympla-api",
     "start:web": "npm run dev --workspace=sympla-web",
     "build": "npm run build --workspace=sympla-api && npm run build --workspace=sympla-web"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9"
   }
 }
