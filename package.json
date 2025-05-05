@@ -1,9 +1,18 @@
 {
-    "name": "sympla-mono",
-    "private": true,
-    "workspaces": [
-      "packages/sympla-api",
-      "packages/sympla-web",
-      "packages/sympla-prisma"
-    ]
+  "name": "sympla-mono",
+  "private": true,
+  "workspaces": [
+    "packages/sympla-api",
+    "packages/sympla-web",
+    "packages/sympla-prisma"
+  ],
+  "scripts": {
+    "prisma:generate": "npm run generate --workspace=@sympla/prisma",
+    "prisma:migrate": "npm run migrate:dev --workspace=@sympla/prisma",
+    "prisma:deploy": "npm run migrate:deploy --workspace=@sympla/prisma",
+    "prisma:studio": "npm run studio --workspace=@sympla/prisma",
+    "start:api": "npm run start:dev --workspace=sympla-api",
+    "start:web": "npm run dev --workspace=sympla-web",
+    "build": "npm run build --workspace=sympla-api && npm run build --workspace=sympla-web"
   }
+}
