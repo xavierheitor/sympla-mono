@@ -1,0 +1,19 @@
+# Node modules
+**/node_modules
+
+# Build
+**/dist
+**/.turbo
+
+# Prisma
+**/generated
+**/.env
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# System files
+.DS_Store

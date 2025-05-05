@@ -1,0 +1,9 @@
+{
+    "name": "sympla-mono",
+    "private": true,
+    "workspaces": [
+      "packages/sympla-api",
+      "packages/sympla-web",
+      "packages/sympla-prisma"
+    ]
+  }
