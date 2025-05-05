@@ -21,3 +21,426 @@ model Test{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+/**---------------ENUMS--------------------**/
+
+enum PropriedadeSubestacao {
+  PROPRIA
+  COMPARTILHADA
+}
+
+enum CategoriaSubestacao {
+  DISTRIBUICAO
+  SUBTRANSMISSAO
+  TRANSMISSAO
+}
+
+enum TipoSubestacao {
+  MT
+  AT
+}
+
+enum TensaoSubestacao {
+  KV_34
+  KV_69
+  KV_138
+  KV_230
+}
+
+enum StatusSubestacao {
+  ATIVA
+  INATIVA
+  EM_MANUTENCAO
+}
+
+enum TipoNota {
+  AA
+  TS
+  RSF
+}
+
+enum StatusAnomalia {
+  ABERTA
+  EM_ANALISE
+  EM_CORRECAO
+  CONCLUIDA
+  CANCELADA
+}
+
+enum PrioridadeDefeito {
+  A
+  P1
+  P2
+  P3
+}
+
+enum StatusNota {
+  PENDENTE
+  PROGRAMADO
+  EXECUTADO
+  BAIXADO_NO_SAP
+}
+
+enum StatusAtividadeMobile {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+}
+
+model Empresa {
+  id        Int        @id @default(autoincrement())
+  nome      String     @db.VarChar(255)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
+  deletedAt DateTime?
+  createdBy Int
+  updatedBy Int?
+  deletedBy Int?
+  Regional  Regional[]
+
+  @@index([nome])
+  @@map("empresas")
+}
+
+model Regional {
+  id          Int           @id @default(autoincrement())
+  nome        String        @db.VarChar(255)
+  empresaId   Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  createdBy   Int
+  updatedBy   Int?
+  deletedBy   Int?
+  empresa     Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  Subestacoes Subestacoes[]
+
+  @@index([empresaId])
+  @@index([nome])
+  @@map("regionais")
+}
+
+model Subestacoes {
+  id                  Int                   @id @default(autoincrement())
+  nome                String                @db.VarChar(255)
+  sigla               String                @db.VarChar(3)
+  localSAP            String                @db.VarChar(255)
+  propriedade         PropriedadeSubestacao
+  tipo                TipoSubestacao
+  categoria           CategoriaSubestacao
+  tensao              TensaoSubestacao
+  status              StatusSubestacao      @default(ATIVA)
+  regionalId          Int
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  deletedAt           DateTime?
+  createdBy           Int
+  updatedBy           Int?
+  deletedBy           Int?
+  Equipamentos        Equipamentos[]
+  NotaPlanoManutencao NotaPlanoManutencao[]
+  regional            Regional              @relation(fields: [regionalId], references: [id], onDelete: Cascade)
+
+  @@unique([sigla, regionalId])
+  @@index([regionalId])
+  @@index([sigla])
+  @@map("subestacoes")
+}
+
+model Equipamentos {
+  id                  Int                   @id @default(autoincrement())
+  nome                String                @db.VarChar(255)
+  subestacaoId        Int
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  deletedAt           DateTime?
+  createdBy           Int
+  updatedBy           Int?
+  deletedBy           Int?
+  Anomalias           Anomalias[]
+  subestacao          Subestacoes           @relation(fields: [subestacaoId], references: [id], onDelete: Cascade)
+  NotaPlanoManutencao NotaPlanoManutencao[]
+
+  @@index([subestacaoId])
+  @@index([nome])
+  @@map("equipamentos")
+}
+
+model TipoManutencao {
+  id                  Int                   @id @default(autoincrement())
+  nome                String                @unique @db.VarChar(255)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  deletedAt           DateTime?
+  createdBy           Int
+  updatedBy           Int?
+  deletedBy           Int?
+  Kpi                 Kpi[]
+  NotaPlanoManutencao NotaPlanoManutencao[]
+
+  @@map("tipos_manutencao")
+}
+
+model Kpi {
+  id                  Int                   @id @default(autoincrement())
+  nome                String                @db.VarChar(255)
+  descricao           String                @db.Text
+  tipoManutencaoId    Int
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  deletedAt           DateTime?
+  createdBy           Int
+  updatedBy           Int?
+  deletedBy           Int?
+  tipoManutencao      TipoManutencao        @relation(fields: [tipoManutencaoId], references: [id], onDelete: Cascade)
+  NotaPlanoManutencao NotaPlanoManutencao[]
+
+  @@unique([nome, tipoManutencaoId])
+  @@index([tipoManutencaoId])
+  @@map("kpis")
+}
+
+model Anomalias {
+  id            Int            @id @default(autoincrement())
+  nome          String         @db.VarChar(255)
+  descricao     String         @db.Text
+  notificador   String         @db.VarChar(255)
+  status        StatusAnomalia @default(ABERTA)
+  equipamentoId Int
+  defeitoId     Int
+  tipoNota      TipoNota
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  createdBy     Int
+  updatedBy     Int?
+  deletedBy     Int?
+  defeito       Defeitos       @relation(fields: [defeitoId], references: [id], onDelete: Cascade)
+  equipamento   Equipamentos   @relation(fields: [equipamentoId], references: [id], onDelete: Cascade)
+
+  @@index([equipamentoId])
+  @@index([defeitoId])
+  @@index([status])
+  @@map("anomalias")
+}
+
+model GrupoDeDefeitos {
+  id                         Int                          @id @default(autoincrement())
+  nome                       String                       @unique @db.VarChar(255)
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
+  deletedAt                  DateTime?
+  createdBy                  Int
+  updatedBy                  Int?
+  deletedBy                  Int?
+  GrupoDeDefeitosEquipamento GrupoDeDefeitosEquipamento[]
+
+  @@map("grupos_defeitos")
+}
+
+model GrupoDeDefeitosEquipamento {
+  id                Int                @id @default(autoincrement())
+  grupoDeDefeitosId Int
+  equipamento       String             @db.VarChar(255)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+  createdBy         Int
+  updatedBy         Int?
+  deletedBy         Int?
+  Defeitos          Defeitos[]
+  grupoDeDefeitos   GrupoDeDefeitos    @relation(fields: [grupoDeDefeitosId], references: [id], onDelete: Cascade)
+  SubGrupoDefeitos  SubGrupoDefeitos[]
+
+  @@unique([grupoDeDefeitosId, equipamento])
+  @@index([grupoDeDefeitosId])
+  @@index([equipamento])
+  @@map("grupos_defeitos_equipamentos")
+}
+
+model SubGrupoDefeitos {
+  id                        Int                        @id @default(autoincrement())
+  nome                      String                     @db.VarChar(255)
+  grupoDefeitoEquipamentoId Int
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  deletedAt                 DateTime?
+  createdBy                 Int
+  updatedBy                 Int?
+  deletedBy                 Int?
+  Defeitos                  Defeitos[]
+  grupoDefeitoEquipamento   GrupoDeDefeitosEquipamento @relation(fields: [grupoDefeitoEquipamentoId], references: [id], onDelete: Cascade)
+
+  @@unique([nome, grupoDefeitoEquipamentoId])
+  @@index([grupoDefeitoEquipamentoId])
+  @@map("subgrupos_defeitos")
+}
+
+model Defeitos {
+  id                         Int                        @id @default(autoincrement())
+  nome                       String                     @db.VarChar(255)
+  descricao                  String                     @db.Text
+  prioridade                 PrioridadeDefeito
+  subGrupoDefeitosId         Int
+  createdAt                  DateTime                   @default(now())
+  updatedAt                  DateTime                   @updatedAt
+  deletedAt                  DateTime?
+  createdBy                  Int
+  deletedBy                  Int?
+  updatedBy                  Int?
+  codigoSAP                  String                     @unique @db.VarChar(50)
+  grupoDefeitosEquipamentoId Int
+  Anomalias                  Anomalias[]
+  grupoDefeitosEquipamento   GrupoDeDefeitosEquipamento @relation(fields: [grupoDefeitosEquipamentoId], references: [id], onDelete: Cascade)
+  subGrupoDefeitos           SubGrupoDefeitos           @relation(fields: [subGrupoDefeitosId], references: [id], onDelete: Cascade)
+
+  @@index([subGrupoDefeitosId])
+  @@index([nome])
+  @@index([grupoDefeitosEquipamentoId], map: "defeitos_grupoDefeitosEquipamentoId_fkey")
+  @@map("defeitos")
+}
+
+model NotaPlanoManutencao {
+  id                 Int            @id @default(autoincrement())
+  nome               String         @db.VarChar(255)
+  numeroSAP          String         @unique @db.VarChar(50)
+  status             StatusNota     @default(PENDENTE)
+  tipoNota           TipoNota
+  subestacaoId       Int
+  equipamentoId      Int
+  tipoManutencaoId   Int
+  kpiId              Int
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  deletedAt          DateTime?
+  createdBy          Int
+  updatedBy          Int?
+  deletedBy          Int?
+  dataLimiteExecucao DateTime
+  equipamento        Equipamentos   @relation(fields: [equipamentoId], references: [id], onDelete: Cascade)
+  kpi                Kpi            @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  subestacao         Subestacoes    @relation(fields: [subestacaoId], references: [id], onDelete: Cascade)
+  tipoManutencao     TipoManutencao @relation(fields: [tipoManutencaoId], references: [id], onDelete: Cascade)
+
+  @@index([subestacaoId])
+  @@index([equipamentoId])
+  @@index([tipoManutencaoId])
+  @@index([kpiId])
+  @@index([status])
+  @@map("notas_plano_manutencao")
+}
+
+/**---------------AUTENTICACAO WEB--------------------**/
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique @db.VarChar(50)
+  email     String?   @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  name      String?   @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy Int
+  updatedBy Int?
+  deletedBy Int?
+  accounts  Account[]
+  sessions  Session[]
+
+  @@index([username])
+  @@index([email])
+  @@map("usuarios")
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("contas")
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessoes")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("tokens_verificacao")
+}
+
+/**---------------AUTENTICACAO MOBILE--------------------**/
+
+model UsuarioMobile {
+  id          Int               @id @default(autoincrement())
+  matricula   String            @unique @db.VarChar(50)
+  nome        String            @db.VarChar(255)
+  email       String?           @unique @db.VarChar(255)
+  senha       String            @db.VarChar(255)
+  funcao      String            @db.VarChar(100)
+  ativo       Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?
+  TokenMobile TokenMobile[]
+  sessoes     SessaoMobile[]
+
+  @@index([matricula])
+  @@map("usuarios_mobile")
+}
+
+model SessaoMobile {
+  id         Int           @id @default(autoincrement())
+  usuarioId  Int
+  deviceInfo String?       @db.Text
+  lastActive DateTime      @default(now())
+  createdAt  DateTime      @default(now())
+  expiresAt  DateTime
+  ativa      Boolean       @default(true)
+  usuario    UsuarioMobile @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("sessoes_mobile")
+}
+
+model TokenMobile {
+  id                    Int           @id @default(autoincrement())
+  token                 String        @unique @db.VarChar(255)
+  refreshToken          String?       @unique @db.VarChar(255)
+  refreshTokenExpiresAt DateTime?
+  usuarioId             Int
+  expiresAt             DateTime
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  revoked               Boolean       @default(false)
+  usuarios_mobile       UsuarioMobile @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId], map: "TokenMobile_usuarioId_fkey")
+}
+
+
