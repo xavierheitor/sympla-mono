@@ -1,22 +1,34 @@
-'use client'
+'use client';
 
 import React from 'react';
-import { Form, Input, Button, Typography, Card } from 'antd';
+import { Form, Input, Button, Typography, Card, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const { Title } = Typography;
 
 const LoginPage: React.FC = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onFinish = (values: any) => {
-        console.log('Login enviado:', values);
-        // Aqui você pode chamar sua API: ex: await login(values)
+    const router = useRouter();
+
+    const onFinish = async (values: { username: string; password: string }) => {
+        const res = await signIn('credentials', {
+            redirect: false,
+            username: values.username,
+            password: values.password,
+        });
+
+        if (res?.ok) {
+            message.success('Login realizado com sucesso!');
+            router.push('/dashboard');
+        } else {
+            message.error('Usuário ou senha inválidos!');
+        }
     };
 
     return (
         <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-
-            <Card>
+            <Card style={{ width: 350 }}>
                 <Title level={3} style={{ textAlign: 'center' }}>Login</Title>
                 <Form
                     name="login"
@@ -29,7 +41,11 @@ const LoginPage: React.FC = () => {
                         label="Usuário"
                         rules={[{ required: true, message: 'Informe seu usuário!' }]}
                     >
-                        <Input prefix={<UserOutlined />} placeholder="Digite seu usuário" />
+                        <Input
+                            prefix={<UserOutlined />}
+                            placeholder="Digite seu usuário"
+                            autoComplete="username"
+                        />
                     </Form.Item>
 
                     <Form.Item
@@ -37,7 +53,11 @@ const LoginPage: React.FC = () => {
                         label="Senha"
                         rules={[{ required: true, message: 'Informe sua senha!' }]}
                     >
-                        <Input.Password prefix={<LockOutlined />} placeholder="Digite sua senha" />
+                        <Input.Password
+                            prefix={<LockOutlined />}
+                            placeholder="Digite sua senha"
+                            autoComplete="current-password"
+                        />
                     </Form.Item>
 
                     <Form.Item>
