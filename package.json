@@ -16,7 +16,8 @@
     "build": "npm run build --workspace=sympla-api && npm run build --workspace=sympla-web"
   },
   "dependencies": {
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "next-auth": "^4.24.11"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.9"

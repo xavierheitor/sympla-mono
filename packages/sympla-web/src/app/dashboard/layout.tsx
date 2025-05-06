@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import {
+    DashboardOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     UploadOutlined,
-    UserOutlined,
     VideoCameraOutlined,
 } from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
-
+import { Button, Layout, Menu, theme, Typography } from 'antd';
+const { Title } = Typography;
 const { Header, Sider, Content } = Layout;
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -26,14 +26,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 collapsed={collapsed}
                 style={{ background: '#001529' }} // padrão do Ant Design dark
             >
-                <div
+                <Title
+                    level={3}
                     style={{
-                        height: 64,
-                        margin: 16,
-                        background: 'rgba(255, 255, 255, 0.3)',
-                        borderRadius: 6,
+                        color: 'white',
+                        textAlign: 'center',
+                        margin: '16px 0',
                     }}
-                />
+                >
+                    SYMPLA
+                </Title>
                 <Menu
                     theme="dark"
                     mode="inline"
@@ -41,8 +43,8 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     items={[
                         {
                             key: '1',
-                            icon: <UserOutlined />,
-                            label: 'Usuários',
+                            icon: <DashboardOutlined />,
+                            label: 'Dashboard',
                         },
                         {
                             key: '2',
