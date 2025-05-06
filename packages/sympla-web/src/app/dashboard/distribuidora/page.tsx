@@ -5,18 +5,11 @@ import fetchDistribuidoras from "@/lib/actions/distribuidora/fetch";
 import { Button, Card, Modal, Space, Table, TableColumnsType, TableProps } from "antd";
 import useSWR from "swr";
 import DistribuidoraForm from "./form";
-
-interface DataType {
-    key: React.Key;
-    id: string;
-    nome: string;
-    descricao: string;
-    codigoSap: string;
-}
+import { type Distribuidora } from '@sympla/prisma';
 
 export default function DistribuidoraPage() {
     const [modalOpen, setModalOpen] = useState(false);
-    const [editingDistribuidora, setEditingDistribuidora] = useState<DataType | null>(null);
+    const [editingDistribuidora, setEditingDistribuidora] = useState<Distribuidora | null>(null);
 
     useEffect(() => {
         const onCreated = () => setModalOpen(false);
@@ -30,12 +23,12 @@ export default function DistribuidoraPage() {
         error,
     } = useSWR('/api/distribuidoras', fetchDistribuidoras);
 
-    const handleEdit = (record: DataType) => {
+    const handleEdit = (record: Distribuidora) => {
         setEditingDistribuidora(record);
         setModalOpen(true);
     };
 
-    const handleDelete = (record: DataType) => {
+    const handleDelete = (record: Distribuidora) => {
         // TODO: implementar exclusão
         console.log('Excluir distribuidora', record);
     };
@@ -49,7 +42,7 @@ export default function DistribuidoraPage() {
         setModalOpen(false);
     };
 
-    const columns: TableColumnsType<DataType> = [
+    const columns: TableColumnsType<Distribuidora> = [
         {
             title: 'Nome',
             dataIndex: 'nome',
@@ -77,7 +70,7 @@ export default function DistribuidoraPage() {
         },
     ];
 
-    const rowSelection: TableProps<DataType>['rowSelection'] = {
+    const rowSelection: TableProps<Distribuidora>['rowSelection'] = {
         onChange: (selectedRowKeys, selectedRows) => {
             console.log('selectedRowKeys:', selectedRowKeys, 'selectedRows:', selectedRows);
         },
@@ -96,7 +89,7 @@ export default function DistribuidoraPage() {
                 extra={<Button type="primary" onClick={handleAdd}>Adicionar</Button>}
                 style={{ width: '100%' }}
             >
-                <Table<DataType>
+                <Table<Distribuidora>
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={distribuidoras}
@@ -112,7 +105,7 @@ export default function DistribuidoraPage() {
                 onCancel={handleCloseModal}
                 destroyOnClose
             >
-                <DistribuidoraForm distribuidora={editingDistribuidora} onClose={handleCloseModal} />
+                <DistribuidoraForm initialValues={editingDistribuidora ?? undefined} onClose={handleCloseModal} />
             </Modal>
         </>
     );

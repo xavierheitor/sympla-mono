@@ -3,8 +3,14 @@
 import { useEffect, useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import createDistribuidora from '@/lib/actions/distribuidora/new';
+import { type Distribuidora } from '@sympla/prisma';
 
-export default function DistribuidoraForm({ onClose, initialValues }) {
+interface DistribuidoraFormProps {
+    onClose: () => void;
+    initialValues?: Partial<Distribuidora>;
+}
+
+export default function DistribuidoraForm({ onClose, initialValues }: DistribuidoraFormProps) {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [actionResult, setActionResult] = useState<{ success?: boolean; error?: string } | null>(null);
@@ -22,7 +28,7 @@ export default function DistribuidoraForm({ onClose, initialValues }) {
         setActionResult(null); // limpa o estado após o toast
     }, [actionResult, onClose]);
 
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: FormData) => {
         setLoading(true);
         try {
             const res = await createDistribuidora(values);
