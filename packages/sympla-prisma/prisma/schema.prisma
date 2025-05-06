@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -15,15 +9,12 @@ datasource db {
 }
 
 
-model Test{
-  id String @id @default(uuid())
-  name String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+//*  ENUMNS SUBESTACAO*/
+
+enum SubestacaoCapital {
+  CAPITAL
+  INTERIOR
 }
-
-
-/**---------------ENUMS--------------------**/
 
 enum PropriedadeSubestacao {
   PROPRIA
@@ -36,36 +27,11 @@ enum CategoriaSubestacao {
   TRANSMISSAO
 }
 
-enum TipoSubestacao {
-  MT
-  AT
-}
-
 enum TensaoSubestacao {
   KV_34
   KV_69
   KV_138
   KV_230
-}
-
-enum StatusSubestacao {
-  ATIVA
-  INATIVA
-  EM_MANUTENCAO
-}
-
-enum TipoNota {
-  AA
-  TS
-  RSF
-}
-
-enum StatusAnomalia {
-  ABERTA
-  EM_ANALISE
-  EM_CORRECAO
-  CONCLUIDA
-  CANCELADA
 }
 
 enum PrioridadeDefeito {
@@ -75,264 +41,41 @@ enum PrioridadeDefeito {
   P3
 }
 
+enum TipoNota {
+  AA
+  TS
+  RSF
+}
+
+enum StatusAnomalia {
+  CONC
+  PEES
+}
+
 enum StatusNota {
   PENDENTE
   PROGRAMADO
   EXECUTADO
   BAIXADO_NO_SAP
-}
-
-enum StatusAtividadeMobile {
-  PENDENTE
-  EM_ANDAMENTO
-  CONCLUIDO
   CANCELADO
 }
 
-model Empresa {
-  id        Int        @id @default(autoincrement())
-  nome      String     @db.VarChar(255)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now()) @updatedAt
-  deletedAt DateTime?
-  createdBy Int
-  updatedBy Int?
-  deletedBy Int?
-  Regional  Regional[]
-
-  @@index([nome])
-  @@map("empresas")
+enum StatusAtribuicao {
+  ATRIBUIDA
+  EM_EXECUCAO
+  FINALIZADA
+  RECUSADA
+  CANCELADA
 }
 
-model Regional {
-  id          Int           @id @default(autoincrement())
-  nome        String        @db.VarChar(255)
-  empresaId   Int
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  deletedAt   DateTime?
-  createdBy   Int
-  updatedBy   Int?
-  deletedBy   Int?
-  empresa     Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  Subestacoes Subestacoes[]
-
-  @@index([empresaId])
-  @@index([nome])
-  @@map("regionais")
+enum tipoAtividadeMobile {
+  ivItIu
+  mpdj
+  mpbb
 }
 
-model Subestacoes {
-  id                  Int                   @id @default(autoincrement())
-  nome                String                @db.VarChar(255)
-  sigla               String                @db.VarChar(3)
-  localSAP            String                @db.VarChar(255)
-  propriedade         PropriedadeSubestacao
-  tipo                TipoSubestacao
-  categoria           CategoriaSubestacao
-  tensao              TensaoSubestacao
-  status              StatusSubestacao      @default(ATIVA)
-  regionalId          Int
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  deletedAt           DateTime?
-  createdBy           Int
-  updatedBy           Int?
-  deletedBy           Int?
-  Equipamentos        Equipamentos[]
-  NotaPlanoManutencao NotaPlanoManutencao[]
-  regional            Regional              @relation(fields: [regionalId], references: [id], onDelete: Cascade)
 
-  @@unique([sigla, regionalId])
-  @@index([regionalId])
-  @@index([sigla])
-  @@map("subestacoes")
-}
-
-model Equipamentos {
-  id                  Int                   @id @default(autoincrement())
-  nome                String                @db.VarChar(255)
-  subestacaoId        Int
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  deletedAt           DateTime?
-  createdBy           Int
-  updatedBy           Int?
-  deletedBy           Int?
-  Anomalias           Anomalias[]
-  subestacao          Subestacoes           @relation(fields: [subestacaoId], references: [id], onDelete: Cascade)
-  NotaPlanoManutencao NotaPlanoManutencao[]
-
-  @@index([subestacaoId])
-  @@index([nome])
-  @@map("equipamentos")
-}
-
-model TipoManutencao {
-  id                  Int                   @id @default(autoincrement())
-  nome                String                @unique @db.VarChar(255)
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  deletedAt           DateTime?
-  createdBy           Int
-  updatedBy           Int?
-  deletedBy           Int?
-  Kpi                 Kpi[]
-  NotaPlanoManutencao NotaPlanoManutencao[]
-
-  @@map("tipos_manutencao")
-}
-
-model Kpi {
-  id                  Int                   @id @default(autoincrement())
-  nome                String                @db.VarChar(255)
-  descricao           String                @db.Text
-  tipoManutencaoId    Int
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  deletedAt           DateTime?
-  createdBy           Int
-  updatedBy           Int?
-  deletedBy           Int?
-  tipoManutencao      TipoManutencao        @relation(fields: [tipoManutencaoId], references: [id], onDelete: Cascade)
-  NotaPlanoManutencao NotaPlanoManutencao[]
-
-  @@unique([nome, tipoManutencaoId])
-  @@index([tipoManutencaoId])
-  @@map("kpis")
-}
-
-model Anomalias {
-  id            Int            @id @default(autoincrement())
-  nome          String         @db.VarChar(255)
-  descricao     String         @db.Text
-  notificador   String         @db.VarChar(255)
-  status        StatusAnomalia @default(ABERTA)
-  equipamentoId Int
-  defeitoId     Int
-  tipoNota      TipoNota
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  deletedAt     DateTime?
-  createdBy     Int
-  updatedBy     Int?
-  deletedBy     Int?
-  defeito       Defeitos       @relation(fields: [defeitoId], references: [id], onDelete: Cascade)
-  equipamento   Equipamentos   @relation(fields: [equipamentoId], references: [id], onDelete: Cascade)
-
-  @@index([equipamentoId])
-  @@index([defeitoId])
-  @@index([status])
-  @@map("anomalias")
-}
-
-model GrupoDeDefeitos {
-  id                         Int                          @id @default(autoincrement())
-  nome                       String                       @unique @db.VarChar(255)
-  createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime                     @updatedAt
-  deletedAt                  DateTime?
-  createdBy                  Int
-  updatedBy                  Int?
-  deletedBy                  Int?
-  GrupoDeDefeitosEquipamento GrupoDeDefeitosEquipamento[]
-
-  @@map("grupos_defeitos")
-}
-
-model GrupoDeDefeitosEquipamento {
-  id                Int                @id @default(autoincrement())
-  grupoDeDefeitosId Int
-  equipamento       String             @db.VarChar(255)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  deletedAt         DateTime?
-  createdBy         Int
-  updatedBy         Int?
-  deletedBy         Int?
-  Defeitos          Defeitos[]
-  grupoDeDefeitos   GrupoDeDefeitos    @relation(fields: [grupoDeDefeitosId], references: [id], onDelete: Cascade)
-  SubGrupoDefeitos  SubGrupoDefeitos[]
-
-  @@unique([grupoDeDefeitosId, equipamento])
-  @@index([grupoDeDefeitosId])
-  @@index([equipamento])
-  @@map("grupos_defeitos_equipamentos")
-}
-
-model SubGrupoDefeitos {
-  id                        Int                        @id @default(autoincrement())
-  nome                      String                     @db.VarChar(255)
-  grupoDefeitoEquipamentoId Int
-  createdAt                 DateTime                   @default(now())
-  updatedAt                 DateTime                   @updatedAt
-  deletedAt                 DateTime?
-  createdBy                 Int
-  updatedBy                 Int?
-  deletedBy                 Int?
-  Defeitos                  Defeitos[]
-  grupoDefeitoEquipamento   GrupoDeDefeitosEquipamento @relation(fields: [grupoDefeitoEquipamentoId], references: [id], onDelete: Cascade)
-
-  @@unique([nome, grupoDefeitoEquipamentoId])
-  @@index([grupoDefeitoEquipamentoId])
-  @@map("subgrupos_defeitos")
-}
-
-model Defeitos {
-  id                         Int                        @id @default(autoincrement())
-  nome                       String                     @db.VarChar(255)
-  descricao                  String                     @db.Text
-  prioridade                 PrioridadeDefeito
-  subGrupoDefeitosId         Int
-  createdAt                  DateTime                   @default(now())
-  updatedAt                  DateTime                   @updatedAt
-  deletedAt                  DateTime?
-  createdBy                  Int
-  deletedBy                  Int?
-  updatedBy                  Int?
-  codigoSAP                  String                     @unique @db.VarChar(50)
-  grupoDefeitosEquipamentoId Int
-  Anomalias                  Anomalias[]
-  grupoDefeitosEquipamento   GrupoDeDefeitosEquipamento @relation(fields: [grupoDefeitosEquipamentoId], references: [id], onDelete: Cascade)
-  subGrupoDefeitos           SubGrupoDefeitos           @relation(fields: [subGrupoDefeitosId], references: [id], onDelete: Cascade)
-
-  @@index([subGrupoDefeitosId])
-  @@index([nome])
-  @@index([grupoDefeitosEquipamentoId], map: "defeitos_grupoDefeitosEquipamentoId_fkey")
-  @@map("defeitos")
-}
-
-model NotaPlanoManutencao {
-  id                 Int            @id @default(autoincrement())
-  nome               String         @db.VarChar(255)
-  numeroSAP          String         @unique @db.VarChar(50)
-  status             StatusNota     @default(PENDENTE)
-  tipoNota           TipoNota
-  subestacaoId       Int
-  equipamentoId      Int
-  tipoManutencaoId   Int
-  kpiId              Int
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-  deletedAt          DateTime?
-  createdBy          Int
-  updatedBy          Int?
-  deletedBy          Int?
-  dataLimiteExecucao DateTime
-  equipamento        Equipamentos   @relation(fields: [equipamentoId], references: [id], onDelete: Cascade)
-  kpi                Kpi            @relation(fields: [kpiId], references: [id], onDelete: Cascade)
-  subestacao         Subestacoes    @relation(fields: [subestacaoId], references: [id], onDelete: Cascade)
-  tipoManutencao     TipoManutencao @relation(fields: [tipoManutencaoId], references: [id], onDelete: Cascade)
-
-  @@index([subestacaoId])
-  @@index([equipamentoId])
-  @@index([tipoManutencaoId])
-  @@index([kpiId])
-  @@index([status])
-  @@map("notas_plano_manutencao")
-}
-
-/**---------------AUTENTICACAO WEB--------------------**/
+//*  AUTENTICACAO WEB
 
 model User {
   id        Int       @id @default(autoincrement())
@@ -394,10 +137,11 @@ model VerificationToken {
   @@map("tokens_verificacao")
 }
 
-/**---------------AUTENTICACAO MOBILE--------------------**/
+
+//*  AUTENTICACAO MOBILE
 
 model UsuarioMobile {
-  id          Int               @id @default(autoincrement())
+  id          String               @id @default(uuid())
   matricula   String            @unique @db.VarChar(50)
   nome        String            @db.VarChar(255)
   email       String?           @unique @db.VarChar(255)
@@ -412,35 +156,558 @@ model UsuarioMobile {
 
   @@index([matricula])
   @@map("usuarios_mobile")
+  UsuarioMobileRegional UsuarioMobileRegional[]
+  AtividadeAtribuicao AtividadeAtribuicao[]
 }
 
 model SessaoMobile {
-  id         Int           @id @default(autoincrement())
-  usuarioId  Int
+  id         String           @id @default(uuid())
+  usuarioMobileId  String
   deviceInfo String?       @db.Text
   lastActive DateTime      @default(now())
   createdAt  DateTime      @default(now())
   expiresAt  DateTime
   ativa      Boolean       @default(true)
-  usuario    UsuarioMobile @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario    UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
 
-  @@index([usuarioId])
+  @@index([usuarioMobileId])
   @@map("sessoes_mobile")
 }
 
 model TokenMobile {
-  id                    Int           @id @default(autoincrement())
+  id                    String           @id @default(uuid())
   token                 String        @unique @db.VarChar(255)
   refreshToken          String?       @unique @db.VarChar(255)
   refreshTokenExpiresAt DateTime?
-  usuarioId             Int
+  usuarioMobileId             String
   expiresAt             DateTime
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
   revoked               Boolean       @default(false)
-  usuarios_mobile       UsuarioMobile @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarios_mobile       UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
 
-  @@index([usuarioId], map: "TokenMobile_usuarioId_fkey")
+  @@index([usuarioMobileId], map: "TokenMobile_usuarioMobileId_fkey")
+}
+
+model UsuarioMobileRegional{
+  id String @id @default(uuid())
+  usuarioMobileId String
+  regionalId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  usuarioMobile UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
+  regional Regional @relation(fields: [regionalId], references: [id], onDelete: Cascade)
+
+  @@index([regionalId])
+  @@map("usuarios_mobile_regionais")
+}
+
+//*  TABELAS
+
+model Distribuidora {
+  id        String  @id @default(uuid())
+  nome      String
+  descricao String?
+  codigoSap String? @unique
+
+  regionais Regional[]
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+model Regional {
+  id        String  @id @default(uuid())
+  nome      String
+  descricao String?
+  codigoSap String? @unique
+
+  distribuidoraId String
+  distribuidora   Distribuidora @relation(fields: [distribuidoraId], references: [id])
+
+  subestacoes Subestacao[]
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  NotasSAP NotasSAP[]
+
+  UsuarioMobileRegional UsuarioMobileRegional[]
+}
+
+model Subestacao {
+  id              String @id @default(uuid())
+  nome            String
+  sigla           String
+  localInstalacao String
+  codigoSap       String @unique
+
+  capital     SubestacaoCapital
+  propriedade PropriedadeSubestacao
+  categoria   CategoriaSubestacao
+  tensao      TensaoSubestacao
+
+  regionalId String
+  regional   Regional @relation(fields: [regionalId], references: [id])
+
+  equipamentos Equipamento[]
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+model GrupoDefeitoEquipamento {
+  id   String @id @default(uuid())
+  nome String @unique
+
+  subgrupos    SubgrupoDefeitoEquipamento[]
+  defeitos     Defeito[]
+  codigos      GrupoDefeitoCodigo[]
+  equipamentos Equipamento[]
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+model SubgrupoDefeitoEquipamento {
+  id   String @id @default(uuid())
+  nome String
+
+  grupoId String
+  grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
+
+  defeitos     Defeito[]
+  equipamentos Equipamento[]
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+model GrupoDefeitoCodigo {
+  id     String @id @default(uuid())
+  sigla  String
+  codigo String @unique
+
+  grupoId String
+  grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
+
+  defeitos     Defeito[]
+  equipamentos Equipamento[]
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+model Defeito {
+  id        String @id @default(uuid())
+  codigoSap String @unique
+  descricao String
+
+  grupoId    String
+  subgrupoId String
+
+  grupo    GrupoDefeitoEquipamento    @relation(fields: [grupoId], references: [id])
+  subgrupo SubgrupoDefeitoEquipamento @relation(fields: [subgrupoId], references: [id])
+
+  grupoDefeitoCodigoId String
+  grupoDefeitoCodigo   GrupoDefeitoCodigo @relation(fields: [grupoDefeitoCodigoId], references: [id])
+
+  acaoRecomendada       String?
+  custeioOuInvestimento String?
+  equipe                String?
+  prioridade            String?
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+model Equipamento {
+  id        String  @id @default(uuid())
+  nome      String
+  descricao String?
+
+  subestacaoId String
+  subestacao   Subestacao @relation(fields: [subestacaoId], references: [id])
+
+  grupoDefeitoCodigoId String
+  grupoDefeitoCodigo   GrupoDefeitoCodigo @relation(fields: [grupoDefeitoCodigoId], references: [id])
+
+  grupoId String
+  grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
+
+  subgrupoId String?
+  subgrupo   SubgrupoDefeitoEquipamento? @relation(fields: [subgrupoId], references: [id])
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  NotasSAP NotasSAP[]
+
+}
+
+model TipoManutencao {
+  id   String @id @default(uuid())
+  nome String
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  Kpi Kpi[]
+
+}
+
+model Kpi {
+  id        String @id @default(uuid())
+  nome      String
+  descricao String
+
+  tipoManutencaoId String
+  tipoManutencao   TipoManutencao @relation(fields: [tipoManutencaoId], references: [id])
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  NotasSAP NotasSAP[]
+  TipoAtividade TipoAtividade[]
+}
+
+model NotasSAP {
+  id String @id @default(uuid())
+  descricao String?
+  notificador String?
+
+  numeroNota      String?
+  localInstalacao String
+
+  tipoNota TipoNota
+  dataNota DateTime
+  dataInicioPlan DateTime?
+  dataFiPlan DateTime?
+  dataInicioReal DateTime?
+  dataFiReal DateTime?
+  centroTrabalhoId String
+  centroTrabalho   CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
+
+  equipamentoId String?
+  equipamento   Equipamento? @relation(fields: [equipamentoId], references: [id])
+
+  kpiId String?
+  kpi   Kpi? @relation(fields: [kpiId], references: [id])
+
+  regionalId String
+  regional   Regional @relation(fields: [regionalId], references: [id])
+
+  prioridade PrioridadeDefeito?
+
+  status StatusNota  @default(PENDENTE)
+
+  ordemServicoExecucao String?
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  Atividade Atividade[]
+
+  HistoricoAlteracaoNota HistoricoAlteracaoNota[]
 }
 
 
+model CentroTrabalho{
+  id String @id @default(uuid())
+  nome String
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  NotasSAP NotasSAP[]
+}
+
+model Tecnico{
+  id String @id @default(uuid())
+  nome String
+  email String @unique
+  telefone String
+  cpf String @unique
+  rg String @unique
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+
+model TipoAtividade{
+  id String @id @default(uuid())
+  nome String
+
+  kpiId String?
+  kpi   Kpi? @relation(fields: [kpiId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+
+  Atividade Atividade[]
+
+  AprModelo AprModelo[]
+
+  ChecklistModelo ChecklistModelo[]
+}
+
+model Atividade {
+  id                  String      @id @default(uuid())
+
+  notaId              String
+  nota                NotasSAP    @relation(fields: [notaId], references: [id])
+
+  tipoAtividadeId String
+  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+  tipoAtividadeMobile tipoAtividadeMobile
+
+  ordemServico        String?
+  status              StatusAtividade @default(PENDENTE)
+  prazoLimite         DateTime?
+  dataProgramacao     DateTime?
+  dataExecucaoInicio  DateTime?
+  dataExecucaoFim     DateTime?
+
+  atribuicoes         AtividadeAtribuicao[]
+
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  deletedAt           DateTime?
+  createdBy           String
+  updatedBy           String?
+  deletedBy           String?
+
+  HistoricoAlteracaoAtividade HistoricoAlteracaoAtividade[]
+}
+
+enum StatusAtividade {
+  PENDENTE
+  EM_EXECUCAO
+  CONCLUIDA
+  CANCELADA
+}
+
+model AtividadeAtribuicao {
+  id            String     @id @default(uuid())
+
+  atividadeId   String
+  atividade     Atividade  @relation(fields: [atividadeId], references: [id])
+
+  usuarioMobileId String
+  usuarioMobile   UsuarioMobile @relation(fields: [usuarioMobileId], references: [id])
+
+  status        StatusAtribuicao @default(ATRIBUIDA)
+
+  dataInicio    DateTime?
+  dataFim       DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  createdBy     String
+  updatedBy     String?
+  deletedBy     String?
+}
+
+
+
+model HistoricoAlteracaoNota {
+  id            String   @id @default(uuid())
+  notaId        String
+  nota          NotasSAP @relation(fields: [notaId], references: [id])
+  campo         String
+  valorAnterior String?
+  valorNovo     String?
+  alteradoPor   String
+  alteradoEm    DateTime @default(now())
+}
+
+model HistoricoAlteracaoAtividade {
+  id            String    @id @default(uuid())
+  atividadeId   String
+  atividade     Atividade @relation(fields: [atividadeId], references: [id])
+  campo         String
+  valorAnterior String?
+  valorNovo     String?
+  alteradoPor   String
+  alteradoEm    DateTime  @default(now())
+}
+
+//* ANALISE PRELIMINAR DE RISCO
+
+model AprPerguntas{
+  id String @id @default(uuid())
+  pergunta String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  AprPerguntasRelation AprPerguntasRelation[]
+}
+
+
+model AprModelo{
+  id String @id @default(uuid())
+  nome String
+  descricao String?
+
+  tipoAtividadeId String
+  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  AprPerguntasRelation AprPerguntasRelation[]
+}
+
+model AprPerguntasRelation{
+  id String @id @default(uuid())
+  perguntaId String
+  pergunta   AprPerguntas @relation(fields: [perguntaId], references: [id])
+  ordem Int @default(0)
+
+  modeloId String
+  modelo   AprModelo @relation(fields: [modeloId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}
+
+
+//* CHECKLIST
+
+model ChecklistPergunta{
+  id String @id @default(uuid())
+  pergunta String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  ChecklisrPerguntaRelation ChecklisrPerguntaRelation[]
+}
+
+model ChecklistModelo{
+  id String @id @default(uuid())
+  nome String
+  descricao String?
+
+  tipoAtividadeId String
+  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+  ChecklisrPerguntaRelation ChecklisrPerguntaRelation[]
+}
+
+model ChecklisrPerguntaRelation{
+  id String @id @default(uuid())
+  perguntaId String
+  pergunta   ChecklistPergunta @relation(fields: [perguntaId], references: [id])
+  ordem Int @default(0)
+
+  modeloId String
+  modelo   ChecklistModelo @relation(fields: [modeloId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+
+}

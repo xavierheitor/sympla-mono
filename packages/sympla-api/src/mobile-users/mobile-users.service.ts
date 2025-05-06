@@ -11,7 +11,7 @@ export class MobileUsersService {
     });
   }
 
-  async findById(id: number) {
+  async findById(id: string) {
     return await this.prisma.usuarioMobile.findUnique({
       where: { id },
     });

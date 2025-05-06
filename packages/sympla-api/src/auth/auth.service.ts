@@ -54,7 +54,7 @@ export class AuthService {
       const payload = this.jwtService.verify(refreshToken);
 
       const user = await this.mobileUsersService.findById(
-        payload.sub as number,
+        payload.sub as string,
       );
       if (!user) throw new ForbiddenException('Usuário não encontrado');
 
