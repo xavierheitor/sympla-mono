@@ -1,4 +1,4 @@
-import { Distribuidora } from '@sympla/prisma';
+import { Distribuidora, } from '@sympla/prisma';
 import { z } from 'zod';
 
 // Zod schema usado só para validação do formulário

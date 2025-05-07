@@ -1,4 +1,3 @@
-
 // src/lib/actions/regional/delete.ts
 'use server';
 
@@ -15,11 +14,10 @@ export const deleteRegional = createPrismaDeleteAction(
             },
         });
     },
-    async (id) => {
-        const exists = await prisma.regional.findUnique({
-            where: { id },
-            select: { deletedAt: true },
-        });
-        return !!exists && !exists.deletedAt;
+    {
+        defaultCheck: {
+            prismaModel: prisma.regional,
+            modelName: 'Regional',
+        },
     }
 );
