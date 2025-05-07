@@ -1,13 +1,12 @@
 'use client';
 
-import React from 'react';
-import useSWR from 'swr';
-import { Button, Card, Modal, Table, TableColumnsType, TableProps } from 'antd';
+import { Button, Card, Modal, Table } from 'antd';
 import { Distribuidora } from '@sympla/prisma';
-import TableActionButtons from '@/lib/components/TableActionButtons';
 import DistribuidoraForm from './form';
-import { useCrudModal } from '@/lib/hooks/useCrudModal';
-import { handleAction } from '@/lib/hooks/useActionHandler';
+
+import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useServerData } from '@/lib/hooks/useServerData';
+import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import { getAllDistribuidoras } from '@/lib/actions/distribuidora/getAll';
 import { createDistribuidora } from '@/lib/actions/distribuidora/create';
@@ -16,98 +15,66 @@ import { deleteDistribuidora } from '@/lib/actions/distribuidora/delete';
 
 import { DistribuidoraFormData } from '@/lib/actions/distribuidora/distribuidoraFormData';
 
+const MUTATE_KEY = 'distribuidoras';
+
 export default function DistribuidoraPage() {
     const {
-        isOpen: modalOpen,
-        editingItem: editingDistribuidora,
+        isOpen,
+        editingItem,
         open,
         close,
+        exec,
         loading,
-    } = useCrudModal<Distribuidora>();
+    } = useCrudController<Distribuidora>(MUTATE_KEY);
 
-    const { data: distribuidoras, isLoading, error } = useSWR(
-        'distribuidoras',
-        async () => {
-            const res = await getAllDistribuidoras();
-            return res.success ? res.data : [];
-        }
-    );
+    const { data, error, isLoading } = useServerData(MUTATE_KEY, getAllDistribuidoras);
 
     const handleSubmit = (values: DistribuidoraFormData) => {
-        const action = editingDistribuidora?.id
-            ? () => updateDistribuidora({ ...values, id: editingDistribuidora.id })
-            : () => createDistribuidora(values);
-
-        return handleAction({
-            action,
-            payload: undefined,
-            onSuccessMessage: 'Distribuidora salva com sucesso!',
-            mutateKey: 'distribuidoras',
-            onSuccess: close,
-        });
+        if (editingItem?.id) {
+            return exec(() => updateDistribuidora({ ...values, id: editingItem.id }), 'Distribuidora atualizada com sucesso!');
+        }
+        return exec(() => createDistribuidora(values), 'Distribuidora criada com sucesso!');
     };
 
     const handleDelete = (record: Distribuidora) => {
-        return handleAction({
-            action: () => deleteDistribuidora(record.id),
-            payload: undefined,
-            onSuccessMessage: 'Distribuidora excluída com sucesso!',
-            mutateKey: 'distribuidoras',
-        });
+        return exec(() => deleteDistribuidora(record.id), 'Distribuidora excluída com sucesso!');
     };
 
-    const columns: TableColumnsType<Distribuidora> = [
-        { title: 'Nome', dataIndex: 'nome', key: 'nome' },
-        { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
-        { title: 'Código SAP', dataIndex: 'codigoSap', key: 'codigoSap' },
-        {
-            title: 'Ações',
-            key: 'actions',
-            render: (_, record) => (
-                <TableActionButtons
-                    record={record}
-                    onEdit={open}
-                    onDelete={handleDelete}
-                />
-            ),
-        },
-    ];
+    const columns = useTableColumnsWithActions<Distribuidora>(
+        [
+            { title: 'Nome', dataIndex: 'nome', key: 'nome' },
+            { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
+            { title: 'Código SAP', dataIndex: 'codigoSap', key: 'codigoSap' },
+        ],
+        open,
+        handleDelete
+    );
 
-    const rowSelection: TableProps<Distribuidora>['rowSelection'] = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            console.log('selectedRowKeys:', selectedRowKeys, 'selectedRows:', selectedRows);
-        },
-    };
-
-    if (error) {
-        return <p style={{ color: 'red' }}>Erro ao carregar distribuidoras.</p>;
-    }
+    if (error) return <p style={{ color: 'red' }}>Erro ao carregar distribuidoras.</p>;
 
     return (
         <>
             <Card
                 title="Distribuidoras"
                 extra={<Button type="primary" onClick={() => open()}>Adicionar</Button>}
-                style={{ width: '100%' }}
             >
                 <Table<Distribuidora>
-                    rowSelection={rowSelection}
                     columns={columns}
-                    dataSource={distribuidoras}
+                    dataSource={data?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />
             </Card>
 
             <Modal
-                title={editingDistribuidora ? 'Editar Distribuidora' : 'Nova Distribuidora'}
-                open={modalOpen}
+                title={editingItem ? 'Editar Distribuidora' : 'Nova Distribuidora'}
+                open={isOpen}
                 onCancel={close}
                 footer={null}
                 destroyOnClose
             >
                 <DistribuidoraForm
-                    initialValues={editingDistribuidora ?? undefined}
+                    initialValues={editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={loading}
                 />
