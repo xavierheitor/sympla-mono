@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, Card, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { cadastrarUsuario } from '@/lib/actions/cadastrarUsuario';
+import { cadastrarUsuario } from '@/lib/actions/common/cadastrarUsuario';
 
 const { Title } = Typography;
 
