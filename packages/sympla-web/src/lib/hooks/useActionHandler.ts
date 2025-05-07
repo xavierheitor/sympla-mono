@@ -12,7 +12,7 @@ interface ActionResult {
 
 interface HandleActionParams<T> {
     action: (payload: T) => Promise<ActionResult>;
-    payload: T;
+    payload?: T;
     onSuccessMessage?: string;
     onErrorMessage?: string;
     mutateKey?: string;
@@ -28,7 +28,7 @@ export async function handleAction<T>({
     onSuccess,
 }: HandleActionParams<T>) {
     try {
-        const result = await action(payload);
+        const result = await action(payload ?? {} as T);
 
         if (result.success) {
             message.success(onSuccessMessage);

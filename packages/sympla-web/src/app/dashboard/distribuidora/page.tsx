@@ -1,18 +1,20 @@
 'use client';
 
 import React from 'react';
-import fetchDistribuidoras from '@/lib/actions/distribuidora/fetch';
-import createDistribuidora from '@/lib/actions/distribuidora/new';
-import updateDistribuidora from '@/lib/actions/distribuidora/update';
-import deleteDistribuidora from '@/lib/actions/distribuidora/delete';
-import { type Distribuidora } from '@sympla/prisma';
 import useSWR from 'swr';
 import { Button, Card, Modal, Table, TableColumnsType, TableProps } from 'antd';
+import { Distribuidora } from '@sympla/prisma';
 import TableActionButtons from '@/lib/components/TableActionButtons';
 import DistribuidoraForm from './form';
 import { useCrudModal } from '@/lib/hooks/useCrudModal';
 import { handleAction } from '@/lib/hooks/useActionHandler';
 
+import { getAllDistribuidoras } from '@/lib/actions/distribuidora/getAll';
+import { createDistribuidora } from '@/lib/actions/distribuidora/create';
+import { updateDistribuidora } from '@/lib/actions/distribuidora/update';
+import { deleteDistribuidora } from '@/lib/actions/distribuidora/delete';
+
+import { DistribuidoraFormData } from '@/lib/actions/distribuidora/distribuidoraFormData';
 
 export default function DistribuidoraPage() {
     const {
@@ -23,8 +25,15 @@ export default function DistribuidoraPage() {
         loading,
     } = useCrudModal<Distribuidora>();
 
-    const { data: distribuidoras, isLoading, error } = useSWR('/api/distribuidoras', fetchDistribuidoras);
-    const handleSubmit = (values: Partial<Distribuidora>) => {
+    const { data: distribuidoras, isLoading, error } = useSWR(
+        'distribuidoras',
+        async () => {
+            const res = await getAllDistribuidoras();
+            return res.success ? res.data : [];
+        }
+    );
+
+    const handleSubmit = (values: DistribuidoraFormData) => {
         const action = editingDistribuidora?.id
             ? () => updateDistribuidora({ ...values, id: editingDistribuidora.id })
             : () => createDistribuidora(values);
@@ -32,18 +41,18 @@ export default function DistribuidoraPage() {
         return handleAction({
             action,
             payload: undefined,
-            onSuccessMessage: "Distribuidora salva com sucesso!",
-            mutateKey: '/api/distribuidoras',
+            onSuccessMessage: 'Distribuidora salva com sucesso!',
+            mutateKey: 'distribuidoras',
             onSuccess: close,
         });
     };
 
     const handleDelete = (record: Distribuidora) => {
         return handleAction({
-            action: deleteDistribuidora,
-            payload: record,
-            onSuccessMessage: "Distribuidora excluída com sucesso!",
-            mutateKey: '/api/distribuidoras',
+            action: () => deleteDistribuidora(record.id),
+            payload: undefined,
+            onSuccessMessage: 'Distribuidora excluída com sucesso!',
+            mutateKey: 'distribuidoras',
         });
     };
 
@@ -70,7 +79,9 @@ export default function DistribuidoraPage() {
         },
     };
 
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar distribuidoras.</p>;
+    if (error) {
+        return <p style={{ color: 'red' }}>Erro ao carregar distribuidoras.</p>;
+    }
 
     return (
         <>

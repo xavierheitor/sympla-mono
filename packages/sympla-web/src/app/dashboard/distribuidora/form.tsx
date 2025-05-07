@@ -1,13 +1,12 @@
-// src/app/dashboard/distribuidora/form.tsx
 'use client';
 
 import { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
-import { type Distribuidora } from '@sympla/prisma';
+import { DistribuidoraFormData } from '@/lib/actions/distribuidora/distribuidoraFormData';
 
 interface DistribuidoraFormProps {
-    onSubmit: (values: Partial<Distribuidora>) => void;
-    initialValues?: Partial<Distribuidora>;
+    onSubmit: (values: DistribuidoraFormData) => void;
+    initialValues?: Partial<DistribuidoraFormData>;
     loading?: boolean;
 }
 
@@ -36,10 +35,10 @@ export default function DistribuidoraForm({
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
-            <Form.Item name="descricao" label="Descrição">
+            <Form.Item name="descricao" label="Descrição" rules={[{ required: true }]}>
                 <Input.TextArea rows={3} />
             </Form.Item>
-            <Form.Item name="codigoSap" label="Código SAP">
+            <Form.Item name="codigoSap" label="Código SAP" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
 
