@@ -1,56 +1,37 @@
+// src/app/dashboard/distribuidora/form.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Form, Input, Button, message } from 'antd';
-import createDistribuidora from '@/lib/actions/distribuidora/new';
+import { useEffect } from 'react';
+import { Form, Input, Button } from 'antd';
 import { type Distribuidora } from '@sympla/prisma';
 
 interface DistribuidoraFormProps {
-    onClose: () => void;
+    onSubmit: (values: Partial<Distribuidora>) => void;
     initialValues?: Partial<Distribuidora>;
+    loading?: boolean;
 }
 
-export default function DistribuidoraForm({ onClose, initialValues }: DistribuidoraFormProps) {
+export default function DistribuidoraForm({
+    onSubmit,
+    initialValues,
+    loading = false,
+}: DistribuidoraFormProps) {
     const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false);
-    const [actionResult, setActionResult] = useState<{ success?: boolean; error?: string } | null>(null);
 
     useEffect(() => {
-        if (!actionResult) return;
-
-        if (actionResult.success) {
-            message.success('Distribuidora salva com sucesso!');
-            onClose(); // fecha o modal
-        } else if (actionResult.error) {
-            message.error(actionResult.error || 'Erro ao salvar distribuidora');
+        if (initialValues) {
+            form.setFieldsValue(initialValues);
+        } else {
+            form.resetFields();
         }
-
-        setActionResult(null); // limpa o estado após o toast
-    }, [actionResult, onClose]);
-
-    const onFinish = async (values: FormData) => {
-        setLoading(true);
-        try {
-            const res = await createDistribuidora(values);
-            if (res.success) {
-                setActionResult({ success: true });
-            } else {
-                setActionResult({ error: res.error || 'Erro inesperado.' });
-            }
-        } catch (err) {
-            console.error(err);
-            setActionResult({ error: 'Erro ao salvar distribuidora' });
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [initialValues, form]);
 
     return (
         <Form
             form={form}
             layout="vertical"
             initialValues={initialValues}
-            onFinish={onFinish}
+            onFinish={onSubmit}
         >
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
                 <Input />
