@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/defeitoFormSchema';
+import { DefeitoFormData, } from '@/lib/actions/defeito/defeitoFormSchema';
 import {
     GrupoDefeitoEquipamento,
     SubgrupoDefeitoEquipamento,
@@ -11,7 +11,7 @@ import {
 
 interface DefeitoFormProps {
     onSubmit: (values: DefeitoFormData) => void;
-    initialValues?: Partial<DefeitoWithRelations>;
+    initialValues?: Partial<DefeitoFormData>;
     loading?: boolean;
     grupoOptions: GrupoDefeitoEquipamento[];
     subgrupoOptions: SubgrupoDefeitoEquipamento[];
