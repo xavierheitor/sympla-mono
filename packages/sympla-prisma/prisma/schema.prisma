@@ -336,9 +336,9 @@ model Defeito {
   descricao String
 
   grupoId    String
-  subgrupoId String
-
   grupo    GrupoDefeitoEquipamento    @relation(fields: [grupoId], references: [id])
+
+  subgrupoId String
   subgrupo SubgrupoDefeitoEquipamento @relation(fields: [subgrupoId], references: [id])
 
   grupoDefeitoCodigoId String
