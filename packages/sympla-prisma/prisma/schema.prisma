@@ -400,7 +400,6 @@ model TipoManutencao {
   deletedBy String?
 
   Kpi Kpi[]
-
 }
 
 model Kpi {
