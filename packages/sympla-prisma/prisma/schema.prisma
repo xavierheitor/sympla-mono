@@ -436,6 +436,7 @@ model NotasSAP {
   dataFiPlan DateTime?
   dataInicioReal DateTime?
   dataFiReal DateTime?
+
   centroTrabalhoId String
   centroTrabalho   CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
 
