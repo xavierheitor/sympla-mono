@@ -10,7 +10,6 @@ import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/sub
 import { createSubgrupoDefeitoEquipamento } from '@/lib/actions/subgrupoDefeitoEquipamento/create';
 import { updateSubgrupoDefeitoEquipamento } from '@/lib/actions/subgrupoDefeitoEquipamento/update';
 import { deleteSubgrupoDefeitoEquipamento } from '@/lib/actions/subgrupoDefeitoEquipamento/delete';
-import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
 
 import SubgrupoDefeitoEquipamentoForm from './form';
 import { SubgrupoDefeitoEquipamentoFormData } from '@/lib/actions/subgrupoDefeitoEquipamento/subgrupoDefeitoEquipamentoFormSchema';
@@ -22,13 +21,16 @@ export default function SubgrupoDefeitoEquipamentoPage() {
     const controller = useCrudController<SubgrupoWithGrupo>('subgrupoDefeitoEquipamento');
 
     const { data: subgrupos, isLoading, error } = useServerData(
-        'subgrupoDefeitoEquipamento',
+        'subgrupos',
         getAllSubgrupoDefeitoEquipamentosWithIncludes
     );
 
     const { data: grupos } = useServerData(
-        'grupoDefeitoEquipamento',
-        getAllGrupoDefeitoEquipamentos
+        'gruposDefeito',
+        async () => {
+            const all = await import('@/lib/actions/grupoDefeitoEquipamento/getAll');
+            return all.getAllGrupoDefeitoEquipamentos();
+        }
     );
 
     const columns = useTableColumnsWithActions<SubgrupoWithGrupo>(
