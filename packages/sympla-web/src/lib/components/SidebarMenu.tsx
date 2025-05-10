@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     DashboardOutlined,
-    UploadOutlined,
     VideoCameraOutlined,
     FormOutlined,
+    LogoutOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Typography } from 'antd';
+import { signOut } from 'next-auth/react';
 
 const { Sider } = Layout;
 const { Title } = Typography;
@@ -103,9 +104,13 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
             label: <Link href="/monitoramento">Monitoramento</Link>,
         },
         {
-            key: '/uploads',
-            icon: <UploadOutlined />,
-            label: <Link href="/uploads">Uploads</Link>,
+            key: 'logout',
+            icon: <LogoutOutlined />,
+            label: (
+                <span onClick={() => signOut({ callbackUrl: '/' })}>
+                    Sair
+                </span>
+            ),
         },
     ];
 

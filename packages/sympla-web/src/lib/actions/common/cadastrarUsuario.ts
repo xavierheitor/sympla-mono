@@ -29,7 +29,7 @@ export async function cadastrarUsuario(formData: FormData) {
       email,
       password: hashed,
       name,
-      createdBy: 0,
+      createdBy: "system",
     },
   });
 

@@ -8,7 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 //*  ENUMNS SUBESTACAO*/
 
 enum SubestacaoCapital {
@@ -74,11 +73,10 @@ enum tipoAtividadeMobile {
   mpbb
 }
 
-
 //*  AUTENTICACAO WEB
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(uuid())
   username  String    @unique @db.VarChar(50)
   email     String?   @unique @db.VarChar(255)
   password  String    @db.VarChar(255)
@@ -86,9 +84,9 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-  createdBy Int
-  updatedBy Int?
-  deletedBy Int?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
   accounts  Account[]
   sessions  Session[]
 
@@ -98,8 +96,7 @@ model User {
 }
 
 model Account {
-  id                Int     @id @default(autoincrement())
-  userId            Int
+  id                String  @id @default(uuid())
   type              String
   provider          String
   providerAccountId String
@@ -110,7 +107,9 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -118,11 +117,12 @@ model Account {
 }
 
 model Session {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(uuid())
   sessionToken String   @unique
-  userId       Int
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("sessoes")
@@ -137,49 +137,51 @@ model VerificationToken {
   @@map("tokens_verificacao")
 }
 
-
 //*  AUTENTICACAO MOBILE
 
 model UsuarioMobile {
-  id          String               @id @default(uuid())
-  matricula   String            @unique @db.VarChar(50)
-  nome        String            @db.VarChar(255)
-  email       String?           @unique @db.VarChar(255)
-  senha       String            @db.VarChar(255)
-  funcao      String            @db.VarChar(100)
-  ativo       Boolean           @default(true)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  deletedAt   DateTime?
-  TokenMobile TokenMobile[]
-  sessoes     SessaoMobile[]
+  id                    String                  @id @default(uuid())
+  matricula             String                  @unique @db.VarChar(50)
+  nome                  String                  @db.VarChar(255)
+  email                 String?                 @unique @db.VarChar(255)
+  senha                 String                  @db.VarChar(255)
+  funcao                String                  @db.VarChar(100)
+  ativo                 Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  deletedAt             DateTime?
+  createdBy             String
+  updatedBy             String?
+  deletedBy             String?
+  TokenMobile           TokenMobile[]
+  sessoes               SessaoMobile[]
+  UsuarioMobileRegional UsuarioMobileRegional[]
+  AtividadeAtribuicao   AtividadeAtribuicao[]
 
   @@index([matricula])
   @@map("usuarios_mobile")
-  UsuarioMobileRegional UsuarioMobileRegional[]
-  AtividadeAtribuicao AtividadeAtribuicao[]
 }
 
 model SessaoMobile {
-  id         String           @id @default(uuid())
-  usuarioMobileId  String
-  deviceInfo String?       @db.Text
-  lastActive DateTime      @default(now())
-  createdAt  DateTime      @default(now())
-  expiresAt  DateTime
-  ativa      Boolean       @default(true)
-  usuario    UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
+  id              String        @id @default(uuid())
+  usuarioMobileId String
+  deviceInfo      String?       @db.Text
+  lastActive      DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  expiresAt       DateTime
+  ativa           Boolean       @default(true)
+  usuario         UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
 
   @@index([usuarioMobileId])
   @@map("sessoes_mobile")
 }
 
 model TokenMobile {
-  id                    String           @id @default(uuid())
+  id                    String        @id @default(uuid())
   token                 String        @unique @db.VarChar(255)
   refreshToken          String?       @unique @db.VarChar(255)
   refreshTokenExpiresAt DateTime?
-  usuarioMobileId             String
+  usuarioMobileId       String
   expiresAt             DateTime
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
@@ -189,16 +191,16 @@ model TokenMobile {
   @@index([usuarioMobileId], map: "TokenMobile_usuarioMobileId_fkey")
 }
 
-model UsuarioMobileRegional{
-  id String @id @default(uuid())
+model UsuarioMobileRegional {
+  id              String    @id @default(uuid())
   usuarioMobileId String
-  regionalId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
+  regionalId      String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   usuarioMobile UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
-  regional Regional @relation(fields: [regionalId], references: [id], onDelete: Cascade)
+  regional      Regional      @relation(fields: [regionalId], references: [id], onDelete: Cascade)
 
   @@index([regionalId])
   @@map("usuarios_mobile_regionais")
@@ -335,11 +337,11 @@ model Defeito {
   codigoSap String @unique
   descricao String
 
-  grupoId    String
-  grupo    GrupoDefeitoEquipamento    @relation(fields: [grupoId], references: [id])
+  grupoId String
+  grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
 
   subgrupoId String
-  subgrupo SubgrupoDefeitoEquipamento @relation(fields: [subgrupoId], references: [id])
+  subgrupo   SubgrupoDefeitoEquipamento @relation(fields: [subgrupoId], references: [id])
 
   grupoDefeitoCodigoId String
   grupoDefeitoCodigo   GrupoDefeitoCodigo @relation(fields: [grupoDefeitoCodigoId], references: [id])
@@ -384,7 +386,6 @@ model Equipamento {
   deletedBy String?
 
   NotasSAP NotasSAP[]
-
 }
 
 model TipoManutencao {
@@ -418,24 +419,24 @@ model Kpi {
   updatedBy String?
   deletedBy String?
 
-  NotasSAP NotasSAP[]
+  NotasSAP      NotasSAP[]
   TipoAtividade TipoAtividade[]
 }
 
 model NotasSAP {
-  id String @id @default(uuid())
-  descricao String?
+  id          String  @id @default(uuid())
+  descricao   String?
   notificador String?
 
   numeroNota      String?
   localInstalacao String
 
-  tipoNota TipoNota
-  dataNota DateTime
+  tipoNota       TipoNota
+  dataNota       DateTime
   dataInicioPlan DateTime?
-  dataFiPlan DateTime?
+  dataFiPlan     DateTime?
   dataInicioReal DateTime?
-  dataFiReal DateTime?
+  dataFiReal     DateTime?
 
   centroTrabalhoId String
   centroTrabalho   CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
@@ -444,14 +445,14 @@ model NotasSAP {
   equipamento   Equipamento? @relation(fields: [equipamentoId], references: [id])
 
   kpiId String?
-  kpi   Kpi? @relation(fields: [kpiId], references: [id])
+  kpi   Kpi?    @relation(fields: [kpiId], references: [id])
 
   regionalId String
   regional   Regional @relation(fields: [regionalId], references: [id])
 
   prioridade PrioridadeDefeito?
 
-  status StatusNota  @default(PENDENTE)
+  status StatusNota @default(PENDENTE)
 
   ordemServicoExecucao String?
 
@@ -468,9 +469,8 @@ model NotasSAP {
   HistoricoAlteracaoNota HistoricoAlteracaoNota[]
 }
 
-
-model CentroTrabalho{
-  id String @id @default(uuid())
+model CentroTrabalho {
+  id   String @id @default(uuid())
   nome String
 
   // Auditoria
@@ -484,13 +484,13 @@ model CentroTrabalho{
   NotasSAP NotasSAP[]
 }
 
-model Tecnico{
-  id String @id @default(uuid())
-  nome String
-  email String @unique
+model Tecnico {
+  id       String @id @default(uuid())
+  nome     String
+  email    String @unique
   telefone String
-  cpf String @unique
-  rg String @unique
+  cpf      String @unique
+  rg       String @unique
 
   // Auditoria
   createdAt DateTime  @default(now())
@@ -501,21 +501,21 @@ model Tecnico{
   deletedBy String?
 }
 
-
-model TipoAtividade{
-  id String @id @default(uuid())
+model TipoAtividade {
+  id   String @id @default(uuid())
   nome String
 
   kpiId String?
-  kpi   Kpi? @relation(fields: [kpiId], references: [id])
+  kpi   Kpi?    @relation(fields: [kpiId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  tipoAtividadeMobile tipoAtividadeMobile @default(ivItIu)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
   updatedBy String?
   deletedBy String?
-
 
   Atividade Atividade[]
 
@@ -525,31 +525,29 @@ model TipoAtividade{
 }
 
 model Atividade {
-  id                  String      @id @default(uuid())
+  id String @id @default(uuid())
 
-  notaId              String
-  nota                NotasSAP    @relation(fields: [notaId], references: [id])
+  notaId String
+  nota   NotasSAP @relation(fields: [notaId], references: [id])
 
   tipoAtividadeId String
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 
-  tipoAtividadeMobile tipoAtividadeMobile
+  ordemServico       String?
+  status             StatusAtividade @default(PENDENTE)
+  prazoLimite        DateTime?
+  dataProgramacao    DateTime?
+  dataExecucaoInicio DateTime?
+  dataExecucaoFim    DateTime?
 
-  ordemServico        String?
-  status              StatusAtividade @default(PENDENTE)
-  prazoLimite         DateTime?
-  dataProgramacao     DateTime?
-  dataExecucaoInicio  DateTime?
-  dataExecucaoFim     DateTime?
+  atribuicoes AtividadeAtribuicao[]
 
-  atribuicoes         AtividadeAtribuicao[]
-
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  deletedAt           DateTime?
-  createdBy           String
-  updatedBy           String?
-  deletedBy           String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
 
   HistoricoAlteracaoAtividade HistoricoAlteracaoAtividade[]
 }
@@ -562,28 +560,26 @@ enum StatusAtividade {
 }
 
 model AtividadeAtribuicao {
-  id            String     @id @default(uuid())
+  id String @id @default(uuid())
 
-  atividadeId   String
-  atividade     Atividade  @relation(fields: [atividadeId], references: [id])
+  atividadeId String
+  atividade   Atividade @relation(fields: [atividadeId], references: [id])
 
   usuarioMobileId String
   usuarioMobile   UsuarioMobile @relation(fields: [usuarioMobileId], references: [id])
 
-  status        StatusAtribuicao @default(ATRIBUIDA)
+  status StatusAtribuicao @default(ATRIBUIDA)
 
-  dataInicio    DateTime?
-  dataFim       DateTime?
+  dataInicio DateTime?
+  dataFim    DateTime?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-  createdBy     String
-  updatedBy     String?
-  deletedBy     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
 }
-
-
 
 model HistoricoAlteracaoNota {
   id            String   @id @default(uuid())
@@ -609,12 +605,12 @@ model HistoricoAlteracaoAtividade {
 
 //* ANALISE PRELIMINAR DE RISCO
 
-model AprPerguntas{
-  id String @id @default(uuid())
+model AprPerguntas {
+  id       String @id @default(uuid())
   pergunta String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
   updatedBy String?
@@ -623,17 +619,16 @@ model AprPerguntas{
   AprPerguntasRelation AprPerguntasRelation[]
 }
 
-
-model AprModelo{
-  id String @id @default(uuid())
-  nome String
+model AprModelo {
+  id        String  @id @default(uuid())
+  nome      String
   descricao String?
 
   tipoAtividadeId String
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
   updatedBy String?
@@ -642,32 +637,31 @@ model AprModelo{
   AprPerguntasRelation AprPerguntasRelation[]
 }
 
-model AprPerguntasRelation{
-  id String @id @default(uuid())
+model AprPerguntasRelation {
+  id         String       @id @default(uuid())
   perguntaId String
   pergunta   AprPerguntas @relation(fields: [perguntaId], references: [id])
-  ordem Int @default(0)
+  ordem      Int          @default(0)
 
   modeloId String
   modelo   AprModelo @relation(fields: [modeloId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
   updatedBy String?
   deletedBy String?
 }
 
-
 //* CHECKLIST
 
-model ChecklistPergunta{
-  id String @id @default(uuid())
+model ChecklistPergunta {
+  id       String @id @default(uuid())
   pergunta String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
   updatedBy String?
@@ -676,16 +670,16 @@ model ChecklistPergunta{
   ChecklisrPerguntaRelation ChecklisrPerguntaRelation[]
 }
 
-model ChecklistModelo{
-  id String @id @default(uuid())
-  nome String
+model ChecklistModelo {
+  id        String  @id @default(uuid())
+  nome      String
   descricao String?
 
   tipoAtividadeId String
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
   updatedBy String?
@@ -694,20 +688,19 @@ model ChecklistModelo{
   ChecklisrPerguntaRelation ChecklisrPerguntaRelation[]
 }
 
-model ChecklisrPerguntaRelation{
-  id String @id @default(uuid())
+model ChecklisrPerguntaRelation {
+  id         String            @id @default(uuid())
   perguntaId String
   pergunta   ChecklistPergunta @relation(fields: [perguntaId], references: [id])
-  ordem Int @default(0)
+  ordem      Int               @default(0)
 
   modeloId String
   modelo   ChecklistModelo @relation(fields: [modeloId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
   updatedBy String?
   deletedBy String?
-
 }
