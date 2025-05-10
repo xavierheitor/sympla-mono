@@ -202,9 +202,13 @@ model UsuarioMobileRegional {
   id              String    @id @default(uuid())
   usuarioMobileId String
   regionalId      String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
 
   usuarioMobile UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
   regional      Regional      @relation(fields: [regionalId], references: [id], onDelete: Cascade)
