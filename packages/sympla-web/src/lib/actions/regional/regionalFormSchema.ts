@@ -8,7 +8,7 @@ export const regionalFormSchema = z.object({
     descricao: z.string().nullable(),
     codigoSap: z.string().nullable(),
     distribuidoraId: z.string().min(1, 'Distribuidora é obrigatória'),
-});
+}).describe('REGIONAL');
 
 // Tipo inferido a partir do schema + compatível com o modelo Prisma
 type BaseFields = Required<Pick<Regional, 'nome' | 'codigoSap' | 'distribuidoraId'>> &
