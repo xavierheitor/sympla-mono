@@ -9,7 +9,7 @@ import {
     FormOutlined,
     LogoutOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Typography } from 'antd';
+import { Layout, Menu, Typography, } from 'antd';
 import { signOut } from 'next-auth/react';
 
 const { Sider } = Layout;
@@ -29,7 +29,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
             icon: <DashboardOutlined />,
             label: <Link href="/dashboard">Dashboard</Link>,
         },
-
         {
             key: 'cadastro',
             icon: <FormOutlined />,
@@ -152,7 +151,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
             collapsed={collapsed}
             onCollapse={onCollapseChange}
             style={{
-                background: '#001529',
                 height: '100vh',
                 overflowY: 'auto',
                 position: 'sticky',
@@ -162,7 +160,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
             <Title
                 level={3}
                 style={{
-                    color: 'white',
+                    color: '#F1FAEE', // cor clara para bom contraste
                     textAlign: 'center',
                     margin: '16px 0',
                 }}
@@ -171,11 +169,14 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
             </Title>
 
             <Menu
-                theme="dark"
                 mode="inline"
+                theme="dark"
                 selectedKeys={[pathname]}
-                defaultOpenKeys={[pathname.split('/').slice(0, 2).join('/')]} // mantém submenu aberto
+                defaultOpenKeys={[pathname.split('/').slice(0, 2).join('/')]}
                 items={items}
+                style={{
+                    background: 'transparent',
+                }}
             />
         </Sider>
     );
