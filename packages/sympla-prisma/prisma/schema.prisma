@@ -73,6 +73,13 @@ enum TipoAtividadeMobile {
   mpbb
 }
 
+enum StatusAtividade {
+  PENDENTE
+  EM_EXECUCAO
+  CONCLUIDA
+  CANCELADA
+}
+
 //*  AUTENTICACAO WEB
 
 model User {
@@ -526,6 +533,7 @@ model TipoAtividade {
 
 model Atividade {
   id String @id @default(uuid())
+  descricao String?
 
   notaId String
   nota   NotasSAP @relation(fields: [notaId], references: [id])
@@ -552,12 +560,7 @@ model Atividade {
   HistoricoAlteracaoAtividade HistoricoAlteracaoAtividade[]
 }
 
-enum StatusAtividade {
-  PENDENTE
-  EM_EXECUCAO
-  CONCLUIDA
-  CANCELADA
-}
+
 
 model AtividadeAtribuicao {
   id String @id @default(uuid())

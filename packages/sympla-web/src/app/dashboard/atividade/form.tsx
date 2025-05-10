@@ -39,6 +39,10 @@ export default function AtividadeForm({
 
     return (
         <Form form={form} layout="vertical" onFinish={onSubmit}>
+            <Form.Item name="descricao" label="Descrição">
+                <Input />
+            </Form.Item>
+
             <Form.Item name="notaId" label="Nota SAP" rules={[{ required: true }]}>
                 <Select
                     options={notaOptions.map(n => ({ label: n.numeroNota || n.id, value: n.id }))}

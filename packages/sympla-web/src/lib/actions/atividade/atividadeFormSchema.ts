@@ -4,6 +4,7 @@ import { Atividade, NotasSAP, StatusAtividade, TipoAtividade } from '@sympla/pri
 
 export const atividadeFormSchema = z.object({
   id: z.string().optional(),
+  descricao: z.string().nullable(),
   notaId: z.string().min(1, 'Nota é obrigatória'),
   tipoAtividadeId: z.string().min(1, 'Tipo de Atividade é obrigatório'),
   ordemServico: z.string().nullable(),
