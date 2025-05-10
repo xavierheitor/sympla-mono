@@ -67,7 +67,7 @@ enum StatusAtribuicao {
   CANCELADA
 }
 
-enum tipoAtividadeMobile {
+enum TipoAtividadeMobile {
   ivItIu
   mpdj
   mpbb
@@ -508,7 +508,7 @@ model TipoAtividade {
   kpiId String?
   kpi   Kpi?    @relation(fields: [kpiId], references: [id])
 
-  tipoAtividadeMobile tipoAtividadeMobile @default(ivItIu)
+  tipoAtividadeMobile TipoAtividadeMobile @default(ivItIu)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

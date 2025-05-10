@@ -7,8 +7,8 @@ export const getAllTipoAtividadesWithIncludes = async () => {
     return await prisma.tipoAtividade.findMany({
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
-        // include: {
-        //     relacaoExemplo: true,
-        // },
+        include: {
+            kpi: true,
+        },
     });
 };
