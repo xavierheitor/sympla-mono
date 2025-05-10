@@ -560,8 +560,6 @@ model Atividade {
   HistoricoAlteracaoAtividade HistoricoAlteracaoAtividade[]
 }
 
-
-
 model AtividadeAtribuicao {
   id String @id @default(uuid())
 
