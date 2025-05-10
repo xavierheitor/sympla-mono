@@ -148,8 +148,10 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
         <Sider
             trigger={null}
             collapsible
+            width={250}
             collapsed={collapsed}
             onCollapse={onCollapseChange}
+
             style={{
                 height: '100vh',
                 overflowY: 'auto',

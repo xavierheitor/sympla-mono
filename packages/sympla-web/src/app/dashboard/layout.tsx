@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, theme, Spin } from 'antd';
-import SidebarMenu from '@/lib/components/SidebarMenu';
 import { useHydrated } from '@/lib/hooks/useHydrated';
 import ThemeToggle from '@/lib/components/ThemeToggler';
+import SidebarMenu from '@/lib/components/SidebarMenu';
 
 const { Header, Content } = Layout;
 

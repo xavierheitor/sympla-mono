@@ -37,13 +37,16 @@ const themeConfig = {
             colorText: symplaPallete.darkBlue,
         },
         components: {
-            Layout: {
-                siderBg: symplaPallete.darkBlue,
-            },
-            Menu: {
-                itemColor: symplaPallete.offWhite,
-                itemSelectedColor: symplaPallete.lightBlue,
-                itemSelectedBg: '#000c17',
+        Menu: {
+            itemBg: symplaPallete.darkBlue,
+            itemColor: symplaPallete.offWhite,
+            itemHoverColor: symplaPallete.lightBlue,
+            itemSelectedColor: symplaPallete.lightBlue,
+            itemSelectedBg: '#000c17',
+            subMenuBg: symplaPallete.mediumBlue, // <- Usada se quiser
+        },
+        Layout: {
+            siderBg: symplaPallete.darkBlue,
             },
         },
     },
@@ -76,6 +79,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
             setMode(saved);
         }
     }, []);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            document.body.setAttribute('data-theme', mode);
+        }
+    }, [mode]);
 
     const toggleTheme = () => {
         const next = mode === 'light' ? 'dark' : 'light';
