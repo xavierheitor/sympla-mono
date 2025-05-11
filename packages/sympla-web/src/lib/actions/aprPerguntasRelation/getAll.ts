@@ -9,4 +9,4 @@ export const getAllAprPerguntasRelations = createPrismaGetAllAction(async () => 
         where: { deletedAt: null },
         orderBy: { ordem: 'asc' },
     });
-});
+}, 'APR_PERGUNTAS_RELATION');

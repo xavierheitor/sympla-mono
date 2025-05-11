@@ -12,4 +12,4 @@ export const createKpi = createPrismaCreateAction(kpiFormSchema, async (data) =>
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'KPI');

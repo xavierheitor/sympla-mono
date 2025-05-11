@@ -3,12 +3,18 @@ import { handleServerAction } from './actionHandler';
 import { ActionResult } from '@/lib/actions/common/types';
 import { Session } from 'next-auth';
 
+// Utilitário para schema com fallback de descrição
+function zAnyWithEntity(entityName?: string) {
+    return entityName ? z.any().describe(entityName) : z.any();
+}
+
 // Criação
 export function createPrismaCreateAction<TInput, TOutput>(
     schema: ZodSchema<TInput>,
     createFn: (input: TInput & { createdBy: number }) => Promise<TOutput>,
     entityName?: string
 ): (input: TInput) => Promise<ActionResult<TOutput>> {
+
     return (input) =>
         handleServerAction(
             schema,
@@ -52,7 +58,7 @@ export function createPrismaDeleteAction<TOutput>(
 ): (id: string) => Promise<ActionResult<TOutput>> {
     return async (id: string) => {
         return await handleServerAction(
-            z.any(),
+            zAnyWithEntity(options?.entityName),
             async (_input, session) => {
                 let exists = true;
 
@@ -83,7 +89,7 @@ export function createPrismaGetByIdAction<TOutput>(
 ): (id: number) => Promise<ActionResult<TOutput>> {
     return (id) =>
         handleServerAction(
-            z.any(),
+            zAnyWithEntity(entityName),
             async () => {
                 return await getFn(id);
             },
@@ -99,7 +105,7 @@ export function createPrismaGetAllAction<TOutput>(
 ): () => Promise<ActionResult<TOutput[]>> {
     return () =>
         handleServerAction(
-            z.any(),
+            zAnyWithEntity(entityName),
             async () => {
                 return await getAllFn({ deletedAt: null });
             },

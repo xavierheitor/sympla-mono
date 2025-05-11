@@ -13,4 +13,4 @@ export const updateAprPerguntas = createPrismaUpdateAction(aprPerguntasFormSchem
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'APR_PERGUNTAS');

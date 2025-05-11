@@ -9,4 +9,4 @@ export const getAllAprModelos = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'APR_MODELO');

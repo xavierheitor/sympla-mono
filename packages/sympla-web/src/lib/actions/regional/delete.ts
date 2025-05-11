@@ -19,5 +19,6 @@ export const deleteRegional = createPrismaDeleteAction(
             prismaModel: prisma.regional,
             modelName: 'Regional',
         },
+        entityName: 'REGIONAL', // ✅ aqui, não como 3º argumento
     }
 );

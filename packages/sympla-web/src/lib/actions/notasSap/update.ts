@@ -13,4 +13,4 @@ export const updateNotasSap = createPrismaUpdateAction(notasSapFormSchema, async
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'NOTAS_SAP');

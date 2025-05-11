@@ -12,4 +12,4 @@ export const createSubgrupoDefeitoEquipamento = createPrismaCreateAction(subgrup
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'SUBGRUPO_DEFEITO_EQUIPAMENTO');

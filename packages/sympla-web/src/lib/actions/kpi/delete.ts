@@ -17,4 +17,5 @@ export const deleteKpi = createPrismaDeleteAction(async (id, session) => {
         prismaModel: prisma.kpi,
         modelName: 'Kpi',
     },
+    entityName: 'KPI',
 });

@@ -1,9 +1,10 @@
-
+// src/lib/actions/checklistModelo/getAll.ts
 'use server';
 
 import { prisma } from '@/lib/db/prisma';
+import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
-export const getAllChecklistModelosWithIncludes = async () => {
+export const getAllChecklistModelos = createPrismaGetAllAction(async () => {
     return await prisma.checklistModelo.findMany({
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
@@ -11,4 +12,4 @@ export const getAllChecklistModelosWithIncludes = async () => {
             tipoAtividade: true,
         },
     });
-};
+}, 'CHECKLIST_MODELO');

@@ -9,4 +9,4 @@ export const getAllAtividades = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { id: 'asc' },
     });
-});
+}, 'ATIVIDADE');

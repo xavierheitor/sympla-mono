@@ -9,4 +9,4 @@ export const getAllTipoAtividades = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'TIPO_ATIVIDADE');

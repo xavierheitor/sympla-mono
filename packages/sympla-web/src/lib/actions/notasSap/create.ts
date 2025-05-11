@@ -12,4 +12,4 @@ export const createNotasSap = createPrismaCreateAction(notasSapFormSchema, async
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'NOTAS_SAP');

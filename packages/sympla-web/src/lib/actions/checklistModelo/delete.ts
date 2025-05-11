@@ -17,4 +17,5 @@ export const deleteChecklistModelo = createPrismaDeleteAction(async (id, session
         prismaModel: prisma.checklistModelo,
         modelName: 'ChecklistModelo',
     },
+    entityName: 'CHECKLIST_MODELO',
 });

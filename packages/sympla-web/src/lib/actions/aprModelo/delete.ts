@@ -17,4 +17,5 @@ export const deleteAprModelo = createPrismaDeleteAction(async (id, session) => {
         prismaModel: prisma.aprModelo,
         modelName: 'AprModelo',
     },
+    entityName: 'APR_MODELO',
 });

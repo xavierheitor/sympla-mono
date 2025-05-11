@@ -12,4 +12,4 @@ export const createChecklisrPerguntaRelation = createPrismaCreateAction(checklis
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'CHECKLIST_PERGUNTA_RELATION');

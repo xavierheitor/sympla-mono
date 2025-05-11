@@ -17,4 +17,5 @@ export const deleteTecnico = createPrismaDeleteAction(async (id, session) => {
         prismaModel: prisma.tecnico,
         modelName: 'Tecnico',
     },
+    entityName: 'TECNICO',
 });

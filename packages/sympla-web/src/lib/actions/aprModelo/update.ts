@@ -13,4 +13,4 @@ export const updateAprModelo = createPrismaUpdateAction(aprModeloFormSchema, asy
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'APR_MODELO');

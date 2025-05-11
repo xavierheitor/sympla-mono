@@ -13,4 +13,4 @@ export const updateTecnico = createPrismaUpdateAction(tecnicoFormSchema, async (
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'TECNICO');

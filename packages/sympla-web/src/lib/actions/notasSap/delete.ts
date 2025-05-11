@@ -17,4 +17,5 @@ export const deleteNotasSap = createPrismaDeleteAction(async (id, session) => {
         prismaModel: prisma.notasSAP,
         modelName: 'NotasSAP',
     },
+    entityName: 'NOTAS_SAP',
 });

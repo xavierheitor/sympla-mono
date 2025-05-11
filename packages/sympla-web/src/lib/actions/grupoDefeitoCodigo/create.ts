@@ -12,4 +12,4 @@ export const createGrupoDefeitoCodigo = createPrismaCreateAction(grupoDefeitoCod
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'GRUPO_DEFEITO_CODIGO');

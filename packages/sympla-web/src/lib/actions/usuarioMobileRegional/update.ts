@@ -13,4 +13,4 @@ export const updateUsuarioMobileRegional = createPrismaUpdateAction(usuarioMobil
             updatedBy: 'seed',
         },
     });
-});
+}, 'USUARIO_MOBILE_REGIONAL');

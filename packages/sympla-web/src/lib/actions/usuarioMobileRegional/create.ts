@@ -12,4 +12,4 @@ export const createUsuarioMobileRegional = createPrismaCreateAction(usuarioMobil
             createdBy: 'seed',
         },
     });
-});
+}, 'USUARIO_MOBILE_REGIONAL');

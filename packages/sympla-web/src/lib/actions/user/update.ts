@@ -13,4 +13,4 @@ export const updateUser = createPrismaUpdateAction(userFormSchema, async (data) 
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'USER');

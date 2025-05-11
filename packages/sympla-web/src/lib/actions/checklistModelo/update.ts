@@ -13,4 +13,4 @@ export const updateChecklistModelo = createPrismaUpdateAction(checklistModeloFor
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'CHECKLIST_MODELO');

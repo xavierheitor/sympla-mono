@@ -9,4 +9,4 @@ export const getAllTipoManutencaos = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'TIPO_MANUTENCAO');

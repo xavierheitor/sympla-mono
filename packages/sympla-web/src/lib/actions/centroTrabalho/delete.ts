@@ -17,4 +17,5 @@ export const deleteCentroTrabalho = createPrismaDeleteAction(async (id, session)
         prismaModel: prisma.centroTrabalho,
         modelName: 'CentroTrabalho',
     },
+    entityName: 'CENTRO_TRABALHO',
 });

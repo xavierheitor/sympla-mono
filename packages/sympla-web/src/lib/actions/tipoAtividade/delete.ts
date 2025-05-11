@@ -17,4 +17,5 @@ export const deleteTipoAtividade = createPrismaDeleteAction(async (id, session) 
         prismaModel: prisma.tipoAtividade,
         modelName: 'TipoAtividade',
     },
+    entityName: 'TIPO_ATIVIDADE',
 });

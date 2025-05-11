@@ -13,4 +13,4 @@ export const updateSubestacao = createPrismaUpdateAction(subestacaoFormSchema, a
             updatedBy: data.updatedBy.toString(),
         },
     });
-});
+}, 'SUBESTACAO');

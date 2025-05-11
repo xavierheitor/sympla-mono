@@ -12,4 +12,4 @@ export const createUsuarioMobile = createPrismaCreateAction(usuarioMobileFormSch
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'USUARIO_MOBILE');

@@ -1,11 +1,12 @@
-
+// src/lib/actions/notasSap/getAll.ts
 'use server';
 
 import { prisma } from '@/lib/db/prisma';
+import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
-export const getAllNotasSapsWithIncludes = async () => {
+export const getAllNotasSapsWithIncludes = createPrismaGetAllAction(async (filter) => {
     return await prisma.notasSAP.findMany({
-        where: { deletedAt: null },
+        where: filter,
         orderBy: { descricao: 'asc' },
         include: {
             centroTrabalho: true,
@@ -14,4 +15,4 @@ export const getAllNotasSapsWithIncludes = async () => {
             regional: true,
         },
     });
-};
+}, 'NOTAS_SAP');

@@ -12,4 +12,4 @@ export const createUser = createPrismaCreateAction(userFormSchema, async (data) 
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'USER');

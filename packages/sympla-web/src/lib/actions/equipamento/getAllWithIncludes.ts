@@ -1,11 +1,12 @@
-
+// src/lib/actions/equipamento/getAll.ts
 'use server';
 
 import { prisma } from '@/lib/db/prisma';
+import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
-export const getAllEquipamentosWithIncludes = async () => {
+export const getAllEquipamentosWithIncludes = createPrismaGetAllAction(async (filter) => {
     return await prisma.equipamento.findMany({
-        where: { deletedAt: null },
+        where: filter,
         orderBy: { nome: 'asc' },
         include: {
             subestacao: true,
@@ -14,4 +15,4 @@ export const getAllEquipamentosWithIncludes = async () => {
             grupoDefeitoCodigo: true,
         },
     });
-};
+}, 'EQUIPAMENTO');

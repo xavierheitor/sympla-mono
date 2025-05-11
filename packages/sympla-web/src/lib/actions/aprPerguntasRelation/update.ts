@@ -13,4 +13,4 @@ export const updateAprPerguntasRelation = createPrismaUpdateAction(aprPerguntasR
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'APR_PERGUNTAS_RELATION');

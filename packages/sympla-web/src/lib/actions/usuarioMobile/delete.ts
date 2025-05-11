@@ -17,4 +17,5 @@ export const deleteUsuarioMobile = createPrismaDeleteAction(async (id, session) 
         prismaModel: prisma.usuarioMobile,
         modelName: 'UsuarioMobile',
     },
+    entityName: 'USUARIO_MOBILE',
 });

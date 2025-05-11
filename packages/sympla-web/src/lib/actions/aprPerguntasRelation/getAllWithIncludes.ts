@@ -1,9 +1,10 @@
-
+// src/lib/actions/aprPerguntaRelation/getAll.ts
 'use server';
 
 import { prisma } from '@/lib/db/prisma';
+import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
-export const getAllAprPerguntasRelationsWithIncludes = async () => {
+export const getAllAprPerguntasRelations = createPrismaGetAllAction(async () => {
     return await prisma.aprPerguntasRelation.findMany({
         where: { deletedAt: null },
         orderBy: { ordem: 'asc' },
@@ -12,4 +13,4 @@ export const getAllAprPerguntasRelationsWithIncludes = async () => {
             modelo: true,
         },
     });
-};
+}, 'APR_PERGUNTAS_RELATION');

@@ -12,4 +12,4 @@ export const createAtividadeAtribuicao = createPrismaCreateAction(atividadeAtrib
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'ATIVIDADE_ATRIBUICAO');

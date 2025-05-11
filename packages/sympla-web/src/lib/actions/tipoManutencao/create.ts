@@ -12,4 +12,4 @@ export const createTipoManutencao = createPrismaCreateAction(tipoManutencaoFormS
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'TIPO_MANUTENCAO');

@@ -16,4 +16,5 @@ export const deleteSubestacao = createPrismaDeleteAction(async (id, session) => 
         prismaModel: prisma.subestacao,
         modelName: 'Subestacao',
     },
+    entityName: 'SUBESTACAO',
 });

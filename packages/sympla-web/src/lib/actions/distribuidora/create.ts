@@ -13,4 +13,4 @@ export const createDistribuidora = createPrismaCreateAction(distribuidoraFormSch
             createdBy: data.createdBy.toString(),
         },
     });
-});
+}, 'DISTRIBUIDORA');

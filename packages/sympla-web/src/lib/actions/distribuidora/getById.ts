@@ -10,4 +10,4 @@ export const getDistribuidoraById = createPrismaGetByIdAction(async (id) => {
             deletedAt: null,
         },
     });
-});
+}, 'DISTRIBUIDORA');

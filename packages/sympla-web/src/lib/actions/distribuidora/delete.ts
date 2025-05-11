@@ -18,5 +18,6 @@ export const deleteDistribuidora = createPrismaDeleteAction(
             prismaModel: prisma.distribuidora,
             modelName: 'Distribuidora',
         },
+        entityName: 'DISTRIBUIDORA',
     }
 );

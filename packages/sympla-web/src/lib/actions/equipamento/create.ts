@@ -12,4 +12,4 @@ export const createEquipamento = createPrismaCreateAction(equipamentoFormSchema,
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'EQUIPAMENTO');

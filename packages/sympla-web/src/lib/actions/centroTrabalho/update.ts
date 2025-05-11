@@ -13,4 +13,4 @@ export const updateCentroTrabalho = createPrismaUpdateAction(centroTrabalhoFormS
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'CENTRO_TRABALHO');

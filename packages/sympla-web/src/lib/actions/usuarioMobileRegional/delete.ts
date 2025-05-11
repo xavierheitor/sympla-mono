@@ -17,4 +17,5 @@ export const deleteUsuarioMobileRegional = createPrismaDeleteAction(async (id) =
         prismaModel: prisma.usuarioMobileRegional,
         modelName: 'UsuarioMobileRegional',
     },
+    entityName: 'USUARIO_MOBILE_REGIONAL',
 });

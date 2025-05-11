@@ -13,4 +13,4 @@ export const updateEquipamento = createPrismaUpdateAction(equipamentoFormSchema,
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'EQUIPAMENTO');

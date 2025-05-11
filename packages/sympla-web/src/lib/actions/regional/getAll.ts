@@ -9,4 +9,4 @@ export const getAllRegionais = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'REGIONAL');

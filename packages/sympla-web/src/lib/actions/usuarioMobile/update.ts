@@ -14,4 +14,4 @@ export const updateUsuarioMobile = createPrismaUpdateAction(usuarioMobileFormSch
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'USUARIO_MOBILE');

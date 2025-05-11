@@ -13,4 +13,4 @@ export const updateAtividadeAtribuicao = createPrismaUpdateAction(atividadeAtrib
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'ATIVIDADE_ATRIBUICAO');

@@ -13,4 +13,4 @@ export const updateDefeito = createPrismaUpdateAction(defeitoFormSchema, async (
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'DEFEITO');

@@ -13,4 +13,4 @@ export const updateGrupoDefeitoCodigo = createPrismaUpdateAction(grupoDefeitoCod
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'GRUPO_DEFEITO_CODIGO');

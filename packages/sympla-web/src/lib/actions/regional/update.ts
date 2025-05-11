@@ -21,4 +21,4 @@ export const updateRegional = createPrismaUpdateAction(schema, async (data) => {
             updatedBy: data.updatedBy.toString(),
         },
     });
-});
+}, 'REGIONAL');

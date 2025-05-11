@@ -12,4 +12,4 @@ export const createAprModelo = createPrismaCreateAction(aprModeloFormSchema, asy
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'APR_MODELO');

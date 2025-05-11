@@ -17,4 +17,5 @@ export const deleteTipoManutencao = createPrismaDeleteAction(async (id, session)
         prismaModel: prisma.tipoManutencao,
         modelName: 'TipoManutencao',
     },
+    entityName: 'TIPO_MANUTENCAO',
 });

@@ -7,6 +7,6 @@ import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 export const getAllChecklistModelos = createPrismaGetAllAction(async () => {
     return await prisma.checklistModelo.findMany({
         where: { deletedAt: null },
-        orderBy: { nome: 'asc' },
+        orderBy: { id: 'asc' },
     });
-});
+}, 'CHECKLIST_MODELO');

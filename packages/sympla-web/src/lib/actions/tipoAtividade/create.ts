@@ -12,4 +12,4 @@ export const createTipoAtividade = createPrismaCreateAction(tipoAtividadeFormSch
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'TIPO_ATIVIDADE');

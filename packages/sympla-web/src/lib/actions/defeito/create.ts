@@ -12,4 +12,4 @@ export const createDefeito = createPrismaCreateAction(defeitoFormSchema, async (
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'DEFEITO');

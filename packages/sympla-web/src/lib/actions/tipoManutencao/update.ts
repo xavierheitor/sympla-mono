@@ -13,4 +13,4 @@ export const updateTipoManutencao = createPrismaUpdateAction(tipoManutencaoFormS
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'TIPO_MANUTENCAO');

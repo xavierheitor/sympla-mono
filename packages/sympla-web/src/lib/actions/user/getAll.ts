@@ -9,4 +9,4 @@ export const getAllUsers = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { name: 'asc' },
     });
-});
+}, 'USER');

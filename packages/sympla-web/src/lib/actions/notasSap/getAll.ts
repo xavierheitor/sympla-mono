@@ -9,4 +9,4 @@ export const getAllNotasSaps = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { descricao: 'asc' },
     });
-});
+}, 'NOTAS_SAP');

@@ -17,4 +17,5 @@ export const deleteGrupoDefeitoCodigo = createPrismaDeleteAction(async (id, sess
         prismaModel: prisma.grupoDefeitoCodigo,
         modelName: 'GrupoDefeitoCodigo',
     },
+    entityName: 'GRUPO_DEFEITO_CODIGO',
 });

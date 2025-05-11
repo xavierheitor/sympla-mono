@@ -17,4 +17,5 @@ export const deleteAtividadeAtribuicao = createPrismaDeleteAction(async (id, ses
         prismaModel: prisma.atividadeAtribuicao,
         modelName: 'AtividadeAtribuicao',
     },
+    entityName: 'ATIVIDADE_ATRIBUICAO',
 });

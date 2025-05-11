@@ -13,4 +13,4 @@ export const updateTipoAtividade = createPrismaUpdateAction(tipoAtividadeFormSch
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'TIPO_ATIVIDADE');

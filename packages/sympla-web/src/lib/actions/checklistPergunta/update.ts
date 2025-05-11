@@ -13,4 +13,4 @@ export const updateChecklistPergunta = createPrismaUpdateAction(checklistPergunt
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'CHECKLIST_PERGUNTA');

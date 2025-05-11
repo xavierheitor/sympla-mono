@@ -17,4 +17,5 @@ export const deleteChecklisrPerguntaRelation = createPrismaDeleteAction(async (i
         prismaModel: prisma.checklisrPerguntaRelation,
         modelName: 'ChecklisrPerguntaRelation',
     },
+    entityName: 'CHECKLIST_PERGUNTA_RELATION',
 });

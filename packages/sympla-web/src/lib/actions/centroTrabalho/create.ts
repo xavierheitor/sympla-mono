@@ -12,4 +12,4 @@ export const createCentroTrabalho = createPrismaCreateAction(centroTrabalhoFormS
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'CENTRO_TRABALHO');

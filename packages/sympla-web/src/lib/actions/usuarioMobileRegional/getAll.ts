@@ -9,4 +9,4 @@ export const getAllUsuarioMobileRegionals = createPrismaGetAllAction(async () =>
         where: { deletedAt: null },
         orderBy: { createdAt: 'asc' },
     });
-});
+}, 'USUARIO_MOBILE_REGIONAL');

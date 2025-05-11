@@ -17,4 +17,5 @@ export const deleteChecklistPergunta = createPrismaDeleteAction(async (id, sessi
         prismaModel: prisma.checklistPergunta,
         modelName: 'ChecklistPergunta',
     },
+    entityName: 'CHECKLIST_PERGUNTA',
 });

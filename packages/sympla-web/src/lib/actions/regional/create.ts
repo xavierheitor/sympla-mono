@@ -15,4 +15,4 @@ export const createRegional = createPrismaCreateAction(regionalFormSchema, async
             createdBy: data.createdBy.toString(),
         },
     });
-});
+}, 'REGIONAL');

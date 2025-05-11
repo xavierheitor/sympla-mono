@@ -12,4 +12,4 @@ export const createChecklistPergunta = createPrismaCreateAction(checklistPergunt
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'CHECKLIST_PERGUNTA');

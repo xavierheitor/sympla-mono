@@ -9,4 +9,4 @@ export const getAllChecklisrPerguntaRelations = createPrismaGetAllAction(async (
         where: { deletedAt: null },
         orderBy: { ordem: 'asc' },
     });
-});
+}, 'CHECKLIST_PERGUNTA_RELATION');

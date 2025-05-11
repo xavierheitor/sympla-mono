@@ -17,4 +17,5 @@ export const deleteSubgrupoDefeitoEquipamento = createPrismaDeleteAction(async (
         prismaModel: prisma.subgrupoDefeitoEquipamento,
         modelName: 'SubgrupoDefeitoEquipamento',
     },
+    entityName: 'SUBGRUPO_DEFEITO_EQUIPAMENTO',
 });

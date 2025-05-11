@@ -13,4 +13,4 @@ export const updateAtividade = createPrismaUpdateAction(atividadeFormSchema, asy
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'ATIVIDADE');

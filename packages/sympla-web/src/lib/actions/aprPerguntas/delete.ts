@@ -17,4 +17,5 @@ export const deleteAprPerguntas = createPrismaDeleteAction(async (id, session) =
         prismaModel: prisma.aprPerguntas,
         modelName: 'AprPerguntas',
     },
+    entityName: 'APR_PERGUNTAS',
 });

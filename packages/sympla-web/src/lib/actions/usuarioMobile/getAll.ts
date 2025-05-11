@@ -9,4 +9,4 @@ export const getAllUsuarioMobiles = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'USUARIO_MOBILE');

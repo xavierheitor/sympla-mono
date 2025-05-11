@@ -9,4 +9,4 @@ export const getAllEquipamentos = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'EQUIPAMENTO');

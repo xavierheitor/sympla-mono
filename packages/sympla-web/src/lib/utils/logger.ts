@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/lib/utils/logger.ts
 import fs from 'fs';
-import { Session } from 'next-auth';
 import path from 'path';
+import { Session } from 'next-auth';
 
-// Diretório onde os logs serão salvos
-const LOG_DIR = path.resolve(process.cwd(), 'logs');
+const logPathFromEnv = process.env.LOG_PATH || './logs';
+const LOG_DIR = path.resolve(logPathFromEnv);
 const LOG_FILE = path.join(LOG_DIR, 'app.log');
 
-// Garante que o diretório existe
+// Garante que o diretório e arquivo existem
 if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR);
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+}
+if (!fs.existsSync(LOG_FILE)) {
+    fs.writeFileSync(LOG_FILE, '', 'utf8');
 }
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'action' | 'access';
@@ -35,28 +37,20 @@ function writeLog(line: string) {
 
 export const logger = {
     log(payload: LogPayload) {
-        const line = formatLog(payload);
-        writeLog(line);
+        writeLog(formatLog(payload));
     },
-    info(message: string, context?: Record<string, any>) {
-        logger.log({ level: 'info', message, context });
-    },
-    warn(message: string, context?: Record<string, any>) {
-        logger.log({ level: 'warn', message, context });
-    },
-    error(message: string, context?: Record<string, any>) {
-        logger.log({ level: 'error', message, context });
-    },
-    action(message: string, context?: Record<string, any>) {
-        logger.log({ level: 'action', message, context });
-    },
-    access(message: string, context?: Record<string, any>) {
-        logger.log({ level: 'access', message, context });
-    },
+    info: (message: string, context?: Record<string, any>) =>
+        logger.log({ level: 'info', message, context }),
+    warn: (message: string, context?: Record<string, any>) =>
+        logger.log({ level: 'warn', message, context }),
+    error: (message: string, context?: Record<string, any>) =>
+        logger.log({ level: 'error', message, context }),
+    action: (message: string, context?: Record<string, any>) =>
+        logger.log({ level: 'action', message, context }),
+    access: (message: string, context?: Record<string, any>) =>
+        logger.log({ level: 'access', message, context }),
 };
 
-
-// lib/utils/logger.ts
 export async function withLogging<T>(
     session: Session,
     actionType: 'create' | 'update' | 'delete' | 'get' | 'list',
@@ -64,34 +58,21 @@ export async function withLogging<T>(
     input: unknown,
     logic: () => Promise<T>
 ): Promise<T> {
+    console.log('withLogging', actionType, entity, input);
     try {
         const result = await logic();
-        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/log`, {
-            method: 'POST',
-            body: JSON.stringify({
-                userId: session.user.id,
-                entity,
-                action: actionType,
-                input,
-                timestamp: new Date().toISOString(),
-                success: true,
-            }),
-            headers: { 'Content-Type': 'application/json' },
+        logger.action(`[${actionType.toUpperCase()}] ${entity}`, {
+            userId: session.user.id,
+            input,
+            success: true,
         });
         return result;
     } catch (error) {
-        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/log`, {
-            method: 'POST',
-            body: JSON.stringify({
-                userId: session.user.id,
-                entity,
-                action: actionType,
-                input,
-                timestamp: new Date().toISOString(),
-                success: false,
-                error: error instanceof Error ? error.message : String(error),
-            }),
-            headers: { 'Content-Type': 'application/json' },
+        logger.error(`[${actionType.toUpperCase()}] ${entity} FAILED`, {
+            userId: session.user.id,
+            input,
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
         });
         throw error;
     }

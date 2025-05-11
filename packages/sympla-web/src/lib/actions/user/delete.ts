@@ -17,4 +17,5 @@ export const deleteUser = createPrismaDeleteAction(async (id, session) => {
         prismaModel: prisma.user,
         modelName: 'User',
     },
+    entityName: 'USER',
 });

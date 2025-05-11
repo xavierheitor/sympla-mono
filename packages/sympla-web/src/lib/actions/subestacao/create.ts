@@ -12,4 +12,4 @@ export const createSubestacao = createPrismaCreateAction(subestacaoFormSchema, a
             createdBy: data.createdBy.toString(),
         },
     });
-});
+}, 'SUBESTACAO');

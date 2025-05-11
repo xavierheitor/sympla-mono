@@ -12,4 +12,4 @@ export const createAprPerguntasRelation = createPrismaCreateAction(aprPerguntasR
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'APR_PERGUNTAS_RELATION');

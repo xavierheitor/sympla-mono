@@ -12,4 +12,4 @@ export const createTecnico = createPrismaCreateAction(tecnicoFormSchema, async (
             createdBy: data.createdBy?.toString?.() || '',
         },
     });
-});
+}, 'TECNICO');

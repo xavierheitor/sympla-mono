@@ -9,4 +9,4 @@ export const getAllTecnicos = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'TECNICO');

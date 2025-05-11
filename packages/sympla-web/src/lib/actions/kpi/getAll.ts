@@ -9,4 +9,4 @@ export const getAllKpis = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'KPI');

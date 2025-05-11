@@ -9,4 +9,4 @@ export const getAllDefeitos = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { codigoSap: 'asc' },
     });
-});
+}, 'DEFEITO');

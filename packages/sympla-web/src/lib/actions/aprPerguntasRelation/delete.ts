@@ -17,4 +17,5 @@ export const deleteAprPerguntasRelation = createPrismaDeleteAction(async (id, se
         prismaModel: prisma.aprPerguntasRelation,
         modelName: 'AprPerguntasRelation',
     },
+    entityName: 'APR_PERGUNTAS_RELATION',
 });

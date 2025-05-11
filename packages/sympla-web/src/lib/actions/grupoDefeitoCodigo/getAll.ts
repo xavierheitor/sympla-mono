@@ -9,4 +9,4 @@ export const getAllGrupoDefeitoCodigos = createPrismaGetAllAction(async () => {
         where: { deletedAt: null },
         orderBy: { sigla: 'asc' },
     });
-});
+}, 'GRUPO_DEFEITO_CODIGO');

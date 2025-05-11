@@ -13,4 +13,4 @@ export const updateChecklisrPerguntaRelation = createPrismaUpdateAction(checklis
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'CHECKLIST_PERGUNTA_RELATION');

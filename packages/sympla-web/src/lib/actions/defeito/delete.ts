@@ -17,4 +17,5 @@ export const deleteDefeito = createPrismaDeleteAction(async (id, session) => {
         prismaModel: prisma.defeito,
         modelName: 'Defeito',
     },
+    entityName: 'DEFEITO',
 });

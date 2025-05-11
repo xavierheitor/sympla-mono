@@ -9,4 +9,4 @@ export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllAction(async () 
         where: { deletedAt: null },
         orderBy: { nome: 'asc' },
     });
-});
+}, 'GRUPO_DEFEITO_EQUIPAMENTO');

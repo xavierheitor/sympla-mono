@@ -13,4 +13,4 @@ export const updateKpi = createPrismaUpdateAction(kpiFormSchema, async (data) =>
             updatedBy: data.updatedBy?.toString?.() || '',
         },
     });
-});
+}, 'KPI');
