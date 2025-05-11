@@ -1,8 +1,8 @@
 // src/lib/hooks/useActionHandler.ts
 'use client';
 
-import { message } from "antd";
-import { mutate } from "swr";
+import { App } from 'antd';
+import { mutate } from 'swr';
 
 interface ActionResult {
     success: boolean;
@@ -19,26 +19,32 @@ interface HandleActionParams<T> {
     onSuccess?: () => void;
 }
 
-export async function handleAction<T>({
-    action,
-    payload,
-    onSuccessMessage = "Operação realizada com sucesso!",
-    onErrorMessage = "Erro ao executar ação.",
-    mutateKey,
-    onSuccess,
-}: HandleActionParams<T>) {
-    try {
-        const result = await action(payload ?? {} as T);
+export function useActionHandler() {
+    const { message } = App.useApp();
 
-        if (result.success) {
-            message.success(onSuccessMessage);
-            if (mutateKey) mutate(mutateKey);
-            if (onSuccess) onSuccess();
-        } else {
-            message.error(result.error || onErrorMessage);
+    async function handleAction<T>({
+        action,
+        payload,
+        onSuccessMessage = "Operação realizada com sucesso!",
+        onErrorMessage = "Erro ao executar ação.",
+        mutateKey,
+        onSuccess,
+    }: HandleActionParams<T>) {
+        try {
+            const result = await action(payload ?? {} as T);
+
+            if (result.success) {
+                message.success(onSuccessMessage);
+                if (mutateKey) mutate(mutateKey);
+                if (onSuccess) onSuccess();
+            } else {
+                message.error(result.error || onErrorMessage);
+            }
+        } catch (error) {
+            console.error(error);
+            message.error(onErrorMessage);
         }
-    } catch (error) {
-        console.error(error);
-        message.error(onErrorMessage);
     }
+
+    return { handleAction };
 }
