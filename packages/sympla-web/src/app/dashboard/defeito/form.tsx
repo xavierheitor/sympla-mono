@@ -4,17 +4,16 @@ import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { DefeitoFormData, } from '@/lib/actions/defeito/defeitoFormSchema';
 import {
-    GrupoDefeitoEquipamento,
-    SubgrupoDefeitoEquipamento,
-    GrupoDefeitoCodigo,
+    GrupoDefeitoEquipamento, GrupoDefeitoCodigo,
 } from '@sympla/prisma';
+import { SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/subgrupoDefeitoEquipamento/subgrupoDefeitoEquipamentoFormSchema';
 
 interface DefeitoFormProps {
     onSubmit: (values: DefeitoFormData) => void;
     initialValues?: Partial<DefeitoFormData>;
     loading?: boolean;
     grupoOptions: GrupoDefeitoEquipamento[];
-    subgrupoOptions: SubgrupoDefeitoEquipamento[];
+    subgrupoOptions: SubgrupoDefeitoEquipamentoWithRelations[];
     codigoOptions: GrupoDefeitoCodigo[];
 }
 
@@ -51,7 +50,7 @@ export default function DefeitoForm({
             </Form.Item>
 
             <Form.Item name="subgrupoId" label="Subgrupo" rules={[{ required: true }]}>
-                <Select options={subgrupoOptions.map(s => ({ label: s.nome, value: s.id }))} />
+                <Select options={subgrupoOptions.map(s => ({ label: `${s.grupo.nome ?? 'Grupo desconhecido'} - ${s.nome}`, value: s.id }))} />
             </Form.Item>
 
             <Form.Item name="grupoDefeitoCodigoId" label="Código do Grupo" rules={[{ required: true }]}>

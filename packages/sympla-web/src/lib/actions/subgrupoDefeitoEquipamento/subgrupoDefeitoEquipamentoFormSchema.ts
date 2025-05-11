@@ -1,3 +1,4 @@
+import { GrupoDefeitoEquipamento, SubgrupoDefeitoEquipamento } from '@sympla/prisma';
 import { z } from 'zod';
 
 export const subgrupoDefeitoEquipamentoFormSchema = z.object({
@@ -7,3 +8,7 @@ export const subgrupoDefeitoEquipamentoFormSchema = z.object({
 });
 
 export type SubgrupoDefeitoEquipamentoFormData = z.infer<typeof subgrupoDefeitoEquipamentoFormSchema>;
+
+export type SubgrupoDefeitoEquipamentoWithRelations = SubgrupoDefeitoEquipamento & {
+  grupo: GrupoDefeitoEquipamento;
+};

@@ -11,12 +11,12 @@ import { updateDefeito } from '@/lib/actions/defeito/update';
 import { deleteDefeito } from '@/lib/actions/defeito/delete';
 
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
-import { getAllSubgrupoDefeitoEquipamentos } from '@/lib/actions/subgrupoDefeitoEquipamento/getAll';
 import { getAllGrupoDefeitoCodigos } from '@/lib/actions/grupoDefeitoCodigo/getAll';
 
 import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/defeitoFormSchema';
 import DefeitoForm from './form';
 import { getAllDefeitosWithIncludes } from '@/lib/actions/defeito/getAllWithIncludes';
+import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/subgrupoDefeitoEquipamento/getAllWithIncludes';
 
 
 
@@ -29,7 +29,7 @@ export default function DefeitoPage() {
     );
 
     const { data: grupos } = useServerData('grupoDefeitoEquipamento', getAllGrupoDefeitoEquipamentos);
-    const { data: subgrupos } = useServerData('subgrupoDefeitoEquipamento', getAllSubgrupoDefeitoEquipamentos);
+    const { data: subgrupos } = useServerData('subgrupoDefeitoEquipamento', getAllSubgrupoDefeitoEquipamentosWithIncludes);
     const { data: codigos } = useServerData('grupoDefeitoCodigos', getAllGrupoDefeitoCodigos);
 
     const columns = useTableColumnsWithActions<DefeitoWithRelations>(
