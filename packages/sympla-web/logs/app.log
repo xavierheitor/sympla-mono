@@ -328,3 +328,10 @@
 [2025-05-11T00:58:02.818Z] [ACCESS] Acesso a rota /dashboard/usuarioMobile
 [2025-05-11T00:58:07.197Z] [ACCESS] Acesso a rota /dashboard/usuarioMobile
 [2025-05-11T00:58:07.553Z] [ACTION] [LIST] USUARIO_MOBILE | {"userId":"b435c6d2-ef8b-4bcc-93fa-8228df4c5c41","input":{},"success":true}
+[2025-05-11T00:59:11.440Z] [ACCESS] Acesso a rota /dashboard/usuarioMobile
+[2025-05-11T00:59:11.556Z] [ACTION] [LIST] USUARIO_MOBILE | {"userId":"b435c6d2-ef8b-4bcc-93fa-8228df4c5c41","input":{},"success":true}
+[2025-05-11T00:59:18.343Z] [ACCESS] Acesso a rota /dashboard/usuarioMobile
+[2025-05-11T00:59:18.378Z] [ACTION] [LIST] USUARIO_MOBILE | {"userId":"b435c6d2-ef8b-4bcc-93fa-8228df4c5c41","input":{},"success":true}
+[2025-05-11T00:59:20.393Z] [ACCESS] Acesso a rota /dashboard/usuarioMobile
+[2025-05-11T00:59:22.142Z] [ACCESS] Acesso a rota /dashboard/usuarioMobile
+[2025-05-11T00:59:22.188Z] [ACTION] [LIST] USUARIO_MOBILE | {"userId":"b435c6d2-ef8b-4bcc-93fa-8228df4c5c41","input":{},"success":true}
