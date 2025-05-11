@@ -68,7 +68,7 @@ export default function SubgrupoDefeitoEquipamentoPage() {
             >
                 <Table<SubgrupoWithGrupo>
                     columns={columns}
-                    dataSource={subgrupos ?? []}
+                    dataSource={subgrupos?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

@@ -6,7 +6,7 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllChecklisrPerguntaRelationsWithIncludes } from '@/lib/actions/checklisrPerguntaRelation/getAllWithIncludes';
+import { getAllChecklisrPerguntaWithIncludes } from '@/lib/actions/checklisrPerguntaRelation/getAllWithIncludes';
 import { createChecklisrPerguntaRelation } from '@/lib/actions/checklisrPerguntaRelation/create';
 import { updateChecklisrPerguntaRelation } from '@/lib/actions/checklisrPerguntaRelation/update';
 import { deleteChecklisrPerguntaRelation } from '@/lib/actions/checklisrPerguntaRelation/delete';
@@ -25,7 +25,7 @@ export default function ChecklisrPerguntaRelationPage() {
 
     const { data: relations, isLoading, error } = useServerData(
         'checklisrPerguntaRelations',
-        getAllChecklisrPerguntaRelationsWithIncludes
+        getAllChecklisrPerguntaWithIncludes
     );
 
     const { data: perguntas } = useServerData('checklistPerguntas', getAllChecklistPerguntas);
@@ -65,7 +65,7 @@ export default function ChecklisrPerguntaRelationPage() {
             >
                 <Table<ChecklisrPerguntaRelationWithIncludes>
                     columns={columns}
-                    dataSource={relations ?? []}
+                    dataSource={relations?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

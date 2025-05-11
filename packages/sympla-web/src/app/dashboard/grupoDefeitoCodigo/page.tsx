@@ -67,7 +67,7 @@ export default function GrupoDefeitoCodigoPage() {
             >
                 <Table<CodigoWithGrupo>
                     columns={columns}
-                    dataSource={codigos ?? []}
+                    dataSource={codigos?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

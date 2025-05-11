@@ -58,7 +58,7 @@ export default function ChecklistModeloPage() {
             >
                 <Table<ChecklistModeloWithIncludes>
                     columns={columns}
-                    dataSource={Array.isArray(modelos) ? modelos : []} // ✅ Evita erro com rawData.some
+                    dataSource={modelos?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />
@@ -76,7 +76,7 @@ export default function ChecklistModeloPage() {
                         initialValues={controller.editingItem ?? undefined}
                         onSubmit={handleSubmit}
                         loading={controller.loading}
-                        tipoAtividadeOptions={Array.isArray(tipos) ? tipos : []} // ✅ Sem .data
+                        tipoAtividadeOptions={tipos?.data ?? []}
                     />
                 )}
             </Modal>

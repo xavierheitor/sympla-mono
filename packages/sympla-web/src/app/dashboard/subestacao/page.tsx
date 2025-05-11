@@ -71,7 +71,7 @@ export default function SubestacaoPage() {
             >
                 <Table<SubestacaoWithRegional>
                     columns={columns}
-                    dataSource={subestacoes ?? []}
+                    dataSource={subestacoes?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

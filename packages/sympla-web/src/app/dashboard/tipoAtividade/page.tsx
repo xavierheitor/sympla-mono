@@ -65,7 +65,7 @@ export default function TipoAtividadePage() {
             >
                 <Table<TipoAtividadeWithKpi>
                     columns={columns}
-                    dataSource={tipoAtividades ?? []}
+                    dataSource={tipoAtividades?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

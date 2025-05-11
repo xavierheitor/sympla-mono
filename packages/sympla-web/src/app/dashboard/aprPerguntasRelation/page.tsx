@@ -9,7 +9,7 @@ import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActio
 import { createAprPerguntasRelation } from '@/lib/actions/aprPerguntasRelation/create';
 import { updateAprPerguntasRelation } from '@/lib/actions/aprPerguntasRelation/update';
 import { deleteAprPerguntasRelation } from '@/lib/actions/aprPerguntasRelation/delete';
-import { getAllAprPerguntasRelationsWithIncludes } from '@/lib/actions/aprPerguntasRelation/getAllWithIncludes';
+import { getAllAprPerguntasWithIncludes } from '@/lib/actions/aprPerguntasRelation/getAllWithIncludes';
 import { getAllAprModelos } from '@/lib/actions/aprModelo/getAll';
 import { getAllAprPerguntass } from '@/lib/actions/aprPerguntas/getAll';
 
@@ -24,7 +24,7 @@ export default function AprPerguntasRelationPage() {
 
     const { data: relacoes, isLoading, error } = useServerData(
         'aprPerguntasRelations',
-        getAllAprPerguntasRelationsWithIncludes
+        getAllAprPerguntasWithIncludes
     );
 
     const { data: modelos } = useServerData('aprModelos', getAllAprModelos);
@@ -72,7 +72,7 @@ export default function AprPerguntasRelationPage() {
             >
                 <Table<AprPerguntasRelationWithIncludes>
                     columns={columns}
-                    dataSource={relacoes ?? []}
+                    dataSource={relacoes?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

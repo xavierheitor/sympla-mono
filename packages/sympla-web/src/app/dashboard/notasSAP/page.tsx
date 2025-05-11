@@ -72,7 +72,7 @@ export default function NotasSapPage() {
             >
                 <Table<NotasSAPFormData>
                     columns={columns}
-                    dataSource={notas ?? []}
+                    dataSource={notas?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

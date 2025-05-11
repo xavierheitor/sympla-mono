@@ -60,7 +60,7 @@ export default function AtividadePage() {
             >
                 <Table<AtividadeWithIncludes>
                     columns={columns}
-                    dataSource={atividades ?? []}
+                    dataSource={atividades?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

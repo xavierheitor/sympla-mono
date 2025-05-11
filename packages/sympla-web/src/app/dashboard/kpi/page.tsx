@@ -49,7 +49,7 @@ export default function KpiPage() {
             >
                 <Table<KpiWithRelations>
                     columns={columns}
-                    dataSource={kpis ?? []}
+                    dataSource={kpis?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

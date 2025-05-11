@@ -64,7 +64,7 @@ export default function EquipamentoPage() {
             >
                 <Table<EquipamentoWithRelations>
                     columns={columns}
-                    dataSource={equipamentos ?? []}
+                    dataSource={equipamentos?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

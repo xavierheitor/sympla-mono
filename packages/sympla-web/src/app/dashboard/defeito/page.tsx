@@ -6,7 +6,6 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllDefeitosWithIncludes } from '@/lib/actions/defeito/getAllWithIncludes';
 import { createDefeito } from '@/lib/actions/defeito/create';
 import { updateDefeito } from '@/lib/actions/defeito/update';
 import { deleteDefeito } from '@/lib/actions/defeito/delete';
@@ -17,6 +16,7 @@ import { getAllGrupoDefeitoCodigos } from '@/lib/actions/grupoDefeitoCodigo/getA
 
 import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/defeitoFormSchema';
 import DefeitoForm from './form';
+import { getAllDefeitosWithIncludes } from '@/lib/actions/defeito/getAllWithIncludes';
 
 
 
@@ -63,7 +63,7 @@ export default function DefeitoPage() {
             >
                 <Table<DefeitoWithRelations>
                     columns={columns}
-                    dataSource={defeitos ?? []}
+                    dataSource={defeitos?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

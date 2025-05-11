@@ -4,7 +4,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
-export const getAllAtividades = createPrismaGetAllAction(async () => {
+export const getAllAtividadesWithIncludes = createPrismaGetAllAction(async () => {
     return await prisma.atividade.findMany({
         where: { deletedAt: null },
         orderBy: { id: 'asc' },

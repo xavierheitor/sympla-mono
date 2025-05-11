@@ -82,7 +82,7 @@ export default function AtividadeAtribuicaoPage() {
             >
                 <Table<AtividadeAtribuicaoWithIncludes>
                     columns={columns}
-                    dataSource={atribuicoes ?? []}
+                    dataSource={atribuicoes?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />

@@ -62,7 +62,7 @@ export default function AprModeloPage() {
             >
                 <Table<AprModeloWithIncludes>
                     columns={columns}
-                    dataSource={modelos ?? []}
+                    dataSource={modelos?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />
