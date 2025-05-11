@@ -2,6 +2,11 @@
 import { z } from 'zod';
 import { Atividade, NotasSAP, StatusAtividade, TipoAtividade } from '@sympla/prisma';
 
+const dateField = z
+  .union([z.string(), z.date()])
+  .nullable()
+  .transform((val) => (typeof val === 'string' ? new Date(val) : val));
+
 export const atividadeFormSchema = z.object({
   id: z.string().optional(),
   descricao: z.string().nullable(),
@@ -9,10 +14,10 @@ export const atividadeFormSchema = z.object({
   tipoAtividadeId: z.string().min(1, 'Tipo de Atividade é obrigatório'),
   ordemServico: z.string().nullable(),
   status: z.nativeEnum(StatusAtividade),
-  prazoLimite: z.date().nullable(),
-  dataProgramacao: z.date().nullable(),
-  dataExecucaoInicio: z.date().nullable(),
-  dataExecucaoFim: z.date().nullable(),
+  prazoLimite: dateField,
+  dataProgramacao: dateField,
+  dataExecucaoInicio: dateField,
+  dataExecucaoFim: dateField,
 });
 
 export type AtividadeFormData = z.infer<typeof atividadeFormSchema>;

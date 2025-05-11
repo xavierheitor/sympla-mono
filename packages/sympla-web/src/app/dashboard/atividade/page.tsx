@@ -41,9 +41,20 @@ export default function AtividadePage() {
     );
 
     const handleSubmit = (values: AtividadeFormData) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const normalizeDate = (date?: any) => date?.toISOString?.() ?? null;
+
+        const parsedValues = {
+            ...values,
+            prazoLimite: normalizeDate(values.prazoLimite),
+            dataProgramacao: normalizeDate(values.dataProgramacao),
+            dataExecucaoInicio: normalizeDate(values.dataExecucaoInicio),
+            dataExecucaoFim: normalizeDate(values.dataExecucaoFim),
+        };
+
         const action = controller.editingItem?.id
-            ? () => updateAtividade({ ...values, id: controller.editingItem!.id })
-            : () => createAtividade(values);
+            ? () => updateAtividade({ ...parsedValues, id: controller.editingItem!.id })
+            : () => createAtividade(parsedValues);
 
         controller.exec(action, 'Atividade salva com sucesso!');
     };
