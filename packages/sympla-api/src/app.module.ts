@@ -23,6 +23,9 @@ import { DefeitoService } from './defeito/service/defeito.service';
 import { GrupoDefeitoService } from './defeito/service/grupoDefeito.service';
 import { SubgrupoDefeitoService } from './defeito/service/subgrupoDefeito.service';
 import { GrupoDefeitoCodigoService } from './defeito/service/grupoDefeitoCodigo.service';
+import { EquipamentoModule } from './equipamento/module/equipamento.module';
+import { EquipamentoController } from './equipamento/controller/equipamento.controller';
+import { EquipamentoService } from './equipamento/service/equipamento.service';
 
 @Module({
   imports: [
@@ -33,6 +36,7 @@ import { GrupoDefeitoCodigoService } from './defeito/service/grupoDefeitoCodigo.
     AtividadeModule,
     ChecklistModule,
     DefeitoModule,
+    EquipamentoModule,
   ],
   controllers: [
     AppController,
@@ -40,6 +44,7 @@ import { GrupoDefeitoCodigoService } from './defeito/service/grupoDefeitoCodigo.
     AtividadeController,
     ChecklistController,
     DefeitoController,
+    EquipamentoController,
   ],
   providers: [
     AppService,
@@ -54,6 +59,7 @@ import { GrupoDefeitoCodigoService } from './defeito/service/grupoDefeitoCodigo.
     GrupoDefeitoService,
     SubgrupoDefeitoService,
     GrupoDefeitoCodigoService,
+    EquipamentoService,
   ],
 })
 export class AppModule {}
