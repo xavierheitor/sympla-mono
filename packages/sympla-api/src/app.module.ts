@@ -26,6 +26,9 @@ import { GrupoDefeitoCodigoService } from './defeito/service/grupoDefeitoCodigo.
 import { EquipamentoModule } from './equipamento/module/equipamento.module';
 import { EquipamentoController } from './equipamento/controller/equipamento.controller';
 import { EquipamentoService } from './equipamento/service/equipamento.service';
+import { TecnicoModule } from './tecnico/module/tecnico.module';
+import { TecnicoController } from './tecnico/controller/tecnico.controller';
+import { TecnicoService } from './tecnico/service/tecnico.service';
 
 @Module({
   imports: [
@@ -37,6 +40,7 @@ import { EquipamentoService } from './equipamento/service/equipamento.service';
     ChecklistModule,
     DefeitoModule,
     EquipamentoModule,
+    TecnicoModule,
   ],
   controllers: [
     AppController,
@@ -45,6 +49,7 @@ import { EquipamentoService } from './equipamento/service/equipamento.service';
     ChecklistController,
     DefeitoController,
     EquipamentoController,
+    TecnicoController,
   ],
   providers: [
     AppService,
@@ -60,6 +65,7 @@ import { EquipamentoService } from './equipamento/service/equipamento.service';
     SubgrupoDefeitoService,
     GrupoDefeitoCodigoService,
     EquipamentoService,
+    TecnicoService,
   ],
 })
 export class AppModule {}
