@@ -17,6 +17,12 @@ import { ChecklistController } from './checklist/controller/checklist.controller
 import { ChecklistService } from './checklist/service/checklist.service';
 import { ChecklistPerguntaService } from './checklist/service/checklistPergunta.service';
 import { ChecklistPerguntaRelacionamentoService } from './checklist/service/checklistPerguntaRelacionamento.service';
+import { DefeitoModule } from './defeito/module/defeito.module';
+import { DefeitoController } from './defeito/controller/defeito.controller';
+import { DefeitoService } from './defeito/service/defeito.service';
+import { GrupoDefeitoService } from './defeito/service/grupoDefeito.service';
+import { SubgrupoDefeitoService } from './defeito/service/subgrupoDefeito.service';
+import { GrupoDefeitoCodigoService } from './defeito/service/grupoDefeitoCodigo.service';
 
 @Module({
   imports: [
@@ -26,12 +32,14 @@ import { ChecklistPerguntaRelacionamentoService } from './checklist/service/chec
     AprModule,
     AtividadeModule,
     ChecklistModule,
+    DefeitoModule,
   ],
   controllers: [
     AppController,
     AprController,
     AtividadeController,
     ChecklistController,
+    DefeitoController,
   ],
   providers: [
     AppService,
@@ -42,6 +50,10 @@ import { ChecklistPerguntaRelacionamentoService } from './checklist/service/chec
     ChecklistService,
     ChecklistPerguntaService,
     ChecklistPerguntaRelacionamentoService,
+    DefeitoService,
+    GrupoDefeitoService,
+    SubgrupoDefeitoService,
+    GrupoDefeitoCodigoService,
   ],
 })
 export class AppModule {}
