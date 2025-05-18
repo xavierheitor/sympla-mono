@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { TipoAtividadeService } from '../service/tipoAtividade.service';
-import { GetUsuarioMobileId } from 'src/modules/auth/decorator/get-user-id-decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { GetUsuarioMobileId } from '../../auth/decorator/get-user-id-decorator';
+import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 
 @Controller('atividade')
 export class AtividadeController {
@@ -13,8 +13,9 @@ export class AtividadeController {
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   findAllAtividades(@GetUsuarioMobileId() usuarioId: string) {
-    console.log(usuarioId);
+    console.log('[ATIVIDADE] Usuario ID:', usuarioId);
+    return this.tipoAtividadeService.findAll();
   }
 }

@@ -4,12 +4,14 @@ import { MobileUsersModule } from 'src/modules/mobile-users/mobile-users.module'
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../strategy/jwt.strategy';
 import { AuthService } from '../service/auth.service';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     MobileUsersModule,
+    PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'sua-chave-secreta',
+      secret: process.env.JWT_SECRET || 'secret',
       signOptions: { expiresIn: '1d' },
     }),
   ],
