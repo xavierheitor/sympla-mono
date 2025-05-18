@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { TipoAtividadeService } from '../service/tipoAtividade.service';
-import { GetUsuarioMobileId } from 'src/auth/get-user-id-decorator';
+import { GetUsuarioMobileId } from 'src/modules/auth/decorator/get-user-id-decorator';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('atividade')

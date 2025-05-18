@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { MobileUsersModule } from 'src/mobile-users/mobile-users.module';
+import { AuthController } from '../controller/auth.controller';
+import { MobileUsersModule } from 'src/modules/mobile-users/mobile-users.module';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategy/jwt.strategy';
+import { JwtStrategy } from '../strategy/jwt.strategy';
+import { AuthService } from '../service/auth.service';
 
 @Module({
   imports: [

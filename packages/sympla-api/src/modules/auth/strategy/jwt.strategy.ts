@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: any) {
-    // Isso será injetado no req.user
-    return { sub: payload.sub, matricula: payload.matricula };
+    console.log('[JWT PAYLOAD]', payload);
+    return { id: payload.sub, ...payload };
   }
 }

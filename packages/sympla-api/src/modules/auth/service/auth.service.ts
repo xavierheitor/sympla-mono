@@ -4,8 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { MobileUsersService } from '../mobile-users/mobile-users.service';
 import * as bcrypt from 'bcrypt';
+import { MobileUsersService } from 'src/modules/mobile-users/mobile-users.service';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
   async validateLogin(matricula: string, senha: string) {
     const user = await this.mobileUsersService.findByMatricula(matricula);
 
-    if (!user || !(await bcrypt.compare(senha, user.senha as string))) {
+    if (!user || !(await bcrypt.compare(senha, user.senha))) {
       throw new UnauthorizedException('Matrícula ou senha inválida');
     }
 
