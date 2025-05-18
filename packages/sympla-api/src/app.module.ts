@@ -29,6 +29,7 @@ import { EquipamentoService } from './modules/equipamento/service/equipamento.se
 import { TecnicoModule } from './modules/tecnico/module/tecnico.module';
 import { TecnicoController } from './modules/tecnico/controller/tecnico.controller';
 import { TecnicoService } from './modules/tecnico/service/tecnico.service';
+import { AtividadeService } from './modules/atividade/service/atividade.service';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { TecnicoService } from './modules/tecnico/service/tecnico.service';
     GrupoDefeitoCodigoService,
     EquipamentoService,
     TecnicoService,
+    AtividadeService,
   ],
 })
 export class AppModule {}
