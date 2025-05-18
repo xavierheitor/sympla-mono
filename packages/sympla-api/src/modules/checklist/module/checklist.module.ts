@@ -3,9 +3,11 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { ChecklistService } from '../service/checklist.service';
 import { ChecklistPerguntaService } from '../service/checklistPergunta.service';
 import { ChecklistPerguntaRelacionamentoService } from '../service/checklistPerguntaRelacionamento.service';
+import { ChecklistController } from '../controller/checklist.controller';
 
 @Module({
   imports: [PrismaModule],
+  controllers: [ChecklistController],
   providers: [
     ChecklistService,
     ChecklistPerguntaService,
