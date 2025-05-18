@@ -1,5 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { TipoAtividadeService } from '../service/tipoAtividade.service';
+import { GetUsuarioMobileId } from 'src/auth/get-user-id-decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('atividade')
 export class AtividadeController {
@@ -8,5 +10,11 @@ export class AtividadeController {
   @Get('tipo-atividades')
   async findAllTipoAtividade() {
     return await this.tipoAtividadeService.findAll();
+  }
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  findAllAtividades(@GetUsuarioMobileId() usuarioId: string) {
+    console.log(usuarioId);
   }
 }
