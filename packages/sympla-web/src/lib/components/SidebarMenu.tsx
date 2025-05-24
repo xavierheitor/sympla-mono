@@ -8,8 +8,11 @@ import {
     VideoCameraOutlined,
     FormOutlined,
     LogoutOutlined,
+    BugOutlined,
+    CheckCircleOutlined,
+    FileProtectOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Typography, } from 'antd';
+import { Layout, Menu, Typography } from 'antd';
 import { signOut } from 'next-auth/react';
 
 const { Sider } = Layout;
@@ -55,20 +58,27 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
                     label: <Link href="/dashboard/equipamento">Equipamento</Link>,
                 },
                 {
-                    key: '/dashboard/grupoDefeitoEquipamento',
-                    label: <Link href="/dashboard/grupoDefeitoEquipamento">Grupo de Defeito do Equipamento</Link>,
-                },
-                {
-                    key: '/dashboard/subgrupoDefeitoEquipamento',
-                    label: <Link href="/dashboard/subgrupoDefeitoEquipamento">Subgrupo de Defeito do Equipamento</Link>,
-                },
-                {
-                    key: '/dashboard/grupoDefeitoCodigo',
-                    label: <Link href="/dashboard/grupoDefeitoCodigo">Grupo de Defeito do Código</Link>,
-                },
-                {
-                    key: '/dashboard/defeito',
-                    label: <Link href="/dashboard/defeito">Defeito</Link>,
+                    key: 'defeitos',
+                    label: 'Defeitos',
+                    icon: <BugOutlined />,
+                    children: [
+                        {
+                            key: '/dashboard/grupoDefeitoEquipamento',
+                            label: <Link href="/dashboard/grupoDefeitoEquipamento">Grupo Defeito Equipamento</Link>,
+                        },
+                        {
+                            key: '/dashboard/subgrupoDefeitoEquipamento',
+                            label: <Link href="/dashboard/subgrupoDefeitoEquipamento">Subgrupo Defeito Equipamento</Link>,
+                        },
+                        {
+                            key: '/dashboard/grupoDefeitoCodigo',
+                            label: <Link href="/dashboard/grupoDefeitoCodigo">Grupo Defeito Código</Link>,
+                        },
+                        {
+                            key: '/dashboard/defeito',
+                            label: <Link href="/dashboard/defeito">Defeito</Link>,
+                        },
+                    ],
                 },
                 {
                     key: '/dashboard/tipoManutencao',
@@ -99,28 +109,42 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
                     label: <Link href="/dashboard/tecnico">Técnico</Link>,
                 },
                 {
-                    key: '/dashboard/aprPergunta',
-                    label: <Link href="/dashboard/aprPergunta">Perguntas</Link>,
+                    key: 'apr',
+                    icon: <FileProtectOutlined />,
+                    label: 'APR',
+                    children: [
+                        {
+                            key: '/dashboard/aprModelo',
+                            label: <Link href="/dashboard/aprModelo">Modelo</Link>,
+                        },
+                        {
+                            key: '/dashboard/aprPergunta',
+                            label: <Link href="/dashboard/aprPergunta">Perguntas</Link>,
+                        },
+                        {
+                            key: '/dashboard/aprPerguntasRelation',
+                            label: <Link href="/dashboard/aprPerguntasRelation">Relação de Perguntas</Link>,
+                        },
+                    ],
                 },
                 {
-                    key: '/dashboard/aprModelo',
-                    label: <Link href="/dashboard/aprModelo">Modelo</Link>,
-                },
-                {
-                    key: '/dashboard/aprPerguntasRelation',
-                    label: <Link href="/dashboard/aprPerguntasRelation">Relação de Perguntas</Link>,
-                },
-                {
-                    key: '/dashboard/checklistPergunta',
-                    label: <Link href="/dashboard/checklistPergunta">Perguntas</Link>,
-                },
-                {
-                    key: '/dashboard/checklistModelo',
-                    label: <Link href="/dashboard/checklistModelo">Modelo</Link>,
-                },
-                {
-                    key: '/dashboard/checklistPerguntaRelation',
-                    label: <Link href="/dashboard/checklistPerguntaRelation">Relação de Perguntas</Link>,
+                    key: 'checklist',
+                    icon: <CheckCircleOutlined />,
+                    label: 'Checklist',
+                    children: [
+                        {
+                            key: '/dashboard/checklistModelo',
+                            label: <Link href="/dashboard/checklistModelo">Modelo</Link>,
+                        },
+                        {
+                            key: '/dashboard/checklistPergunta',
+                            label: <Link href="/dashboard/checklistPergunta">Perguntas</Link>,
+                        },
+                        {
+                            key: '/dashboard/checklistPerguntaRelation',
+                            label: <Link href="/dashboard/checklistPerguntaRelation">Relação de Perguntas</Link>,
+                        },
+                    ],
                 },
                 {
                     key: '/dashboard/usuarioMobile',
@@ -151,18 +175,18 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
             width={250}
             collapsed={collapsed}
             onCollapse={onCollapseChange}
-
             style={{
                 height: '100vh',
                 overflowY: 'auto',
                 position: 'sticky',
                 top: 0,
+                backgroundColor: '#1D3557', // Mantém o tema azul do sidebar
             }}
         >
             <Title
                 level={3}
                 style={{
-                    color: '#F1FAEE', // cor clara para bom contraste
+                    color: '#F1FAEE',
                     textAlign: 'center',
                     margin: '16px 0',
                 }}
