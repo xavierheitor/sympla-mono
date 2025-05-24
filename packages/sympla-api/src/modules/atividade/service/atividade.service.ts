@@ -13,6 +13,7 @@ export class AtividadeService {
     const atribuicoes = await this.prisma.atividadeAtribuicao.findMany({
       where: {
         usuarioMobileId: usuarioId,
+        deletedAt: null,
       },
       include: {
         atividade: {
