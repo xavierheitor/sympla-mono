@@ -7,8 +7,6 @@ import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
-import { getAllSubgrupoDefeitoEquipamentos } from '@/lib/actions/subgrupoDefeitoEquipamento/getAll';
-import { getAllGrupoDefeitoCodigos } from '@/lib/actions/grupoDefeitoCodigo/getAll';
 import { getAllSubestacoes } from '@/lib/actions/subestacao/getAll';
 import { getAllEquipamentosWithIncludes } from '@/lib/actions/equipamento/getAllWithIncludes';
 import { deleteEquipamento } from '@/lib/actions/equipamento/delete';
@@ -30,17 +28,14 @@ export default function EquipamentoPage() {
     );
 
     const { data: grupos } = useServerData('grupoDefeitoEquipamento', getAllGrupoDefeitoEquipamentos);
-    const { data: subgrupos } = useServerData('subgrupoDefeitoEquipamento', getAllSubgrupoDefeitoEquipamentos);
-    const { data: codigos } = useServerData('grupoDefeitoCodigos', getAllGrupoDefeitoCodigos);
+
     const { data: subestacoes } = useServerData('subestacao', getAllSubestacoes);
 
     const columns = useTableColumnsWithActions<EquipamentoWithRelations>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
             { title: 'Subestação', dataIndex: ['subestacao', 'nome'], key: 'subestacao.nome' },
-            { title: 'Grupo', dataIndex: ['grupo', 'nome'], key: 'grupo.nome' },
-            { title: 'Subgrupo', dataIndex: ['subgrupo', 'nome'], key: 'subgrupo.nome' },
-            { title: 'Código', dataIndex: ['grupoDefeitoCodigo', 'codigo'], key: 'grupoDefeitoCodigo.codigo' },
+            { title: 'Código', dataIndex: 'grupoDefeitoCodigo', key: 'grupoDefeitoCodigo' },
         ],
         controller.open,
         (item) => controller.exec(() => deleteEquipamento(item.id), 'Equipamento excluído com sucesso!')
@@ -82,8 +77,6 @@ export default function EquipamentoPage() {
                     onSubmit={handleSubmit}
                     loading={controller.loading}
                     grupoOptions={grupos?.data ?? []}
-                    subgrupoOptions={subgrupos?.data ?? []}
-                    codigoOptions={codigos?.data ?? []}
                     subestacaoOptions={subestacoes?.data ?? []}
                 />
             </Modal>

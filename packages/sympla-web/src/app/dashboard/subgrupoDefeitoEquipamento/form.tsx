@@ -31,7 +31,7 @@ export default function SubgrupoDefeitoEquipamentoForm({
     return (
         <Form form={form} layout="vertical" initialValues={initialValues} onFinish={onSubmit}>
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
-                <Input />
+                <Input autoFocus />
             </Form.Item>
 
             <Form.Item name="grupoId" label="Grupo de Defeito" rules={[{ required: true }]}>

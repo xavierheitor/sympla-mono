@@ -28,8 +28,13 @@ export default function GrupoDefeitoEquipamentoForm({
     return (
         <Form form={form} layout="vertical" initialValues={initialValues} onFinish={onSubmit}>
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
+                <Input autoFocus />
+            </Form.Item>
+
+            <Form.Item name="codigo" label="Grupo Defeito Código" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
+
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" block loading={loading}>

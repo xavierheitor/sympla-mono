@@ -5,8 +5,6 @@ import { Form, Input, Button, Select } from 'antd';
 import { EquipamentoFormData } from '@/lib/actions/equipamento/equipamentoFormSchema';
 import {
     GrupoDefeitoEquipamento,
-    GrupoDefeitoCodigo,
-    SubgrupoDefeitoEquipamento,
     Subestacao,
 } from '@sympla/prisma';
 
@@ -15,8 +13,6 @@ interface EquipamentoFormProps {
     initialValues?: Partial<EquipamentoFormData>;
     loading?: boolean;
     grupoOptions: GrupoDefeitoEquipamento[];
-    subgrupoOptions: SubgrupoDefeitoEquipamento[];
-    codigoOptions: GrupoDefeitoCodigo[];
     subestacaoOptions: Subestacao[];
 }
 
@@ -25,8 +21,6 @@ export default function EquipamentoForm({
     initialValues,
     loading = false,
     grupoOptions,
-    subgrupoOptions,
-    codigoOptions,
     subestacaoOptions,
 }: EquipamentoFormProps) {
     const [form] = Form.useForm();
@@ -56,24 +50,9 @@ export default function EquipamentoForm({
                 />
             </Form.Item>
 
-            <Form.Item name="grupoId" label="Grupo de Defeito" rules={[{ required: true }]}>
+            <Form.Item name="grupoDefeitoCodigo" label="Código do Grupo" rules={[{ required: true }]}>
                 <Select
-                    options={grupoOptions.map((g) => ({ label: g.nome, value: g.id }))}
-                    placeholder="Selecione o grupo de defeito"
-                />
-            </Form.Item>
-
-            <Form.Item name="subgrupoId" label="Subgrupo de Defeito">
-                <Select
-                    options={subgrupoOptions.map((s) => ({ label: s.nome, value: s.id }))}
-                    placeholder="Selecione o subgrupo de defeito"
-                    allowClear
-                />
-            </Form.Item>
-
-            <Form.Item name="grupoDefeitoCodigoId" label="Código do Grupo" rules={[{ required: true }]}>
-                <Select
-                    options={codigoOptions.map((c) => ({ label: c.codigo, value: c.id }))}
+                    options={grupoOptions.map((c) => ({ label: `${c.codigo} - ${c.nome}`, value: c.codigo }))}
                     placeholder="Selecione o código"
                 />
             </Form.Item>

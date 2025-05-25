@@ -289,11 +289,10 @@ model Subestacao {
 model GrupoDefeitoEquipamento {
   id   String @id @default(uuid())
   nome String @unique
+  codigo String? @unique
 
   subgrupos    SubgrupoDefeitoEquipamento[]
   defeitos     Defeito[]
-  codigos      GrupoDefeitoCodigo[]
-  equipamentos Equipamento[]
 
   // Auditoria
   createdAt DateTime  @default(now())
@@ -312,27 +311,6 @@ model SubgrupoDefeitoEquipamento {
   grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
 
   defeitos     Defeito[]
-  equipamentos Equipamento[]
-
-  // Auditoria
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  createdBy String
-  updatedBy String?
-  deletedBy String?
-}
-
-model GrupoDefeitoCodigo {
-  id     String @id @default(uuid())
-  sigla  String
-  codigo String @unique
-
-  grupoId String
-  grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
-
-  defeitos     Defeito[]
-  equipamentos Equipamento[]
 
   // Auditoria
   createdAt DateTime  @default(now())
@@ -353,9 +331,6 @@ model Defeito {
 
   subgrupoId String
   subgrupo   SubgrupoDefeitoEquipamento @relation(fields: [subgrupoId], references: [id])
-
-  grupoDefeitoCodigoId String
-  grupoDefeitoCodigo   GrupoDefeitoCodigo @relation(fields: [grupoDefeitoCodigoId], references: [id])
 
   acaoRecomendada       String?
   custeioOuInvestimento String?
@@ -379,14 +354,7 @@ model Equipamento {
   subestacaoId String
   subestacao   Subestacao @relation(fields: [subestacaoId], references: [id])
 
-  grupoDefeitoCodigoId String
-  grupoDefeitoCodigo   GrupoDefeitoCodigo @relation(fields: [grupoDefeitoCodigoId], references: [id])
-
-  grupoId String
-  grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
-
-  subgrupoId String?
-  subgrupo   SubgrupoDefeitoEquipamento? @relation(fields: [subgrupoId], references: [id])
+  grupoDefeitoCodigo String
 
   // Auditoria
   createdAt DateTime  @default(now())

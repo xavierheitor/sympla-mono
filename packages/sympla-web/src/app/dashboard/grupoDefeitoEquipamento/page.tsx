@@ -26,6 +26,7 @@ export default function GrupoDefeitoEquipamentoPage() {
     const columns = useTableColumnsWithActions<GrupoDefeitoEquipamento>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
+            { title: 'Código', dataIndex: 'codigo', key: 'codigo' }
         ],
         controller.open,
         (item) => controller.exec(() => deleteGrupoDefeitoEquipamento(item.id), 'Grupo excluído com sucesso!')
