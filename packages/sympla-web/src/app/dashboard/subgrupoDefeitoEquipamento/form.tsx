@@ -36,7 +36,15 @@ export default function SubgrupoDefeitoEquipamentoForm({
 
             <Form.Item name="grupoId" label="Grupo de Defeito" rules={[{ required: true }]}>
                 <Select
-                    options={grupoOptions.map((g) => ({ label: g.nome, value: g.id }))}
+                    showSearch
+                    optionFilterProp="label"
+                    filterOption={(input, option) =>
+                        (option?.label as string).toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={grupoOptions.map((g) => ({
+                        label: `${g.codigo} - ${g.nome}`,
+                        value: g.id,
+                    }))}
                     placeholder="Selecione o grupo de defeito"
                 />
             </Form.Item>
