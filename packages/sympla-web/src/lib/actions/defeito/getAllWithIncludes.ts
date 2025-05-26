@@ -10,7 +10,11 @@ export const getAllDefeitosWithIncludes = createPrismaGetAllAction(async () => {
       orderBy: { codigoSap: "asc" },
       include: {
         grupo: true,
-        subgrupo: true,
+        subgrupo: {
+          include: {
+            grupo: true,
+          },
+        },
       },
     });
 }, 'DEFEITO');

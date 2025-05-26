@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Button, Card, Modal, Table } from 'antd';
+import React, { useState } from 'react';
+import { Button, Card, Modal, Table, Space } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
@@ -11,18 +11,19 @@ import { updateDefeito } from '@/lib/actions/defeito/update';
 import { deleteDefeito } from '@/lib/actions/defeito/delete';
 
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
+import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/subgrupoDefeitoEquipamento/getAllWithIncludes';
+import { getAllDefeitosWithIncludes } from '@/lib/actions/defeito/getAllWithIncludes';
 
 import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/defeitoFormSchema';
 import DefeitoForm from './form';
-import { getAllDefeitosWithIncludes } from '@/lib/actions/defeito/getAllWithIncludes';
-import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/subgrupoDefeitoEquipamento/getAllWithIncludes';
-
-
+import DefeitoLoteForm from './defeitoLoteForm';
 
 export default function DefeitoPage() {
     const controller = useCrudController<DefeitoWithRelations>('defeitos');
 
-    const { data: defeitos, isLoading, error } = useServerData(
+    const [loteModalOpen, setLoteModalOpen] = useState(false);
+
+    const { data: defeitos, isLoading, error, mutate } = useServerData(
         'defeitos',
         getAllDefeitosWithIncludes
     );
@@ -32,10 +33,53 @@ export default function DefeitoPage() {
 
     const columns = useTableColumnsWithActions<DefeitoWithRelations>(
         [
-            { title: 'Código SAP', dataIndex: 'codigoSap', key: 'codigoSap' },
-            { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
-            { title: 'Grupo', dataIndex: ['grupo', 'nome'], key: 'grupo.nome' },
-            { title: 'Subgrupo', dataIndex: ['subgrupo', 'nome'], key: 'subgrupo.nome' },
+            {
+                title: 'Código SAP',
+                dataIndex: 'codigoSap',
+                key: 'codigoSap',
+                sorter: (a, b) => a.codigoSap.localeCompare(b.codigoSap),
+                sortDirections: ['descend', 'ascend'],
+            },
+            {
+                title: 'Prioridade',
+                dataIndex: 'prioridade',
+                key: 'prioridade',
+                sorter: (a, b) => a.prioridade?.localeCompare(b.prioridade ?? '') ?? 0,
+                sortDirections: ['descend', 'ascend'],
+            },
+            {
+                title: 'Descrição',
+                dataIndex: 'descricao',
+                key: 'descricao',
+                sorter: (a, b) => a.descricao.localeCompare(b.descricao),
+                sortDirections: ['descend', 'ascend'],
+            },
+            {
+                title: 'Grupo',
+                dataIndex: ['grupo', 'nome'],
+                key: 'grupo.nome',
+                filters: grupos?.data?.map((g) => ({
+                    text: `${g.codigo ? g.codigo + ' - ' : ''}${g.nome}`,
+                    value: g.nome,
+                })) ?? [],
+                onFilter: (value, record) => record.grupo.nome.includes(value as string),
+                sorter: (a, b) => a.grupo.nome.localeCompare(b.grupo.nome),
+                sortDirections: ['descend', 'ascend'],
+                render: (_, record) => `${record.grupo.codigo ? record.grupo.codigo + ' - ' : ''}${record.grupo.nome}`,
+            },
+            {
+                title: 'Subgrupo',
+                dataIndex: ['subgrupo', 'nome'],
+                key: 'subgrupo.nome',
+                filters: subgrupos?.data?.map((s) => ({
+                    text: `${s.grupo.codigo ? s.grupo.codigo + ' - ' : ''}${s.nome}`,
+                    value: s.nome,
+                })) ?? [],
+                onFilter: (value, record) => record.subgrupo.nome.includes(value as string),
+                sorter: (a, b) => a.subgrupo.nome.localeCompare(b.subgrupo.nome),
+                sortDirections: ['descend', 'ascend'],
+                render: (_, record) => `${record.subgrupo.grupo.codigo ? record.subgrupo.grupo.codigo + ' - ' : ''}${record.subgrupo.nome}`,
+            },
         ],
         controller.open,
         (item) =>
@@ -56,7 +100,16 @@ export default function DefeitoPage() {
         <>
             <Card
                 title="Defeitos"
-                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
+                extra={
+                    <Space>
+                        <Button type="primary" onClick={() => controller.open()}>
+                            Adicionar
+                        </Button>
+                        <Button onClick={() => setLoteModalOpen(true)}>
+                            Adicionar em Lote
+                        </Button>
+                    </Space>
+                }
             >
                 <Table<DefeitoWithRelations>
                     columns={columns}
@@ -77,6 +130,24 @@ export default function DefeitoPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
+                    grupoOptions={grupos?.data ?? []}
+                    subgrupoOptions={subgrupos?.data ?? []}
+                />
+            </Modal>
+
+            <Modal
+                title="Adicionar Defeitos em Lote"
+                open={loteModalOpen}
+                onCancel={() => setLoteModalOpen(false)}
+                footer={null}
+                width={900}
+                destroyOnClose
+            >
+                <DefeitoLoteForm
+                    onSuccess={() => {
+                        setLoteModalOpen(false);
+                        mutate(); // 🔥 Atualiza a tabela após salvar
+                    }}
                     grupoOptions={grupos?.data ?? []}
                     subgrupoOptions={subgrupos?.data ?? []}
                 />

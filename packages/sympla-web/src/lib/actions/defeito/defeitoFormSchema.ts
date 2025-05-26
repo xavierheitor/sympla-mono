@@ -20,5 +20,7 @@ export type DefeitoFormData = Partial<Pick<Defeito, "id">> & BaseFields;
 
 export type DefeitoWithRelations = Defeito & {
   grupo: GrupoDefeitoEquipamento;
-  subgrupo: SubgrupoDefeitoEquipamento;
+  subgrupo: SubgrupoDefeitoEquipamento & {
+    grupo: GrupoDefeitoEquipamento;
+  };
 };
