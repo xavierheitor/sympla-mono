@@ -11,7 +11,6 @@ import { updateDefeito } from '@/lib/actions/defeito/update';
 import { deleteDefeito } from '@/lib/actions/defeito/delete';
 
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
-import { getAllGrupoDefeitoCodigos } from '@/lib/actions/grupoDefeitoCodigo/getAll';
 
 import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/defeitoFormSchema';
 import DefeitoForm from './form';
@@ -30,7 +29,6 @@ export default function DefeitoPage() {
 
     const { data: grupos } = useServerData('grupoDefeitoEquipamento', getAllGrupoDefeitoEquipamentos);
     const { data: subgrupos } = useServerData('subgrupoDefeitoEquipamento', getAllSubgrupoDefeitoEquipamentosWithIncludes);
-    const { data: codigos } = useServerData('grupoDefeitoCodigos', getAllGrupoDefeitoCodigos);
 
     const columns = useTableColumnsWithActions<DefeitoWithRelations>(
         [
@@ -38,7 +36,6 @@ export default function DefeitoPage() {
             { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
             { title: 'Grupo', dataIndex: ['grupo', 'nome'], key: 'grupo.nome' },
             { title: 'Subgrupo', dataIndex: ['subgrupo', 'nome'], key: 'subgrupo.nome' },
-            { title: 'Código do Grupo', dataIndex: ['grupoDefeitoCodigo', 'codigo'], key: 'grupoDefeitoCodigo.codigo' },
         ],
         controller.open,
         (item) =>
@@ -82,7 +79,6 @@ export default function DefeitoPage() {
                     loading={controller.loading}
                     grupoOptions={grupos?.data ?? []}
                     subgrupoOptions={subgrupos?.data ?? []}
-                    codigoOptions={codigos?.data ?? []}
                 />
             </Modal>
         </>

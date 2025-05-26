@@ -40,10 +40,15 @@ export default function SubgrupoDefeitoEquipamentoPage() {
                 title: 'Grupo',
                 dataIndex: ['grupo', 'nome'],
                 key: 'grupo.nome',
-                onFilter: (value, record) => record.grupo.nome.indexOf(value as string) === 0,
-                sorter: (a, b) => a.grupo.nome.length - b.grupo.nome.length,
+                filters: grupos?.data?.map((g) => ({
+                    text: g.nome,
+                    value: g.nome,
+                })) ?? [],
+                onFilter: (value, record) => record.grupo.nome.includes(value as string),
+                sorter: (a, b) => a.grupo.nome.localeCompare(b.grupo.nome),
                 sortDirections: ['descend'],
-            },
+                render: (text, record) => `${record.grupo.codigo} - ${record.nome}`,
+            }
         ],
         controller.open,
         (item) =>

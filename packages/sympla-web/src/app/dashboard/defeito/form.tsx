@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { DefeitoFormData, } from '@/lib/actions/defeito/defeitoFormSchema';
 import {
-    GrupoDefeitoEquipamento, GrupoDefeitoCodigo,
+    GrupoDefeitoEquipamento,
 } from '@sympla/prisma';
 import { SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/subgrupoDefeitoEquipamento/subgrupoDefeitoEquipamentoFormSchema';
 
@@ -14,7 +14,6 @@ interface DefeitoFormProps {
     loading?: boolean;
     grupoOptions: GrupoDefeitoEquipamento[];
     subgrupoOptions: SubgrupoDefeitoEquipamentoWithRelations[];
-    codigoOptions: GrupoDefeitoCodigo[];
 }
 
 export default function DefeitoForm({
@@ -23,7 +22,6 @@ export default function DefeitoForm({
     loading = false,
     grupoOptions,
     subgrupoOptions,
-    codigoOptions,
 }: DefeitoFormProps) {
     const [form] = Form.useForm();
 
@@ -51,10 +49,6 @@ export default function DefeitoForm({
 
             <Form.Item name="subgrupoId" label="Subgrupo" rules={[{ required: true }]}>
                 <Select options={subgrupoOptions.map(s => ({ label: `${s.grupo.nome ?? 'Grupo desconhecido'} - ${s.nome}`, value: s.id }))} />
-            </Form.Item>
-
-            <Form.Item name="grupoDefeitoCodigoId" label="Código do Grupo" rules={[{ required: true }]}>
-                <Select options={codigoOptions.map(c => ({ label: c.codigo, value: c.id }))} />
             </Form.Item>
 
             <Form.Item name="acaoRecomendada" label="Ação Recomendada">

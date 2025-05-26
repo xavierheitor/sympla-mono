@@ -6,12 +6,11 @@ import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
 export const getAllDefeitosWithIncludes = createPrismaGetAllAction(async () => {
     return await prisma.defeito.findMany({
-        where: { deletedAt: null },
-        orderBy: { codigoSap: 'asc' },
-        include: {
-            grupo: true,
-            subgrupo: true,
-            grupoDefeitoCodigo: true,
-        },
+      where: { deletedAt: null },
+      orderBy: { codigoSap: "asc" },
+      include: {
+        grupo: true,
+        subgrupo: true,
+      },
     });
 }, 'DEFEITO');
