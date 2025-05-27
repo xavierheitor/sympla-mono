@@ -24,7 +24,6 @@ export default function KpiPage() {
     const columns = useTableColumnsWithActions<KpiWithRelations>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
-            { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
             { title: 'Tipo de Manutenção', dataIndex: ['tipoManutencao', 'nome'], key: 'tipoManutencao.nome' },
         ],
         controller.open,
