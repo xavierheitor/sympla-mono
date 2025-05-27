@@ -9,14 +9,12 @@ export class EquipamentoService {
     const equipamentos = await this.prisma.equipamento.findMany({
       include: {
         subestacao: true,
-        grupoDefeitoCodigo: true,
       },
     });
 
     return equipamentos.map((equipamento) => ({
       ...equipamento,
       subestacao: equipamento.subestacao?.sigla ?? null,
-      grupoDefeitoCodigo: equipamento.grupoDefeitoCodigo?.codigo ?? null,
     }));
   }
 }

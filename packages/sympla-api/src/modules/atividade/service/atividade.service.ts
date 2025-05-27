@@ -56,9 +56,8 @@ export class AtividadeService {
               nome: equipamento.nome,
               descricao: equipamento.descricao,
               subestacaoId: equipamento.subestacaoId,
-              grupoDefeitoCodigoId: equipamento.grupoDefeitoCodigoId,
-              grupoId: equipamento.grupoId,
-              subgrupoId: equipamento.subgrupoId,
+              subestacao: equipamento.subestacao,
+              grupoDefeitoCodigo: equipamento.grupoDefeitoCodigo,
             }
           : null,
         // 🔴 tipoAtividade removido daqui, conforme solicitado

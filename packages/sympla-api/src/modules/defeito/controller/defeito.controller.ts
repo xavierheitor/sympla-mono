@@ -2,7 +2,6 @@ import { Controller, Get } from '@nestjs/common';
 import { DefeitoService } from '../service/defeito.service';
 import { GrupoDefeitoService } from '../service/grupoDefeito.service';
 import { SubgrupoDefeitoService } from '../service/subgrupoDefeito.service';
-import { GrupoDefeitoCodigoService } from '../service/grupoDefeitoCodigo.service';
 
 @Controller('defeito')
 export class DefeitoController {
@@ -10,7 +9,6 @@ export class DefeitoController {
     private readonly defeitoService: DefeitoService,
     private readonly grupoDefeitoService: GrupoDefeitoService,
     private readonly subgrupoDefeitoService: SubgrupoDefeitoService,
-    private readonly grupoDefeitoCodigoService: GrupoDefeitoCodigoService,
   ) {}
 
   @Get()
@@ -26,10 +24,5 @@ export class DefeitoController {
   @Get('subgrupo-defeito')
   async findAllSubgrupoDefeito() {
     return await this.subgrupoDefeitoService.findAll();
-  }
-
-  @Get('grupo-defeito-codigo')
-  async findAllGrupoDefeitoCodigo() {
-    return await this.grupoDefeitoCodigoService.findAll();
   }
 }
