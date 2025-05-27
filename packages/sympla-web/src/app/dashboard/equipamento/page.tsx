@@ -1,58 +1,54 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useState } from 'react';
-import { Button, Card, Modal, Table, Space } from 'antd';
-import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useState } from 'react';
+import { Button, Card, Input, Modal, Select, Space, Table } from 'antd';
+import { useEquipamentoPaginated } from '@/lib/hooks/useEquipamentoPaginated';
 import { useServerData } from '@/lib/hooks/useServerData';
-import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
 import { getAllSubestacoes } from '@/lib/actions/subestacao/getAll';
-import { getAllEquipamentosWithIncludes } from '@/lib/actions/equipamento/getAllWithIncludes';
-import { deleteEquipamento } from '@/lib/actions/equipamento/delete';
-import { updateEquipamento } from '@/lib/actions/equipamento/update';
 import { createEquipamento } from '@/lib/actions/equipamento/create';
+import { updateEquipamento } from '@/lib/actions/equipamento/update';
 
+import { useCrudController } from '@/lib/hooks/useCrudController';
 import EquipamentoForm from './form';
-import {
-    EquipamentoFormData,
-    EquipamentoWithRelations,
-} from '@/lib/actions/equipamento/equipamentoFormSchema';
 import EquipamentoLoteForm from './equipamentoLoteForm';
 
 export default function EquipamentoPage() {
-    const controller = useCrudController<EquipamentoWithRelations>('equipamentos');
-
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(20);
+    const [search, setSearch] = useState('');
+    const [subestacaoId, setSubestacaoId] = useState<string | undefined>(undefined);
+    const [grupoDefeitoCodigo, setGrupoDefeitoCodigo] = useState<string | undefined>(undefined);
     const [loteModalOpen, setLoteModalOpen] = useState(false);
 
-    const { data: equipamentos, isLoading, error, mutate } = useServerData(
-        'equipamentos',
-        getAllEquipamentosWithIncludes
-    );
+    const { data, total, isLoading, mutate } = useEquipamentoPaginated({
+        page,
+        pageSize,
+        search,
+        subestacaoId,
+        grupoDefeitoCodigo,
+    });
 
     const { data: grupos } = useServerData('grupoDefeitoEquipamento', getAllGrupoDefeitoEquipamentos);
-
     const { data: subestacoes } = useServerData('subestacao', getAllSubestacoes);
 
-    const columns = useTableColumnsWithActions<EquipamentoWithRelations>(
-        [
-            { title: 'Nome', dataIndex: 'nome', key: 'nome' },
-            { title: 'Subestação', dataIndex: ['subestacao', 'nome'], key: 'subestacao.nome' },
-            { title: 'Código', dataIndex: 'grupoDefeitoCodigo', key: 'grupoDefeitoCodigo' },
-        ],
-        controller.open,
-        (item) => controller.exec(() => deleteEquipamento(item.id), 'Equipamento excluído com sucesso!')
-    );
+    const controller = useCrudController('equipamentos-paginated');
 
-    const handleSubmit = (values: EquipamentoFormData) => {
+    const columns = [
+        { title: 'Nome', dataIndex: 'nome', key: 'nome' },
+        { title: 'Subestação', dataIndex: ['subestacao', 'nome'], key: 'subestacao.nome' },
+        { title: 'Código', dataIndex: 'grupoDefeitoCodigo', key: 'grupoDefeitoCodigo' },
+    ];
+
+    const handleSubmit = (values: any) => {
         const action = controller.editingItem?.id
             ? () => updateEquipamento({ ...values, id: controller.editingItem!.id })
             : () => createEquipamento(values);
 
-        controller.exec(action, 'Equipamento salvo com sucesso!');
+        controller.exec(action, 'Equipamento salvo com sucesso!', () => mutate());
     };
-
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar equipamentos.</p>;
 
     return (
         <>
@@ -60,6 +56,41 @@ export default function EquipamentoPage() {
                 title="Equipamentos"
                 extra={
                     <Space>
+                        <Input.Search
+                            placeholder="Buscar por nome"
+                            onSearch={(v) => {
+                                setSearch(v);
+                                setPage(1);
+                            }}
+                            allowClear
+                            style={{ width: 200 }}
+                        />
+                        <Select
+                            allowClear
+                            placeholder="Subestação"
+                            style={{ width: 200 }}
+                            options={subestacoes?.data?.map((s) => ({
+                                label: s.nome,
+                                value: s.id,
+                            }))}
+                            onChange={(v) => {
+                                setSubestacaoId(v);
+                                setPage(1);
+                            }}
+                        />
+                        <Select
+                            allowClear
+                            placeholder="Grupo"
+                            style={{ width: 200 }}
+                            options={grupos?.data?.map((g) => ({
+                                label: `${g.codigo} - ${g.nome}`,
+                                value: g.codigo,
+                            }))}
+                            onChange={(v) => {
+                                setGrupoDefeitoCodigo(v);
+                                setPage(1);
+                            }}
+                        />
                         <Button type="primary" onClick={() => controller.open()}>
                             Adicionar
                         </Button>
@@ -69,15 +100,20 @@ export default function EquipamentoPage() {
                     </Space>
                 }
             >
-                <Table<EquipamentoWithRelations>
+                <Table
                     columns={columns}
-                    dataSource={equipamentos?.data ?? []}
-                    loading={isLoading}
+                    dataSource={data}
                     rowKey="id"
+                    pagination={{
+                        current: page,
+                        pageSize,
+                        total,
+                        onChange: (p) => setPage(p),
+                    }}
+                    loading={isLoading}
                 />
             </Card>
 
-            {/* Modal para cadastro individual */}
             <Modal
                 title={controller.editingItem ? 'Editar Equipamento' : 'Novo Equipamento'}
                 open={controller.isOpen}
@@ -94,7 +130,6 @@ export default function EquipamentoPage() {
                 />
             </Modal>
 
-            {/* Modal para cadastro em lote */}
             <Modal
                 title="Cadastro de Equipamentos em Lote"
                 open={loteModalOpen}
@@ -106,7 +141,7 @@ export default function EquipamentoPage() {
                 <EquipamentoLoteForm
                     onSuccess={() => {
                         setLoteModalOpen(false);
-                        mutate(); // 🔥 Atualiza a tabela após cadastro
+                        mutate();
                     }}
                 />
             </Modal>
