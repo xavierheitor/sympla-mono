@@ -12,9 +12,24 @@ export class EquipamentoService {
       },
     });
 
-    return equipamentos.map((equipamento) => ({
-      ...equipamento,
-      subestacao: equipamento.subestacao?.sigla ?? null,
-    }));
+    const grupos = await this.prisma.grupoDefeitoEquipamento.findMany();
+
+    const grupoMap = new Map(grupos.map((g) => [g.codigo, g.id]));
+
+    return equipamentos.map((equipamento) => {
+      const grupoId = grupoMap.get(equipamento.grupoDefeitoCodigo);
+
+      if (!grupoId) {
+        console.error(
+          `⚠️ GrupoId não encontrado para grupoDefeitoCodigo: "${equipamento.grupoDefeitoCodigo}" no equipamento "${equipamento.nome}"`,
+        );
+      }
+
+      return {
+        ...equipamento,
+        subestacao: equipamento.subestacao?.sigla ?? null,
+        grupoId: grupoId ?? null,
+      };
+    });
   }
 }
