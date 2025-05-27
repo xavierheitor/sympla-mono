@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `NotasSAP` ADD COLUMN `origemNota` ENUM('SISTEMA', 'SAP') NOT NULL DEFAULT 'SISTEMA';

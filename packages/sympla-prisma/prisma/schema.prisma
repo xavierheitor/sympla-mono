@@ -80,6 +80,11 @@ enum StatusAtividade {
   CANCELADA
 }
 
+enum OrigemNota {
+  SISTEMA
+  SAP
+}
+
 //*  AUTENTICACAO WEB
 
 model User {
@@ -434,6 +439,8 @@ model NotasSAP {
   status StatusNota @default(PENDENTE)
 
   ordemServicoExecucao String?
+
+  origemNota OrigemNota @default(SISTEMA)
 
   // Auditoria
   createdAt DateTime  @default(now())
