@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Button, Card, Modal, Table } from 'antd';
+import React, { useState } from 'react';
+import { Button, Card, Modal, Table, Space } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
@@ -18,11 +18,14 @@ import {
     EquipamentoFormData,
     EquipamentoWithRelations,
 } from '@/lib/actions/equipamento/equipamentoFormSchema';
+import EquipamentoLoteForm from './equipamentoLoteForm';
 
 export default function EquipamentoPage() {
     const controller = useCrudController<EquipamentoWithRelations>('equipamentos');
 
-    const { data: equipamentos, isLoading, error } = useServerData(
+    const [loteModalOpen, setLoteModalOpen] = useState(false);
+
+    const { data: equipamentos, isLoading, error, mutate } = useServerData(
         'equipamentos',
         getAllEquipamentosWithIncludes
     );
@@ -55,7 +58,16 @@ export default function EquipamentoPage() {
         <>
             <Card
                 title="Equipamentos"
-                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
+                extra={
+                    <Space>
+                        <Button type="primary" onClick={() => controller.open()}>
+                            Adicionar
+                        </Button>
+                        <Button onClick={() => setLoteModalOpen(true)}>
+                            Adicionar em Lote
+                        </Button>
+                    </Space>
+                }
             >
                 <Table<EquipamentoWithRelations>
                     columns={columns}
@@ -65,6 +77,7 @@ export default function EquipamentoPage() {
                 />
             </Card>
 
+            {/* Modal para cadastro individual */}
             <Modal
                 title={controller.editingItem ? 'Editar Equipamento' : 'Novo Equipamento'}
                 open={controller.isOpen}
@@ -78,6 +91,23 @@ export default function EquipamentoPage() {
                     loading={controller.loading}
                     grupoOptions={grupos?.data ?? []}
                     subestacaoOptions={subestacoes?.data ?? []}
+                />
+            </Modal>
+
+            {/* Modal para cadastro em lote */}
+            <Modal
+                title="Cadastro de Equipamentos em Lote"
+                open={loteModalOpen}
+                onCancel={() => setLoteModalOpen(false)}
+                footer={null}
+                width={900}
+                destroyOnClose
+            >
+                <EquipamentoLoteForm
+                    onSuccess={() => {
+                        setLoteModalOpen(false);
+                        mutate(); // 🔥 Atualiza a tabela após cadastro
+                    }}
                 />
             </Modal>
         </>

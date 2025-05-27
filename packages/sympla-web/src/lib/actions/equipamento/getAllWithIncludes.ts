@@ -6,13 +6,14 @@ import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
 export const getAllEquipamentosWithIncludes = createPrismaGetAllAction(async (filter) => {
     return await prisma.equipamento.findMany({
-        where: filter,
-        orderBy: { nome: 'asc' },
-        include: {
-            subestacao: true,
-            grupo: true,
-            subgrupo: true,
-            grupoDefeitoCodigo: true,
+      where: filter,
+      orderBy: { nome: "asc" },
+      include: {
+        subestacao: {
+          include: {
+            regional: true,
+          },
         },
+      },
     });
 }, 'EQUIPAMENTO');

@@ -52,8 +52,18 @@ export default function EquipamentoForm({
 
             <Form.Item name="grupoDefeitoCodigo" label="Código do Grupo" rules={[{ required: true }]}>
                 <Select
-                    options={grupoOptions.map((c) => ({ label: `${c.codigo} - ${c.nome}`, value: c.codigo }))}
+                    showSearch
+                    allowClear
                     placeholder="Selecione o código"
+                    optionFilterProp="label"
+                    filterOption={(input, option) =>
+                        (option?.label as string)?.toLowerCase().includes(input.toLowerCase()) ||
+                        (option?.value as string)?.toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={grupoOptions.map((c) => ({
+                        label: `${c.codigo} - ${c.nome}`,
+                        value: c.codigo,
+                    }))}
                 />
             </Form.Item>
 
