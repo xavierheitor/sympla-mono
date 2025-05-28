@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Form, Input, Button, Typography, Card, message } from 'antd';
+import { Form, Input, Button, Typography, Card, App } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,8 @@ const LoginPage: React.FC = () => {
     const [form] = Form.useForm();
     const [formError, setFormError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const { message } = App.useApp(); // <-- 👈 Aqui puxa o contexto correto
+
 
     const onFinish = async (values: { username: string; password: string }) => {
         setLoading(true);

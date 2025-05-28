@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     DashboardOutlined,
-    VideoCameraOutlined,
     FormOutlined,
     LogoutOutlined,
     BugOutlined,
@@ -149,9 +148,14 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
             ],
         },
         {
-            key: '/monitoramento',
-            icon: <VideoCameraOutlined />,
-            label: <Link href="/monitoramento">Monitoramento</Link>,
+            key: '/dashboard/pma',
+            icon: <FormOutlined />,
+            label: <Link href="/dashboard/pma">Plano de Manutenção</Link>,
+        },
+        {
+            key: '/dashboard/anomalias',
+            icon: < FormOutlined />,
+            label: <Link href="/dashboard/anomalias">Anomalias</Link>,
         },
         {
             key: 'logout',
