@@ -36,6 +36,7 @@ export default function EquipamentoLoteForm({ onSuccess }: EquipamentoLoteFormPr
             );
 
             console.log('🚀 Dados lidos do Excel:');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             json.forEach((linha: any, index: number) => {
                 console.log(`🔸 Linha ${index + 1}:`, linha);
             });
