@@ -12,11 +12,14 @@ import { deleteAprModelo } from '@/lib/actions/aprModelo/delete';
 import { getAllTipoAtividades } from '@/lib/actions/tipoAtividade/getAll';
 
 import AprModeloForm from './form';
-import { AprModeloFormData, AprModeloWithIncludes } from '@/lib/actions/aprModelo/aprModeloFormSchema';
+import { AprModeloFormData, } from '@/lib/actions/aprModelo/aprModeloFormSchema';
 import { getAllAprModelosWithIncludes } from '@/lib/actions/aprModelo/getAllWithIncludes';
+import { setTipoAtividadesDoModelo } from '@/lib/actions/aprModeloTipoAtividadeRelation/setRelations';
+import { ActionResult } from '@/lib/types/ActionResult';
+import { AprModelo } from '@sympla/prisma';
 
 export default function AprModeloPage() {
-    const controller = useCrudController<AprModeloWithIncludes>('aprModelo');
+    const controller = useCrudController<AprModelo>('aprModelo');
 
     const { data: modelos, isLoading, error } = useServerData(
         'aprModelos',
@@ -28,24 +31,32 @@ export default function AprModeloPage() {
         getAllTipoAtividades
     );
 
-    const columns = useTableColumnsWithActions<AprModeloWithIncludes>(
+    const columns = useTableColumnsWithActions<AprModelo>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
             { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
-            {
-                title: 'Tipo de Atividade',
-                dataIndex: ['tipoAtividade', 'nome'],
-                key: 'tipoAtividade.nome',
-            },
+
         ],
         controller.open,
         (item) => controller.exec(() => deleteAprModelo(item.id), 'Modelo excluído com sucesso!')
     );
 
-    const handleSubmit = (values: AprModeloFormData) => {
-        const action = controller.editingItem?.id
-            ? () => updateAprModelo({ ...values, id: controller.editingItem!.id })
-            : () => createAprModelo(values);
+    const handleSubmit = async (values: AprModeloFormData & { tipoAtividadeIds: string[] }) => {
+        const { tipoAtividadeIds, ...rest } = values;
+
+        const action = async (): Promise<ActionResult<AprModelo>> => {
+            const modelo =
+                controller.editingItem?.id
+                    ? await updateAprModelo({ ...rest, id: controller.editingItem!.id })
+                    : await createAprModelo(rest);
+
+            await setTipoAtividadesDoModelo({
+                modeloId: modelo.data?.id ?? '',
+                tipoAtividadeIds,
+            });
+
+            return { success: true, data: modelo.data }; // ✅ Agora retorna corretamente
+        };
 
         controller.exec(action, 'Modelo salvo com sucesso!');
     };
@@ -60,7 +71,7 @@ export default function AprModeloPage() {
                 title="Modelos de APR"
                 extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
             >
-                <Table<AprModeloWithIncludes>
+                <Table<AprModelo>
                     columns={columns}
                     dataSource={modelos?.data ?? []}
                     loading={isLoading}
@@ -78,9 +89,11 @@ export default function AprModeloPage() {
                 {tipoAtividades && (
                     <AprModeloForm
                         initialValues={controller.editingItem ?? undefined}
+                        selectedTipoAtividadeIds={controller.editingItem?.tipoAtividades?.map(t => t.id)}
+                        tipoAtividades={tipoAtividades.data ?? []}
                         onSubmit={handleSubmit}
                         loading={controller.loading}
-                        tipoAtividadeOptions={tipoAtividades.data ?? []}
+                        // tipoAtividadeOptions={tipoAtividades.data ?? []}
                     />
                 )}
             </Modal>

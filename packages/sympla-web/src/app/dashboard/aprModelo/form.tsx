@@ -1,36 +1,48 @@
-// form.tsx
 'use client';
 
 import { useEffect } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Transfer } from 'antd';
+import type { TransferItem } from 'antd/es/transfer';
 import { AprModeloFormData } from '@/lib/actions/aprModelo/aprModeloFormSchema';
 import { TipoAtividade } from '@sympla/prisma';
 
 interface AprModeloFormProps {
-    onSubmit: (values: AprModeloFormData) => void;
+    onSubmit: (values: AprModeloFormData & { tipoAtividadeIds: string[] }) => void;
     initialValues?: Partial<AprModeloFormData>;
+    tipoAtividades: TipoAtividade[];
+    selectedTipoAtividadeIds?: string[];
     loading?: boolean;
-    tipoAtividadeOptions: TipoAtividade[];
 }
 
 export default function AprModeloForm({
     onSubmit,
     initialValues,
+    tipoAtividades,
+    selectedTipoAtividadeIds = [],
     loading = false,
-    tipoAtividadeOptions,
 }: AprModeloFormProps) {
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (initialValues) {
-            form.setFieldsValue(initialValues);
+            form.setFieldsValue({ ...initialValues, tipoAtividadeIds: selectedTipoAtividadeIds });
         } else {
             form.resetFields();
         }
-    }, [initialValues, form]);
+    }, [initialValues, selectedTipoAtividadeIds, form]);
+
+    const transferData: TransferItem[] = tipoAtividades.map((ta) => ({
+        key: ta.id,
+        title: ta.nome,
+    }));
 
     return (
-        <Form form={form} layout="vertical" onFinish={onSubmit}>
+        <Form
+            form={form}
+            layout="vertical"
+            onFinish={onSubmit}
+            initialValues={{ tipoAtividadeIds: selectedTipoAtividadeIds }}
+        >
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
@@ -39,13 +51,14 @@ export default function AprModeloForm({
                 <Input.TextArea rows={3} />
             </Form.Item>
 
-            <Form.Item name="tipoAtividadeId" label="Tipo de Atividade" rules={[{ required: true }]}>
-                <Select
-                    options={tipoAtividadeOptions.map((tipo) => ({
-                        label: tipo.nome,
-                        value: tipo.id,
-                    }))}
-                    placeholder="Selecione o tipo de atividade"
+            <Form.Item name="tipoAtividadeIds" label="Tipos de Atividade">
+                <Transfer
+                    dataSource={transferData}
+                    targetKeys={form.getFieldValue('tipoAtividadeIds')}
+                    onChange={(keys) => form.setFieldValue('tipoAtividadeIds', keys)}
+                    render={(item: TransferItem) => item.title ?? ''}
+                    showSearch
+                    rowKey={(item: TransferItem) => item.key ?? ''}
                 />
             </Form.Item>
 

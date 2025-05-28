@@ -518,6 +518,13 @@ model TipoAtividadeKpi {
 
   kpiId String
   kpi   Kpi @relation(fields: [kpiId], references: [id])
+
+    createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
 }
 
 model Atividade {
@@ -634,6 +641,13 @@ model AprModeloTipoAtividadeRelation {
 
   tipoAtividadeId String
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+    createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
 }
 
 model AprPerguntasRelation {
@@ -694,6 +708,13 @@ model ChecklistModeloTipoAtividadeRelation {
 
   tipoAtividadeId String
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+    createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
 }
 
 model ChecklisrPerguntaRelation {
