@@ -8,7 +8,7 @@ import { ActionResult } from "../types/ActionResult";
 type ActionType = "create" | "update" | "delete" | "get" | "list";
 
 /**
- * Handle a server action with validation and session.
+ * Handle a server action with validation, session and automatic audit fields.
  */
 export async function handleServerAction<TInput, TOutput>(
   schema: ZodSchema<TInput>,
@@ -33,12 +33,27 @@ export async function handleServerAction<TInput, TOutput>(
     const entityName = options?.entityName || "UNKNOWN_ENTITY";
     const actionType = options?.actionType || "unknown";
 
+    // 🎯 Adiciona os campos de auditoria automaticamente
+    const userId = session.user.id;
+    const now = new Date();
+
+    const auditFields =
+      actionType === "create"
+        ? { createdBy: userId, createdAt: now }
+        : actionType === "update"
+          ? { updatedBy: userId, updatedAt: now }
+          : actionType === "delete"
+            ? { deletedBy: userId, deletedAt: now }
+            : {};
+
+    const finalInput = { ...input, ...auditFields };
+
     const result = await withLogging(
       session,
       actionType as ActionType,
       entityName,
       input,
-      () => logic(input, session)
+      () => logic(finalInput, session)
     );
 
     return { success: true, data: result };

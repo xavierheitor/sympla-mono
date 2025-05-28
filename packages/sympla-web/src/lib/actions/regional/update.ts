@@ -12,13 +12,10 @@ const schema = regionalFormSchema.extend({
 
 export const updateRegional = createPrismaUpdateAction(schema, async (data) => {
     return await prisma.regional.update({
-        where: { id: data.id },
-        data: {
-            nome: data.nome,
-            descricao: data.descricao,
-            codigoSap: data.codigoSap,
-            distribuidoraId: data.distribuidoraId,
-            updatedBy: data.updatedBy.toString(),
-        },
+      where: { id: data.id },
+      data: {
+        ...data,
+        updatedBy: data.updatedBy.toString(),
+      },
     });
 }, 'REGIONAL');
