@@ -6,8 +6,8 @@ import { createPrismaGetAllAction } from '@/lib/server-action/actionFactory';
 
 export const getAllCentroTrabalhos = createPrismaGetAllAction(async () => {
     return await prisma.centroTrabalho.findMany({
-        where: { deletedAt: null },
-        orderBy: { id: 'asc' },
-        // include: { relacaoExemplo: true },
+      where: { deletedAt: null },
+      orderBy: { id: "asc" },
+      include: { regional: true },
     });
 }, 'CENTRO_TRABALHO');

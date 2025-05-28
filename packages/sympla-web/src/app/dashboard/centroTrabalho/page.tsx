@@ -14,6 +14,7 @@ import { deleteCentroTrabalho } from '@/lib/actions/centroTrabalho/delete';
 import CentroTrabalhoForm from './form';
 import { CentroTrabalhoFormData } from '@/lib/actions/centroTrabalho/centroTrabalhoFormSchema';
 import { CentroTrabalho } from '@sympla/prisma';
+import { getAllRegionais } from '@/lib/actions/regional/getAll';
 
 export default function CentroTrabalhoPage() {
     const controller = useCrudController<CentroTrabalho>('centroTrabalho');
@@ -21,6 +22,11 @@ export default function CentroTrabalhoPage() {
     const { data: centrosTrabalho, isLoading, error } = useServerData(
         'centroTrabalho',
         getAllCentroTrabalhos
+    );
+
+    const { data: regionals } = useServerData(
+        'regional',
+        getAllRegionais
     );
 
     const columns = useTableColumnsWithActions<CentroTrabalho>(
@@ -66,6 +72,7 @@ export default function CentroTrabalhoPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
+                    regionals={regionals?.data ?? []}
                 />
             </Modal>
         </>
