@@ -10,10 +10,6 @@ datasource db {
 
 //*  ENUMNS SUBESTACAO*/
 
-enum SubestacaoCapital {
-  CAPITAL
-  INTERIOR
-}
 
 enum PropriedadeSubestacao {
   PROPRIA
@@ -49,6 +45,7 @@ enum TipoNota {
 enum StatusAnomalia {
   CONC
   PEES
+  CSTS
 }
 
 enum StatusNota {
@@ -263,16 +260,17 @@ model Regional {
   NotasSAP NotasSAP[]
 
   UsuarioMobileRegional UsuarioMobileRegional[]
+
+  CentroTrabalho CentroTrabalho[]
 }
 
 model Subestacao {
   id              String @id @default(uuid())
   nome            String
   sigla           String
-  localInstalacao String
+  localInstalacao String?
   codigoSap       String @unique
 
-  capital     SubestacaoCapital
   propriedade PropriedadeSubestacao
   categoria   CategoriaSubestacao
   tensao      TensaoSubestacao
@@ -294,7 +292,7 @@ model Subestacao {
 model GrupoDefeitoEquipamento {
   id   String @id @default(uuid())
   nome String @unique
-  codigo String? @unique
+  codigo String @unique
 
   subgrupos    SubgrupoDefeitoEquipamento[]
   defeitos     Defeito[]
@@ -404,7 +402,7 @@ model Kpi {
   deletedBy String?
 
   NotasSAP      NotasSAP[]
-  TipoAtividade TipoAtividade[]
+  TipoAtividadeKpi TipoAtividadeKpi[]
 }
 
 model NotasSAP {
@@ -413,7 +411,7 @@ model NotasSAP {
   notificador String?
 
   numeroNota      String?
-  localInstalacao String
+  localInstalacao String?
 
   tipoNota       TipoNota
   dataNota       DateTime
@@ -422,8 +420,8 @@ model NotasSAP {
   dataInicioReal DateTime?
   dataFiReal     DateTime?
 
-  centroTrabalhoId String
-  centroTrabalho   CentroTrabalho @relation(fields: [centroTrabalhoId], references: [id])
+  centroTrabalhoId String?
+  centroTrabalho   CentroTrabalho? @relation(fields: [centroTrabalhoId], references: [id])
 
   equipamentoId String?
   equipamento   Equipamento? @relation(fields: [equipamentoId], references: [id])
@@ -434,7 +432,7 @@ model NotasSAP {
   regionalId String
   regional   Regional @relation(fields: [regionalId], references: [id])
 
-  prioridade PrioridadeDefeito?
+  prioridade PrioridadeDefeito @default(A)
 
   status StatusNota @default(PENDENTE)
 
@@ -458,6 +456,9 @@ model NotasSAP {
 model CentroTrabalho {
   id   String @id @default(uuid())
   nome String
+
+  regionalId String
+  regional   Regional @relation(fields: [regionalId], references: [id])
 
   // Auditoria
   createdAt DateTime  @default(now())
@@ -491,9 +492,6 @@ model TipoAtividade {
   id   String @id @default(uuid())
   nome String
 
-  kpiId String?
-  kpi   Kpi?    @relation(fields: [kpiId], references: [id])
-
   tipoAtividadeMobile TipoAtividadeMobile @default(ivItIu)
 
   createdAt DateTime  @default(now())
@@ -505,9 +503,21 @@ model TipoAtividade {
 
   Atividade Atividade[]
 
-  AprModelo AprModelo[]
+  TipoAtividadeKpi TipoAtividadeKpi[]
 
-  ChecklistModelo ChecklistModelo[]
+  AprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
+
+  ChecklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
+}
+
+model TipoAtividadeKpi {
+  id String @id @default(uuid())
+
+  tipoAtividadeId String
+  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+  kpiId String
+  kpi   Kpi @relation(fields: [kpiId], references: [id])
 }
 
 model Atividade {
@@ -604,9 +614,6 @@ model AprModelo {
   nome      String
   descricao String?
 
-  tipoAtividadeId String
-  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
-
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -615,6 +622,18 @@ model AprModelo {
   deletedBy String?
 
   AprPerguntasRelation AprPerguntasRelation[]
+
+  AprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
+}
+
+model AprModeloTipoAtividadeRelation {
+  id String @id @default(uuid())
+
+  modeloId String
+  modelo   AprModelo @relation(fields: [modeloId], references: [id])
+
+  tipoAtividadeId String
+  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 }
 
 model AprPerguntasRelation {
@@ -655,9 +674,6 @@ model ChecklistModelo {
   nome      String
   descricao String?
 
-  tipoAtividadeId String
-  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
-
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -666,6 +682,18 @@ model ChecklistModelo {
   deletedBy String?
 
   ChecklisrPerguntaRelation ChecklisrPerguntaRelation[]
+
+  ChecklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
+}
+
+model ChecklistModeloTipoAtividadeRelation {
+  id String @id @default(uuid())
+
+  modeloId String
+  modelo   ChecklistModelo @relation(fields: [modeloId], references: [id])
+
+  tipoAtividadeId String
+  tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 }
 
 model ChecklisrPerguntaRelation {

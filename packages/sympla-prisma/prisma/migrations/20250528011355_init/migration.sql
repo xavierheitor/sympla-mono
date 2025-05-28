@@ -8,9 +8,9 @@ CREATE TABLE `usuarios` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
-    `createdBy` INTEGER NOT NULL,
-    `updatedBy` INTEGER NULL,
-    `deletedBy` INTEGER NULL,
+    `createdBy` VARCHAR(191) NOT NULL,
+    `updatedBy` VARCHAR(191) NULL,
+    `deletedBy` VARCHAR(191) NULL,
 
     UNIQUE INDEX `usuarios_username_key`(`username`),
     UNIQUE INDEX `usuarios_email_key`(`email`),
@@ -73,6 +73,9 @@ CREATE TABLE `usuarios_mobile` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
+    `createdBy` VARCHAR(191) NOT NULL,
+    `updatedBy` VARCHAR(191) NULL,
+    `deletedBy` VARCHAR(191) NULL,
 
     UNIQUE INDEX `usuarios_mobile_matricula_key`(`matricula`),
     UNIQUE INDEX `usuarios_mobile_email_key`(`email`),
@@ -120,6 +123,9 @@ CREATE TABLE `usuarios_mobile_regionais` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
+    `createdBy` VARCHAR(191) NOT NULL,
+    `updatedBy` VARCHAR(191) NULL,
+    `deletedBy` VARCHAR(191) NULL,
 
     INDEX `usuarios_mobile_regionais_regionalId_idx`(`regionalId`),
     PRIMARY KEY (`id`)
@@ -165,9 +171,8 @@ CREATE TABLE `Subestacao` (
     `id` VARCHAR(191) NOT NULL,
     `nome` VARCHAR(191) NOT NULL,
     `sigla` VARCHAR(191) NOT NULL,
-    `localInstalacao` VARCHAR(191) NOT NULL,
+    `localInstalacao` VARCHAR(191) NULL,
     `codigoSap` VARCHAR(191) NOT NULL,
-    `capital` ENUM('CAPITAL', 'INTERIOR') NOT NULL,
     `propriedade` ENUM('PROPRIA', 'COMPARTILHADA') NOT NULL,
     `categoria` ENUM('DISTRIBUICAO', 'SUBTRANSMISSAO', 'TRANSMISSAO') NOT NULL,
     `tensao` ENUM('KV_34', 'KV_69', 'KV_138', 'KV_230') NOT NULL,
@@ -187,6 +192,7 @@ CREATE TABLE `Subestacao` (
 CREATE TABLE `GrupoDefeitoEquipamento` (
     `id` VARCHAR(191) NOT NULL,
     `nome` VARCHAR(191) NOT NULL,
+    `codigo` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
@@ -195,6 +201,7 @@ CREATE TABLE `GrupoDefeitoEquipamento` (
     `deletedBy` VARCHAR(191) NULL,
 
     UNIQUE INDEX `GrupoDefeitoEquipamento_nome_key`(`nome`),
+    UNIQUE INDEX `GrupoDefeitoEquipamento_codigo_key`(`codigo`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -214,30 +221,12 @@ CREATE TABLE `SubgrupoDefeitoEquipamento` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `GrupoDefeitoCodigo` (
-    `id` VARCHAR(191) NOT NULL,
-    `sigla` VARCHAR(191) NOT NULL,
-    `codigo` VARCHAR(191) NOT NULL,
-    `grupoId` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-    `deletedAt` DATETIME(3) NULL,
-    `createdBy` VARCHAR(191) NOT NULL,
-    `updatedBy` VARCHAR(191) NULL,
-    `deletedBy` VARCHAR(191) NULL,
-
-    UNIQUE INDEX `GrupoDefeitoCodigo_codigo_key`(`codigo`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Defeito` (
     `id` VARCHAR(191) NOT NULL,
     `codigoSap` VARCHAR(191) NOT NULL,
     `descricao` VARCHAR(191) NOT NULL,
     `grupoId` VARCHAR(191) NOT NULL,
     `subgrupoId` VARCHAR(191) NOT NULL,
-    `grupoDefeitoCodigoId` VARCHAR(191) NOT NULL,
     `acaoRecomendada` VARCHAR(191) NULL,
     `custeioOuInvestimento` VARCHAR(191) NULL,
     `equipe` VARCHAR(191) NULL,
@@ -259,9 +248,7 @@ CREATE TABLE `Equipamento` (
     `nome` VARCHAR(191) NOT NULL,
     `descricao` VARCHAR(191) NULL,
     `subestacaoId` VARCHAR(191) NOT NULL,
-    `grupoDefeitoCodigoId` VARCHAR(191) NOT NULL,
-    `grupoId` VARCHAR(191) NOT NULL,
-    `subgrupoId` VARCHAR(191) NULL,
+    `grupoDefeitoCodigo` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
@@ -308,20 +295,21 @@ CREATE TABLE `NotasSAP` (
     `descricao` VARCHAR(191) NULL,
     `notificador` VARCHAR(191) NULL,
     `numeroNota` VARCHAR(191) NULL,
-    `localInstalacao` VARCHAR(191) NOT NULL,
+    `localInstalacao` VARCHAR(191) NULL,
     `tipoNota` ENUM('AA', 'TS', 'RSF') NOT NULL,
     `dataNota` DATETIME(3) NOT NULL,
     `dataInicioPlan` DATETIME(3) NULL,
     `dataFiPlan` DATETIME(3) NULL,
     `dataInicioReal` DATETIME(3) NULL,
     `dataFiReal` DATETIME(3) NULL,
-    `centroTrabalhoId` VARCHAR(191) NOT NULL,
+    `centroTrabalhoId` VARCHAR(191) NULL,
     `equipamentoId` VARCHAR(191) NULL,
     `kpiId` VARCHAR(191) NULL,
     `regionalId` VARCHAR(191) NOT NULL,
-    `prioridade` ENUM('A', 'P1', 'P2', 'P3') NULL,
+    `prioridade` ENUM('A', 'P1', 'P2', 'P3') NOT NULL DEFAULT 'A',
     `status` ENUM('PENDENTE', 'PROGRAMADO', 'EXECUTADO', 'BAIXADO_NO_SAP', 'CANCELADO') NOT NULL DEFAULT 'PENDENTE',
     `ordemServicoExecucao` VARCHAR(191) NULL,
+    `origemNota` ENUM('SISTEMA', 'SAP') NOT NULL DEFAULT 'SISTEMA',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
@@ -336,6 +324,7 @@ CREATE TABLE `NotasSAP` (
 CREATE TABLE `CentroTrabalho` (
     `id` VARCHAR(191) NOT NULL,
     `nome` VARCHAR(191) NOT NULL,
+    `regionalId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
@@ -371,7 +360,6 @@ CREATE TABLE `Tecnico` (
 CREATE TABLE `TipoAtividade` (
     `id` VARCHAR(191) NOT NULL,
     `nome` VARCHAR(191) NOT NULL,
-    `kpiId` VARCHAR(191) NULL,
     `tipoAtividadeMobile` ENUM('ivItIu', 'mpdj', 'mpbb') NOT NULL DEFAULT 'ivItIu',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -384,8 +372,18 @@ CREATE TABLE `TipoAtividade` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `TipoAtividadeKpi` (
+    `id` VARCHAR(191) NOT NULL,
+    `tipoAtividadeId` VARCHAR(191) NOT NULL,
+    `kpiId` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Atividade` (
     `id` VARCHAR(191) NOT NULL,
+    `descricao` VARCHAR(191) NULL,
     `notaId` VARCHAR(191) NOT NULL,
     `tipoAtividadeId` VARCHAR(191) NOT NULL,
     `ordemServico` VARCHAR(191) NULL,
@@ -467,13 +465,21 @@ CREATE TABLE `AprModelo` (
     `id` VARCHAR(191) NOT NULL,
     `nome` VARCHAR(191) NOT NULL,
     `descricao` VARCHAR(191) NULL,
-    `tipoAtividadeId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
     `createdBy` VARCHAR(191) NOT NULL,
     `updatedBy` VARCHAR(191) NULL,
     `deletedBy` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `AprModeloTipoAtividadeRelation` (
+    `id` VARCHAR(191) NOT NULL,
+    `modeloId` VARCHAR(191) NOT NULL,
+    `tipoAtividadeId` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -513,13 +519,21 @@ CREATE TABLE `ChecklistModelo` (
     `id` VARCHAR(191) NOT NULL,
     `nome` VARCHAR(191) NOT NULL,
     `descricao` VARCHAR(191) NULL,
-    `tipoAtividadeId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `deletedAt` DATETIME(3) NULL,
     `createdBy` VARCHAR(191) NOT NULL,
     `updatedBy` VARCHAR(191) NULL,
     `deletedBy` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ChecklistModeloTipoAtividadeRelation` (
+    `id` VARCHAR(191) NOT NULL,
+    `modeloId` VARCHAR(191) NOT NULL,
+    `tipoAtividadeId` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -568,34 +582,19 @@ ALTER TABLE `Subestacao` ADD CONSTRAINT `Subestacao_regionalId_fkey` FOREIGN KEY
 ALTER TABLE `SubgrupoDefeitoEquipamento` ADD CONSTRAINT `SubgrupoDefeitoEquipamento_grupoId_fkey` FOREIGN KEY (`grupoId`) REFERENCES `GrupoDefeitoEquipamento`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `GrupoDefeitoCodigo` ADD CONSTRAINT `GrupoDefeitoCodigo_grupoId_fkey` FOREIGN KEY (`grupoId`) REFERENCES `GrupoDefeitoEquipamento`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Defeito` ADD CONSTRAINT `Defeito_grupoId_fkey` FOREIGN KEY (`grupoId`) REFERENCES `GrupoDefeitoEquipamento`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Defeito` ADD CONSTRAINT `Defeito_subgrupoId_fkey` FOREIGN KEY (`subgrupoId`) REFERENCES `SubgrupoDefeitoEquipamento`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Defeito` ADD CONSTRAINT `Defeito_grupoDefeitoCodigoId_fkey` FOREIGN KEY (`grupoDefeitoCodigoId`) REFERENCES `GrupoDefeitoCodigo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Equipamento` ADD CONSTRAINT `Equipamento_subestacaoId_fkey` FOREIGN KEY (`subestacaoId`) REFERENCES `Subestacao`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Equipamento` ADD CONSTRAINT `Equipamento_grupoDefeitoCodigoId_fkey` FOREIGN KEY (`grupoDefeitoCodigoId`) REFERENCES `GrupoDefeitoCodigo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Equipamento` ADD CONSTRAINT `Equipamento_grupoId_fkey` FOREIGN KEY (`grupoId`) REFERENCES `GrupoDefeitoEquipamento`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Equipamento` ADD CONSTRAINT `Equipamento_subgrupoId_fkey` FOREIGN KEY (`subgrupoId`) REFERENCES `SubgrupoDefeitoEquipamento`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Kpi` ADD CONSTRAINT `Kpi_tipoManutencaoId_fkey` FOREIGN KEY (`tipoManutencaoId`) REFERENCES `TipoManutencao`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `NotasSAP` ADD CONSTRAINT `NotasSAP_centroTrabalhoId_fkey` FOREIGN KEY (`centroTrabalhoId`) REFERENCES `CentroTrabalho`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `NotasSAP` ADD CONSTRAINT `NotasSAP_centroTrabalhoId_fkey` FOREIGN KEY (`centroTrabalhoId`) REFERENCES `CentroTrabalho`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `NotasSAP` ADD CONSTRAINT `NotasSAP_equipamentoId_fkey` FOREIGN KEY (`equipamentoId`) REFERENCES `Equipamento`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -607,7 +606,13 @@ ALTER TABLE `NotasSAP` ADD CONSTRAINT `NotasSAP_kpiId_fkey` FOREIGN KEY (`kpiId`
 ALTER TABLE `NotasSAP` ADD CONSTRAINT `NotasSAP_regionalId_fkey` FOREIGN KEY (`regionalId`) REFERENCES `Regional`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TipoAtividade` ADD CONSTRAINT `TipoAtividade_kpiId_fkey` FOREIGN KEY (`kpiId`) REFERENCES `Kpi`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `CentroTrabalho` ADD CONSTRAINT `CentroTrabalho_regionalId_fkey` FOREIGN KEY (`regionalId`) REFERENCES `Regional`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `TipoAtividadeKpi` ADD CONSTRAINT `TipoAtividadeKpi_tipoAtividadeId_fkey` FOREIGN KEY (`tipoAtividadeId`) REFERENCES `TipoAtividade`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `TipoAtividadeKpi` ADD CONSTRAINT `TipoAtividadeKpi_kpiId_fkey` FOREIGN KEY (`kpiId`) REFERENCES `Kpi`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Atividade` ADD CONSTRAINT `Atividade_notaId_fkey` FOREIGN KEY (`notaId`) REFERENCES `NotasSAP`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -628,7 +633,10 @@ ALTER TABLE `HistoricoAlteracaoNota` ADD CONSTRAINT `HistoricoAlteracaoNota_nota
 ALTER TABLE `HistoricoAlteracaoAtividade` ADD CONSTRAINT `HistoricoAlteracaoAtividade_atividadeId_fkey` FOREIGN KEY (`atividadeId`) REFERENCES `Atividade`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `AprModelo` ADD CONSTRAINT `AprModelo_tipoAtividadeId_fkey` FOREIGN KEY (`tipoAtividadeId`) REFERENCES `TipoAtividade`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `AprModeloTipoAtividadeRelation` ADD CONSTRAINT `AprModeloTipoAtividadeRelation_modeloId_fkey` FOREIGN KEY (`modeloId`) REFERENCES `AprModelo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `AprModeloTipoAtividadeRelation` ADD CONSTRAINT `AprModeloTipoAtividadeRelation_tipoAtividadeId_fkey` FOREIGN KEY (`tipoAtividadeId`) REFERENCES `TipoAtividade`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `AprPerguntasRelation` ADD CONSTRAINT `AprPerguntasRelation_perguntaId_fkey` FOREIGN KEY (`perguntaId`) REFERENCES `AprPerguntas`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -637,7 +645,10 @@ ALTER TABLE `AprPerguntasRelation` ADD CONSTRAINT `AprPerguntasRelation_pergunta
 ALTER TABLE `AprPerguntasRelation` ADD CONSTRAINT `AprPerguntasRelation_modeloId_fkey` FOREIGN KEY (`modeloId`) REFERENCES `AprModelo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ChecklistModelo` ADD CONSTRAINT `ChecklistModelo_tipoAtividadeId_fkey` FOREIGN KEY (`tipoAtividadeId`) REFERENCES `TipoAtividade`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ChecklistModeloTipoAtividadeRelation` ADD CONSTRAINT `ChecklistModeloTipoAtividadeRelation_modeloId_fkey` FOREIGN KEY (`modeloId`) REFERENCES `ChecklistModelo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ChecklistModeloTipoAtividadeRelation` ADD CONSTRAINT `ChecklistModeloTipoAtividadeRelation_tipoAtividadeId_fkey` FOREIGN KEY (`tipoAtividadeId`) REFERENCES `TipoAtividade`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ChecklisrPerguntaRelation` ADD CONSTRAINT `ChecklisrPerguntaRelation_perguntaId_fkey` FOREIGN KEY (`perguntaId`) REFERENCES `ChecklistPergunta`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
