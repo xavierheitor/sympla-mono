@@ -16,7 +16,6 @@ interface LinhaSubestacao {
     sigla: string;
     codigoSap: string;
     localInstalacao: string;
-    capital: string;
     propriedade: string;
     categoria: string;
     tensao: string;
@@ -54,7 +53,6 @@ export default function SubestacaoLoteForm({
         { title: 'Sigla', dataIndex: 'sigla', render: renderInput('sigla') },
         { title: 'Código SAP', dataIndex: 'codigoSap', render: renderInput('codigoSap') },
         { title: 'Local Instalação', dataIndex: 'localInstalacao', render: renderInput('localInstalacao') },
-        { title: 'Capital', dataIndex: 'capital', render: renderInput('capital', true) },
         { title: 'Propriedade', dataIndex: 'propriedade', render: renderInput('propriedade', true) },
         { title: 'Categoria', dataIndex: 'categoria', render: renderInput('categoria', true) },
         { title: 'Tensão', dataIndex: 'tensao', render: renderInput('tensao', true) },
@@ -97,10 +95,9 @@ export default function SubestacaoLoteForm({
                 sigla: colunas[1]?.trim() ?? '',
                 codigoSap: colunas[2]?.trim() ?? '',
                 localInstalacao: colunas[3]?.trim() ?? '',
-                capital: colunas[4]?.trim() ?? '',
-                propriedade: colunas[5]?.trim() ?? '',
-                categoria: colunas[6]?.trim() ?? '',
-                tensao: colunas[7]?.trim() ?? '',
+                propriedade: colunas[4]?.trim() ?? '',
+                categoria: colunas[5]?.trim() ?? '',
+                tensao: colunas[6]?.trim() ?? '',
             };
         });
 
@@ -166,7 +163,6 @@ export default function SubestacaoLoteForm({
                                 sigla: '',
                                 codigoSap: '',
                                 localInstalacao: '',
-                                capital: '',
                                 propriedade: '',
                                 categoria: '',
                                 tensao: '',

@@ -1,25 +1,40 @@
-import { CategoriaSubestacao, PropriedadeSubestacao, Regional, Subestacao, SubestacaoCapital, TensaoSubestacao } from '@sympla/prisma';
-import { z } from 'zod';
+import {
+  CategoriaSubestacao,
+  PropriedadeSubestacao,
+  Regional,
+  Subestacao,
+  TensaoSubestacao,
+} from "@sympla/prisma";
+import { z } from "zod";
 
 export const subestacaoFormSchema = z.object({
-    id: z.string().optional(),
-    nome: z.string().min(1, 'Nome é obrigatório'),
-    sigla: z.string().min(1, 'Sigla é obrigatório'),
-    localInstalacao: z.string().min(1, 'Local de instalação é obrigatório'),
-    codigoSap: z.string().min(1, 'Código SAP é obrigatório'),
-    capital: z.nativeEnum(SubestacaoCapital),
-    propriedade: z.nativeEnum(PropriedadeSubestacao),
-    categoria: z.nativeEnum(CategoriaSubestacao),
-    tensao: z.nativeEnum(TensaoSubestacao),
-    regionalId: z.string().min(1, 'Regional é obrigatório'),
+  id: z.string().optional(),
+  nome: z.string().min(1, "Nome é obrigatório"),
+  sigla: z.string().min(1, "Sigla é obrigatório"),
+  localInstalacao: z.string().min(1, "Local de instalação é obrigatório"),
+  codigoSap: z.string().min(1, "Código SAP é obrigatório"),
+  propriedade: z.nativeEnum(PropriedadeSubestacao),
+  categoria: z.nativeEnum(CategoriaSubestacao),
+  tensao: z.nativeEnum(TensaoSubestacao),
+  regionalId: z.string().min(1, "Regional é obrigatório"),
 });
 
 export type SubestacaoFormData = {
-    id?: string;
+  id?: string;
 } & Required<
-    Pick<Subestacao, 'nome' | 'sigla' | 'localInstalacao' | 'codigoSap' | 'capital' | 'propriedade' | 'categoria' | 'tensao' | 'regionalId'>
+  Pick<
+    Subestacao,
+    | "nome"
+    | "sigla"
+    | "localInstalacao"
+    | "codigoSap"
+    | "propriedade"
+    | "categoria"
+    | "tensao"
+    | "regionalId"
+  >
 >;
 
 export type SubestacaoWithRegional = Subestacao & {
-    regional: Regional;
+  regional: Regional;
 };

@@ -4,7 +4,6 @@ import { prisma } from "@/lib/db/prisma";
 import {
   CategoriaSubestacao,
   PropriedadeSubestacao,
-  SubestacaoCapital,
   TensaoSubestacao,
 } from "@sympla/prisma";
 import { z } from "zod";
@@ -15,7 +14,6 @@ const subestacaoLoteSchema = z.array(
     sigla: z.string().min(1),
     codigoSap: z.string().min(1),
     localInstalacao: z.string().min(1),
-    capital: z.nativeEnum(SubestacaoCapital),
     propriedade: z.nativeEnum(PropriedadeSubestacao),
     categoria: z.nativeEnum(CategoriaSubestacao),
     tensao: z.nativeEnum(TensaoSubestacao),
@@ -63,7 +61,6 @@ export const createManySubestacoes = async (data: unknown) => {
       sigla: item.sigla,
       codigoSap: item.codigoSap,
       localInstalacao: item.localInstalacao,
-      capital: item.capital,
       propriedade: item.propriedade,
       categoria: item.categoria,
       tensao: item.tensao,
