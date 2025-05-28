@@ -15,7 +15,6 @@ interface SubestacaoFormProps {
     initialValues?: Partial<SubestacaoFormData>;
     loading?: boolean;
 
-    capitalOptions: EnumOption[];
     propriedadeOptions: EnumOption[];
     categoriaOptions: EnumOption[];
     tensaoOptions: EnumOption[];
@@ -26,7 +25,6 @@ export default function SubestacaoForm({
     onSubmit,
     initialValues,
     loading = false,
-    capitalOptions,
     propriedadeOptions,
     categoriaOptions,
     tensaoOptions,
@@ -67,10 +65,6 @@ export default function SubestacaoForm({
 
             <Form.Item name="codigoSap" label="Código SAP" rules={[{ required: true }]}>
                 <Input />
-            </Form.Item>
-
-            <Form.Item name="capital" label="Capital" rules={[{ required: true }]}>
-                <Select options={capitalOptions} placeholder="Selecione..." />
             </Form.Item>
 
             <Form.Item name="propriedade" label="Propriedade" rules={[{ required: true }]}>

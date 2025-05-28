@@ -25,7 +25,6 @@ interface LinhaSubestacao {
 
 interface Props {
     regionalOptions: Regional[];
-    capitalOptions: EnumOption[];
     propriedadeOptions: EnumOption[];
     categoriaOptions: EnumOption[];
     tensaoOptions: EnumOption[];
@@ -34,7 +33,6 @@ interface Props {
 
 export default function SubestacaoLoteForm({
     regionalOptions,
-    capitalOptions,
     propriedadeOptions,
     categoriaOptions,
     tensaoOptions,
@@ -46,7 +44,6 @@ export default function SubestacaoLoteForm({
     const [isFocused, setIsFocused] = useState(false); // 🔥 Estado para controle de foco
 
     const enums = {
-        capital: capitalOptions.map((e) => e.value),
         propriedade: propriedadeOptions.map((e) => e.value),
         categoria: categoriaOptions.map((e) => e.value),
         tensao: tensaoOptions.map((e) => e.value),
@@ -120,7 +117,6 @@ export default function SubestacaoLoteForm({
 
         const linhasComErro = dataSource.filter(
             (linha) =>
-                !enums.capital.includes(linha.capital) ||
                 !enums.propriedade.includes(linha.propriedade) ||
                 !enums.categoria.includes(linha.categoria) ||
                 !enums.tensao.includes(linha.tensao)

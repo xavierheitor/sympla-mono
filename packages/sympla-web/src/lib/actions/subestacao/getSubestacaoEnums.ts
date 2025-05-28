@@ -2,11 +2,10 @@
 'use server';
 
 import {
-    SubestacaoCapital,
-    PropriedadeSubestacao,
-    CategoriaSubestacao,
-    TensaoSubestacao,
-} from '@sympla/prisma';
+  PropriedadeSubestacao,
+  CategoriaSubestacao,
+  TensaoSubestacao,
+} from "@sympla/prisma";
 import { logger } from '@/lib/utils/logger';
 
 function enumToOptions<T extends object>(enumObj: T) {
@@ -18,10 +17,9 @@ function enumToOptions<T extends object>(enumObj: T) {
 
 export async function getSubestacaoEnums() {
     const data = {
-        capitalOptions: enumToOptions(SubestacaoCapital),
-        propriedadeOptions: enumToOptions(PropriedadeSubestacao),
-        categoriaOptions: enumToOptions(CategoriaSubestacao),
-        tensaoOptions: enumToOptions(TensaoSubestacao),
+      propriedadeOptions: enumToOptions(PropriedadeSubestacao),
+      categoriaOptions: enumToOptions(CategoriaSubestacao),
+      tensaoOptions: enumToOptions(TensaoSubestacao),
     };
 
     logger.action('[GET] SUBESTACAO_ENUMS', {

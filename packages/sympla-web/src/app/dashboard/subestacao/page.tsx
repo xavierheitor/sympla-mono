@@ -134,7 +134,6 @@ export default function SubestacaoPage() {
                         initialValues={controller.editingItem ?? undefined}
                         onSubmit={handleSubmit}
                         loading={controller.loading}
-                        capitalOptions={enums.capitalOptions}
                         propriedadeOptions={enums.propriedadeOptions}
                         categoriaOptions={enums.categoriaOptions}
                         tensaoOptions={enums.tensaoOptions}
@@ -158,7 +157,6 @@ export default function SubestacaoPage() {
                             setLoteModalOpen(false);
                             mutate(); // 🔥 Atualiza tabela após salvar
                         }}
-                        capitalOptions={enums.capitalOptions}
                         propriedadeOptions={enums.propriedadeOptions}
                         categoriaOptions={enums.categoriaOptions}
                         tensaoOptions={enums.tensaoOptions}
