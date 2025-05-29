@@ -15,11 +15,12 @@ import TipoAtividadeForm from './form';
 import { TipoAtividadeFormData, TipoAtividadeWithKpi } from '@/lib/actions/tipoAtividade/tipoAtividadeFormSchema';
 import { getAllTipoAtividadeEnums } from '@/lib/actions/tipoAtividade/getAllTipoAtividadeEnums';
 import { getAllTipoAtividadesWithIncludes } from '@/lib/actions/tipoAtividade/getAllWithIncludes';
+import { setTipoAtividadeKpi } from '@/lib/actions/tipoAtividadeKpi/setRelations';
 
 export default function TipoAtividadePage() {
     const controller = useCrudController<TipoAtividadeWithKpi>('tipoAtividade');
 
-    const { data: tipoAtividades, isLoading, error } = useServerData(
+    const { data: tipoAtividades, isLoading } = useServerData(
         'tipoAtividades',
         getAllTipoAtividadesWithIncludes
     );
@@ -31,31 +32,29 @@ export default function TipoAtividadePage() {
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
             {
-                title: 'KPI',
-                dataIndex: ['kpi', 'nome'],
-                key: 'kpi.nome',
-            },
-            {
                 title: 'Tipo Mobile',
                 dataIndex: 'tipoAtividadeMobile',
                 key: 'tipoAtividadeMobile',
             },
         ],
         controller.open,
-        (item) => controller.exec(() => deleteTipoAtividade(item.id), 'Tipo de Atividade excluído com sucesso!')
+        item => controller.exec(() => deleteTipoAtividade(item.id), 'Tipo de Atividade excluído com sucesso!')
     );
 
-    const handleSubmit = (values: TipoAtividadeFormData) => {
-        const action = controller.editingItem?.id
-            ? () => updateTipoAtividade({ ...values, id: controller.editingItem!.id })
-            : () => createTipoAtividade(values);
+    const handleSubmit = async (values: TipoAtividadeFormData & { kpiIds: string[] }) => {
+        const { kpiIds, ...rest } = values;
+
+        const action = async () => {
+            const tipoAtividade = controller.editingItem?.id
+                ? await updateTipoAtividade({ ...rest, id: controller.editingItem!.id })
+                : await createTipoAtividade(rest);
+
+            await setTipoAtividadeKpi({ tipoAtividadeId: tipoAtividade.data!.id, kpiIds });
+            return { success: true, data: tipoAtividade.data };
+        };
 
         controller.exec(action, 'Tipo de Atividade salvo com sucesso!');
     };
-
-    if (error) {
-        return <p style={{ color: 'red' }}>Erro ao carregar tipos de atividade.</p>;
-    }
 
     return (
         <>
@@ -63,8 +62,9 @@ export default function TipoAtividadePage() {
                 title="Tipos de Atividade"
                 extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
             >
-                <Table<TipoAtividadeWithKpi>
-                    columns={columns}
+                <Table
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    columns={columns as any}
                     dataSource={tipoAtividades?.data ?? []}
                     loading={isLoading}
                     rowKey="id"
@@ -80,7 +80,10 @@ export default function TipoAtividadePage() {
             >
                 {kpis && tipoMobileOptions && (
                     <TipoAtividadeForm
-                        initialValues={controller.editingItem ?? undefined}
+                        initialValues={{
+                            ...controller.editingItem,
+                            kpiIds: controller.editingItem?.kpis?.map(k => k.id) ?? [],
+                        }}
                         onSubmit={handleSubmit}
                         loading={controller.loading}
                         kpiOptions={kpis.data ?? []}
