@@ -9,12 +9,12 @@ import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActio
 import { createAprModelo } from '@/lib/actions/aprModelo/create';
 import { updateAprModelo } from '@/lib/actions/aprModelo/update';
 import { deleteAprModelo } from '@/lib/actions/aprModelo/delete';
-import { getAllTipoAtividades } from '@/lib/actions/tipoAtividade/getAll';
+import { getAllTipoAtividades } from '@/lib/actions/atividade/tipoAtividade/getAll';
 
 import AprModeloForm from './form';
 import { AprModeloFormData, } from '@/lib/actions/aprModelo/aprModeloFormSchema';
 import { getAllAprModelosWithIncludes } from '@/lib/actions/aprModelo/getAllWithIncludes';
-import { setTipoAtividadesDoModelo } from '@/lib/actions/aprModeloTipoAtividadeRelation/setRelations';
+import { setTipoAtividadesDoModelo } from '@/lib/actions/aprModelo/aprModeloTipoAtividadeRelation/setRelations';
 import { ActionResult } from '@/lib/types/ActionResult';
 import { AprModelo } from '@sympla/prisma';
 

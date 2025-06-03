@@ -6,15 +6,15 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllChecklistPerguntas } from '@/lib/actions/checklistPergunta/getAll';
-import { createChecklistPergunta } from '@/lib/actions/checklistPergunta/create';
-import { updateChecklistPergunta } from '@/lib/actions/checklistPergunta/update';
-import { deleteChecklistPergunta } from '@/lib/actions/checklistPergunta/delete';
+import { getAllChecklistPerguntas } from '@/lib/actions/checklistModelo/checklistPergunta/getAll';
+import { createChecklistPergunta } from '@/lib/actions/checklistModelo/checklistPergunta/create';
+import { updateChecklistPergunta } from '@/lib/actions/checklistModelo/checklistPergunta/update';
+import { deleteChecklistPergunta } from '@/lib/actions/checklistModelo/checklistPergunta/delete';
 
 import ChecklistPerguntaForm from './form';
 import {
     ChecklistPerguntaFormData,
-} from '@/lib/actions/checklistPergunta/checklistPerguntaFormSchema';
+} from '@/lib/actions/checklistModelo/checklistPergunta/checklistPerguntaFormSchema';
 import { ChecklistPergunta } from '@sympla/prisma';
 
 export default function ChecklistPerguntaPage() {

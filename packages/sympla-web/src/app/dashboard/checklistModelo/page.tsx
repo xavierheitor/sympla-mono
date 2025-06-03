@@ -10,7 +10,7 @@ import { getAllChecklistModelosWithIncludes } from '@/lib/actions/checklistModel
 import { createChecklistModelo } from '@/lib/actions/checklistModelo/create';
 import { updateChecklistModelo } from '@/lib/actions/checklistModelo/update';
 import { deleteChecklistModelo } from '@/lib/actions/checklistModelo/delete';
-import { getAllTipoAtividades } from '@/lib/actions/tipoAtividade/getAll';
+import { getAllTipoAtividades } from '@/lib/actions/atividade/tipoAtividade/getAll';
 
 import ChecklistModeloForm from './form';
 import {

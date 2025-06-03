@@ -6,14 +6,14 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { createAprPerguntas } from '@/lib/actions/aprPerguntas/create';
-import { updateAprPerguntas } from '@/lib/actions/aprPerguntas/update';
-import { deleteAprPerguntas } from '@/lib/actions/aprPerguntas/delete';
+import { createAprPerguntas } from '@/lib/actions/aprModelo/aprPerguntas/create';
+import { updateAprPerguntas } from '@/lib/actions/aprModelo/aprPerguntas/update';
+import { deleteAprPerguntas } from '@/lib/actions/aprModelo/aprPerguntas/delete';
 
 import AprPerguntasForm from './form';
-import { AprPerguntasFormData } from '@/lib/actions/aprPerguntas/aprPerguntasFormSchema';
+import { AprPerguntasFormData } from '@/lib/actions/aprModelo/aprPerguntas/aprPerguntasFormSchema';
 import { AprPerguntas } from '@sympla/prisma';
-import { getAllAprPerguntass } from '@/lib/actions/aprPerguntas/getAll';
+import { getAllAprPerguntass } from '@/lib/actions/aprModelo/aprPerguntas/getAll';
 
 export default function AprPerguntasPage() {
     const controller = useCrudController<AprPerguntas>('aprPerguntas');

@@ -11,7 +11,7 @@ import { createAtividade } from '@/lib/actions/atividade/create';
 import { updateAtividade } from '@/lib/actions/atividade/update';
 import { deleteAtividade } from '@/lib/actions/atividade/delete';
 
-import { getAllTipoAtividades } from '@/lib/actions/tipoAtividade/getAll';
+import { getAllTipoAtividades } from '@/lib/actions/atividade/tipoAtividade/getAll';
 
 import AtividadeForm from './form';
 import { AtividadeFormData, AtividadeWithIncludes } from '@/lib/actions/atividade/atividadeFormSchema';

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, InputNumber, Select, Button } from 'antd';
-import { ChecklisrPerguntaRelationFormData } from '@/lib/actions/checklisrPerguntaRelation/checklisrPerguntaRelationFormSchema';
+import { ChecklisrPerguntaRelationFormData } from '@/lib/actions/checklistModelo/checklisrPerguntaRelation/checklisrPerguntaRelationFormSchema';
 import { ChecklistPergunta, ChecklistModelo } from '@sympla/prisma';
 
 interface ChecklisrPerguntaRelationFormProps {

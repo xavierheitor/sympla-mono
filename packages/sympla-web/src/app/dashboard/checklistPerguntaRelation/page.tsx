@@ -6,19 +6,19 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllChecklisrPerguntaWithIncludes } from '@/lib/actions/checklisrPerguntaRelation/getAllWithIncludes';
-import { createChecklisrPerguntaRelation } from '@/lib/actions/checklisrPerguntaRelation/create';
-import { updateChecklisrPerguntaRelation } from '@/lib/actions/checklisrPerguntaRelation/update';
-import { deleteChecklisrPerguntaRelation } from '@/lib/actions/checklisrPerguntaRelation/delete';
+import { getAllChecklisrPerguntaWithIncludes } from '@/lib/actions/checklistModelo/checklisrPerguntaRelation/getAllWithIncludes';
+import { createChecklisrPerguntaRelation } from '@/lib/actions/checklistModelo/checklisrPerguntaRelation/create';
+import { updateChecklisrPerguntaRelation } from '@/lib/actions/checklistModelo/checklisrPerguntaRelation/update';
+import { deleteChecklisrPerguntaRelation } from '@/lib/actions/checklistModelo/checklisrPerguntaRelation/delete';
 
-import { getAllChecklistPerguntas } from '@/lib/actions/checklistPergunta/getAll';
+import { getAllChecklistPerguntas } from '@/lib/actions/checklistModelo/checklistPergunta/getAll';
 import { getAllChecklistModelos } from '@/lib/actions/checklistModelo/getAll';
 import ChecklisrPerguntaRelationForm from './form';
 
 import {
     ChecklisrPerguntaRelationWithIncludes,
     ChecklisrPerguntaRelationFormData
-} from '@/lib/actions/checklisrPerguntaRelation/checklisrPerguntaRelationFormSchema';
+} from '@/lib/actions/checklistModelo/checklisrPerguntaRelation/checklisrPerguntaRelationFormSchema';
 
 export default function ChecklisrPerguntaRelationPage() {
     const controller = useCrudController<ChecklisrPerguntaRelationWithIncludes>('checklisrPerguntaRelation');

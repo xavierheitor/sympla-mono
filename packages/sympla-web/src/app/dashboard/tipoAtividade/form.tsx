@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Form, Input, Button, Select, Transfer, Spin } from 'antd';
-import { TipoAtividadeFormData } from '@/lib/actions/tipoAtividade/tipoAtividadeFormSchema';
+import { TipoAtividadeFormData } from '@/lib/actions/atividade/tipoAtividade/tipoAtividadeFormSchema';
 import { Kpi } from '@sympla/prisma';
-import { getKpisByTipoAtividade } from '@/lib/actions/tipoAtividadeKpi/getAll';
+import { getKpisByTipoAtividade } from '@/lib/actions/atividade/tipoAtividadeKpi/getAll';
 
 interface EnumOption {
     label: string;

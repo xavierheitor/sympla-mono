@@ -6,16 +6,16 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { createTipoAtividade } from '@/lib/actions/tipoAtividade/create';
-import { updateTipoAtividade } from '@/lib/actions/tipoAtividade/update';
-import { deleteTipoAtividade } from '@/lib/actions/tipoAtividade/delete';
+import { createTipoAtividade } from '@/lib/actions/atividade/tipoAtividade/create';
+import { updateTipoAtividade } from '@/lib/actions/atividade/tipoAtividade/update';
+import { deleteTipoAtividade } from '@/lib/actions/atividade/tipoAtividade/delete';
 import { getAllKpis } from '@/lib/actions/kpi/getAll';
 
 import TipoAtividadeForm from './form';
-import { TipoAtividadeFormData, TipoAtividadeWithKpi } from '@/lib/actions/tipoAtividade/tipoAtividadeFormSchema';
-import { getAllTipoAtividadeEnums } from '@/lib/actions/tipoAtividade/getAllTipoAtividadeEnums';
-import { getAllTipoAtividadesWithIncludes } from '@/lib/actions/tipoAtividade/getAllWithIncludes';
-import { setTipoAtividadeKpi } from '@/lib/actions/tipoAtividadeKpi/setRelations';
+import { TipoAtividadeFormData, TipoAtividadeWithKpi } from '@/lib/actions/atividade/tipoAtividade/tipoAtividadeFormSchema';
+import { getAllTipoAtividadeEnums } from '@/lib/actions/atividade/tipoAtividade/getAllTipoAtividadeEnums';
+import { getAllTipoAtividadesWithIncludes } from '@/lib/actions/atividade/tipoAtividade/getAllWithIncludes';
+import { setTipoAtividadeKpi } from '@/lib/actions/atividade/tipoAtividadeKpi/setRelations';
 
 export default function TipoAtividadePage() {
     const controller = useCrudController<TipoAtividadeWithKpi>('tipoAtividade');

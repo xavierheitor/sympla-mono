@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { Form, Button, Select, InputNumber } from 'antd';
-import { AprPerguntasRelationFormData } from '@/lib/actions/aprPerguntasRelation/aprPerguntasRelationFormSchema';
+import { AprPerguntasRelationFormData } from '@/lib/actions/aprModelo/aprPerguntasRelation/aprPerguntasRelationFormSchema';
 import { AprModelo, AprPerguntas } from '@sympla/prisma';
 
 interface AprPerguntasRelationFormProps {
