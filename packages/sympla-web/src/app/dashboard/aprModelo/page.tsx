@@ -89,7 +89,6 @@ export default function AprModeloPage() {
                 {tipoAtividades && (
                     <AprModeloForm
                         initialValues={controller.editingItem ?? undefined}
-                        selectedTipoAtividadeIds={controller.editingItem?.tipoAtividades?.map(t => t.id)}
                         tipoAtividades={tipoAtividades.data ?? []}
                         onSubmit={handleSubmit}
                         loading={controller.loading}

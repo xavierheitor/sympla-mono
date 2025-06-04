@@ -12,3 +12,17 @@ export const getAllAprModeloTipoAtividadeRelation = createPrismaGetAllAction(
   },
   "APR_MODELO_TIPO_ATIVIDADE_RELATION"
 );
+
+export async function getAllTipoAtividadesByAprModelo(modeloId: string) {
+  const registros = await prisma.aprModeloTipoAtividadeRelation.findMany({
+    where: {
+      modeloId,
+      deletedAt: null,
+    },
+    select: {
+      tipoAtividadeId: true,
+    },
+  });
+
+  return registros.map((r) => r.tipoAtividadeId);
+}
