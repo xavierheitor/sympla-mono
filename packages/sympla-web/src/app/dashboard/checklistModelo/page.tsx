@@ -18,6 +18,10 @@ import {
     ChecklistModeloWithIncludes,
 } from '@/lib/actions/checklistModelo/checklistModeloFormSchema';
 
+import { setTipoAtividadesDoModelo } from '@/lib/actions/checklistModelo/checklistModeloTipoAtividadeRelation/setRelation';
+import { ActionResult } from '@/lib/types/ActionResult';
+import { ChecklistModelo } from '@sympla/prisma';
+
 export default function ChecklistModeloPage() {
     const controller = useCrudController<ChecklistModeloWithIncludes>('checklistModelo');
 
@@ -26,24 +30,37 @@ export default function ChecklistModeloPage() {
         getAllChecklistModelosWithIncludes
     );
 
-    const { data: tipos } = useServerData('tipoAtividade', getAllTipoAtividades);
+    const { data: tipoAtividades } = useServerData(
+        'tipoAtividades',
+        getAllTipoAtividades
+    );
 
     const columns = useTableColumnsWithActions<ChecklistModeloWithIncludes>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
             { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
-            { title: 'Tipo de Atividade', dataIndex: ['tipoAtividade', 'nome'], key: 'tipoAtividade.nome' },
         ],
         controller.open,
         (item) => controller.exec(() => deleteChecklistModelo(item.id), 'Modelo excluído com sucesso!')
     );
 
-    const handleSubmit = (values: ChecklistModeloFormData) => {
-        const action = controller.editingItem?.id
-            ? () => updateChecklistModelo({ ...values, id: controller.editingItem!.id })
-            : () => createChecklistModelo(values);
+    const handleSubmit = async (values: ChecklistModeloFormData & { tipoAtividadeIds: string[] }) => {
+        const { tipoAtividadeIds, ...rest } = values;
 
-        controller.exec(action, 'Modelo salvo com sucesso!');
+        const action = async (): Promise<ActionResult<ChecklistModelo>> => {
+            const modelo = controller.editingItem?.id
+                ? await updateChecklistModelo({ ...rest, id: controller.editingItem!.id })
+                : await createChecklistModelo(rest);
+
+            await setTipoAtividadesDoModelo({
+                modeloId: modelo.data?.id ?? '',
+                tipoAtividadeIds,
+            });
+
+            return { success: true, data: modelo.data };
+        };
+
+        controller.exec(action, 'Modelo de checklist salvo com sucesso!');
     };
 
     if (error) {
@@ -71,12 +88,12 @@ export default function ChecklistModeloPage() {
                 footer={null}
                 destroyOnClose
             >
-                {tipos && (
+                {tipoAtividades && (
                     <ChecklistModeloForm
                         initialValues={controller.editingItem ?? undefined}
+                        tipoAtividadeOptions={tipoAtividades.data ?? []}
                         onSubmit={handleSubmit}
                         loading={controller.loading}
-                        tipoAtividadeOptions={tipos?.data ?? []}
                     />
                 )}
             </Modal>

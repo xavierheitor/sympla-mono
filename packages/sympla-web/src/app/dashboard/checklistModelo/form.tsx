@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { useEffect, useState } from 'react';
+import { Form, Input, Button, Spin, Transfer } from 'antd';
 import { ChecklistModeloFormData } from '@/lib/actions/checklistModelo/checklistModeloFormSchema';
 import { TipoAtividade } from '@sympla/prisma';
+import { getAllTipoAtividadesByChecklistModelo } from '@/lib/actions/checklistModelo/checklistModeloTipoAtividadeRelation/getAll';
 
 interface ChecklistModeloFormProps {
     onSubmit: (values: ChecklistModeloFormData) => void;
@@ -20,39 +21,73 @@ export default function ChecklistModeloForm({
 }: ChecklistModeloFormProps) {
     const [form] = Form.useForm();
 
+    const [selectedTipoAtividades, setSelectedTipoAtividades] = useState<string[]>([]);
+    const [selectetKeys, setSelectedKeys] = useState<string[]>([]);
+    const [loadingTipoAtividades, setLoadingTipoAtividades] = useState(false); // novo estado
+
     useEffect(() => {
-        if (initialValues) {
-            form.setFieldsValue(initialValues);
-        } else {
-            form.resetFields();
-        }
+        const carregarTipoAtividades = async () => {
+            setLoadingTipoAtividades(true);
+            try {
+                if (initialValues?.id) {
+                    const associados = await getAllTipoAtividadesByChecklistModelo(initialValues.id)
+                    setSelectedTipoAtividades(associados)
+                } else {
+                    setSelectedTipoAtividades([])
+                }
+            } finally {
+                setLoadingTipoAtividades(false);
+            }
+        };
+        form.setFieldsValue(initialValues ?? {});
+        carregarTipoAtividades();
     }, [initialValues, form]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleFinish = (values: any) => {
+        onSubmit({ ...values, tipoAtividadeIds: selectedTipoAtividades })
+    }
+
     return (
-        <Form layout="vertical" form={form} onFinish={onSubmit}>
+        <Spin spinning={loadingTipoAtividades}>
+            <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleFinish}
+            >
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
 
             <Form.Item name="descricao" label="Descrição">
-                <Input.TextArea rows={3} />
+                    <Input.TextArea rows={3} /> 
             </Form.Item>
 
-            <Form.Item name="tipoAtividadeId" label="Tipo de Atividade" rules={[{ required: true }]}>
-                <Select
-                    options={tipoAtividadeOptions.map((tipo) => ({
-                        label: tipo.nome,
-                        value: tipo.id,
-                    }))}
-                    placeholder="Selecione o tipo"
-                />
-            </Form.Item>
-
+                <Form.Item name="tipoAtividadeIds" label="Tipos de Atividade">
+                    <Transfer
+                        dataSource={tipoAtividadeOptions.map((tipoAtividade) => ({
+                            key: String(tipoAtividade.id),
+                            title: tipoAtividade.nome,
+                        }))}
+                        titles={['Disponíveis', 'Selecionados']}
+                        targetKeys={selectedTipoAtividades.map(String)} // 🔧 garante que são strings
+                        selectedKeys={selectetKeys.map(String)} // 🔧 garante que são strings
+                        onChange={(nextTargetKeys) => setSelectedTipoAtividades(nextTargetKeys.map(String))}
+                        onSelectChange={(sourceSelected, targetSelected) =>
+                            setSelectedKeys([...sourceSelected, ...targetSelected].map(String))
+                        }
+                        render={(item) => item.title!}
+                        showSearch
+                        pagination
+                        listStyle={{ width: 200, height: 300 }}
+                    />
+                </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit" block loading={loading}>
                     Salvar
                 </Button>
             </Form.Item>
         </Form>
+        </Spin>
     );
 }
