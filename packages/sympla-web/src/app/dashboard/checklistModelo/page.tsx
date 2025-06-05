@@ -23,7 +23,7 @@ import { ActionResult } from '@/lib/types/ActionResult';
 import { ChecklistModelo } from '@sympla/prisma';
 
 export default function ChecklistModeloPage() {
-    const controller = useCrudController<ChecklistModeloWithIncludes>('checklistModelo');
+    const controller = useCrudController<ChecklistModeloWithIncludes>('checklistModelos');
 
     const { data: modelos, isLoading, error } = useServerData(
         'checklistModelos',
