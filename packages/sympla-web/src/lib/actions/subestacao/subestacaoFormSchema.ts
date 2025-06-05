@@ -11,7 +11,7 @@ export const subestacaoFormSchema = z.object({
   id: z.string().optional(),
   nome: z.string().min(1, "Nome é obrigatório"),
   sigla: z.string().min(1, "Sigla é obrigatório"),
-  localInstalacao: z.string().min(1, "Local de instalação é obrigatório"),
+  localInstalacao: z.string().nullable().optional(),
   codigoSap: z.string().min(1, "Código SAP é obrigatório"),
   propriedade: z.nativeEnum(PropriedadeSubestacao),
   categoria: z.nativeEnum(CategoriaSubestacao),
