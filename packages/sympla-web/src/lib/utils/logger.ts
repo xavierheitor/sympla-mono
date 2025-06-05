@@ -37,7 +37,12 @@ function writeLog(line: string) {
 
 export const logger = {
   log(payload: LogPayload) {
-    writeLog(formatLog(payload));
+    const line = formatLog(payload);
+    writeLog(line);
+
+    if (payload.level === "error") {
+      console.error(line); // 🔥 Mostra erro também no console
+    }
   },
   info: (message: string, context?: Record<string, any>) =>
     logger.log({ level: "info", message, context }),
@@ -64,7 +69,7 @@ export async function withLogging<T>(
     logger.action(`[${actionType.toUpperCase()}] ${entity}`, {
       userId: session.user.id,
       input,
-      output: result, // ← 🔥 Aqui adicionamos o resultado retornado
+      output: result,
       success: true,
     });
 
@@ -79,3 +84,7 @@ export async function withLogging<T>(
     throw error;
   }
 }
+
+// TODO: Implementar hook useLogger
+// TODO: Migrar todos os tipos e definicoes pra uma pasta types
+// TODO: Adicionar documentacao de arquitetura
