@@ -10,6 +10,6 @@ export const checklistModeloFormSchema = z.object({
 
 type BaseFields = Required<Pick<ChecklistModelo, "nome" | "descricao">>;
 export type ChecklistModeloFormData = Partial<Pick<ChecklistModelo, "id">> &
-  BaseFields;
+  BaseFields & { tipoAtividadeIds: string[] };
 
 export type ChecklistModeloWithIncludes = ChecklistModelo & {};
