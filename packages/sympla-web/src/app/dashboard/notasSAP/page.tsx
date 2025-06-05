@@ -22,7 +22,7 @@ import 'dayjs/locale/pt-br';
 // Aplica o plugin
 dayjs.extend(utc);
 dayjs.locale('pt-br'); // 🔥 Importante! Isso ativa o locale como padrão.
-import NotasPmaLoteForm from './NotasPmaLoteForm';
+import NotasPmaLoteForm from './formLote';
 import { getAllNotasSapPMA } from '@/lib/actions/notasSap/getAll';
 
 export default function NotasSapPage() {

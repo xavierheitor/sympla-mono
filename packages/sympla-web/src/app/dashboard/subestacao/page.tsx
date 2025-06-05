@@ -15,7 +15,7 @@ import { getSubestacaoEnums } from '@/lib/actions/subestacao/getSubestacaoEnums'
 
 import SubestacaoForm from './form';
 import { SubestacaoFormData, SubestacaoWithRegional } from '@/lib/actions/subestacao/subestacaoFormSchema';
-import SubestacaoLoteForm from './SubestacaoLoteForm';
+import SubestacaoLoteForm from './formLote';
 
 export default function SubestacaoPage() {
     const controller = useCrudController<SubestacaoWithRegional>('subestacoes');

@@ -12,7 +12,7 @@ export const notasSapFormSchema = z.object({
   descricao: z.string().nullable(),
   notificador: z.string().nullable(),
   numeroNota: z.string().nullable(),
-  localInstalacao: z.string().min(1, "localInstalacao é obrigatório"),
+  localInstalacao: z.string().nullable(),
   tipoNota: z.nativeEnum(TipoNota, {
     required_error: "tipoNota é obrigatório",
   }),
@@ -21,7 +21,7 @@ export const notasSapFormSchema = z.object({
   dataFiPlan: z.string().nullable(),
   dataInicioReal: z.string().nullable(),
   dataFiReal: z.string().nullable(),
-  centroTrabalhoId: z.string().min(1, "centroTrabalhoId é obrigatório"),
+  centroTrabalhoId: z.string().nullable(),
   equipamentoId: z.string().nullable(),
   kpiId: z.string().nullable(),
   regionalId: z.string().min(1, "regionalId é obrigatório"),

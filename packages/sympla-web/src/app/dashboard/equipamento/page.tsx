@@ -13,7 +13,7 @@ import { updateEquipamento } from '@/lib/actions/equipamento/update';
 
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import EquipamentoForm from './form';
-import EquipamentoLoteForm from './equipamentoLoteForm';
+import EquipamentoLoteForm from './formLote';
 
 export default function EquipamentoPage() {
     const [page, setPage] = useState(1);
