@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Form, Input, Button, Transfer, Spin } from 'antd';
-import { AprModeloFormData } from '@/lib/actions/aprModelo/aprModeloFormSchema';
 import { TipoAtividade } from '@sympla/prisma';
-import { getAllTipoAtividadesByAprModelo } from '@/lib/actions/aprModelo/aprModeloTipoAtividadeRelation/getAll';
+import { AprModeloFormData } from '@/lib/actions/apr/schema';
+import { getAllTipoAtividadesByAprModelo } from '@/lib/actions/apr/actionsAprModelo';
 
 interface AprModeloFormProps {
     onSubmit: (values: AprModeloFormData & { tipoAtividadeIds: string[] }) => void;

@@ -5,15 +5,12 @@ import { useState } from 'react';
 import { Button, Card, Input, Modal, Select, Space, Table } from 'antd';
 import { useEquipamentoPaginated } from '@/lib/hooks/useEquipamentoPaginated';
 import { useServerData } from '@/lib/hooks/useServerData';
-
-import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
-import { getAllSubestacoes } from '@/lib/actions/subestacao/getAll';
-import { createEquipamento } from '@/lib/actions/equipamento/create';
-import { updateEquipamento } from '@/lib/actions/equipamento/update';
-
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import EquipamentoForm from './form';
 import EquipamentoLoteForm from './formLote';
+import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/defeito/actionsGrupoDefeito';
+import { createEquipamento, updateEquipamento } from '@/lib/actions/equipamento/actionsEquipamento';
+import { getAllSubestacoes } from '@/lib/actions/subestacao/actionsSubestacao';
 
 export default function EquipamentoPage() {
     const [page, setPage] = useState(1);

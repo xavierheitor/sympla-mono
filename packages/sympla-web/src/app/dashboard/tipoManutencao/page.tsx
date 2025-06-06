@@ -6,11 +6,8 @@ import { TipoManutencao } from '@sympla/prisma';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-import { createTipoManutencao } from '@/lib/actions/tipoManutencao/create';
-import { updateTipoManutencao } from '@/lib/actions/tipoManutencao/update';
-import { deleteTipoManutencao } from '@/lib/actions/tipoManutencao/delete';
 import TipoManutencaoForm, { TipoManutencaoFormData } from './form';
-import { getAllTipoManutencaos } from '@/lib/actions/tipoManutencao/getAll';
+import { createTipoManutencao, deleteTipoManutencao, getAllTipoManutencaos, updateTipoManutencao } from '@/lib/actions/tipoManutencao/actionsTipoManutencao';
 
 export default function TipoManutencaoPage() {
     const controller = useCrudController<TipoManutencao>('tipoManutencao');

@@ -6,18 +6,11 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { createAprPerguntasRelation } from '@/lib/actions/aprModelo/aprPerguntasRelation/create';
-import { updateAprPerguntasRelation } from '@/lib/actions/aprModelo/aprPerguntasRelation/update';
-import { deleteAprPerguntasRelation } from '@/lib/actions/aprModelo/aprPerguntasRelation/delete';
-import { getAllAprPerguntasWithIncludes } from '@/lib/actions/aprModelo/aprPerguntasRelation/getAllWithIncludes';
-import { getAllAprModelos } from '@/lib/actions/aprModelo/getAll';
-import { getAllAprPerguntass } from '@/lib/actions/aprModelo/aprPerguntas/getAll';
-
 import AprPerguntasRelationForm from './form';
-import {
-    AprPerguntasRelationFormData,
-    AprPerguntasRelationWithIncludes,
-} from '@/lib/actions/aprModelo/aprPerguntasRelation/aprPerguntasRelationFormSchema';
+
+import { getAllAprModelos } from '@/lib/actions/apr/actionsAprModelo';
+import { createAprPerguntasRelation, deleteAprPerguntasRelation, getAllAprPerguntass, getAllAprPerguntasWithIncludes, updateAprPerguntasRelation } from '@/lib/actions/apr/actionsAprPergunta';
+import { AprPerguntasRelationFormData, AprPerguntasRelationWithIncludes } from '@/lib/actions/apr/schema';
 
 export default function AprPerguntasRelationPage() {
     const controller = useCrudController<AprPerguntasRelationWithIncludes>('aprPerguntasRelation');

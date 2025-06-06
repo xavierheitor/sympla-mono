@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
-import { TecnicoFormData } from '@/lib/actions/tecnico/tecnicoFormSchema';
+import { TecnicoFormData } from '@/lib/actions/tecnico/schema';
 
 interface TecnicoFormProps {
     onSubmit: (values: TecnicoFormData) => void;

@@ -5,17 +5,11 @@ import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
-import { getAllAtividadesWithIncludes } from '@/lib/actions/atividade/getAllWithIncludes';
-import { createAtividade } from '@/lib/actions/atividade/create';
-import { updateAtividade } from '@/lib/actions/atividade/update';
-import { deleteAtividade } from '@/lib/actions/atividade/delete';
-
-import { getAllTipoAtividades } from '@/lib/actions/atividade/tipoAtividade/getAll';
-
 import AtividadeForm from './form';
-import { AtividadeFormData, AtividadeWithIncludes } from '@/lib/actions/atividade/atividadeFormSchema';
-import { getAllNotasSaps } from '@/lib/actions/notasSap/getAll';
+import { createAtividade, deleteAtividade, getAllAtividadesWithIncludes, updateAtividade } from '@/lib/actions/atividade/actionsAtividade';
+import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
+import { AtividadeFormData, AtividadeWithIncludes } from '@/lib/actions/atividade/schema';
+import { getAllNotasSaps } from '@/lib/actions/notasSap/actionsNotasSap';
 
 export default function AtividadePage() {
     const controller = useCrudController<AtividadeWithIncludes>('atividade');

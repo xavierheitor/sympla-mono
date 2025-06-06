@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
-import { GrupoDefeitoEquipamentoFormData } from '@/lib/actions/grupoDefeitoEquipamento/grupoDefeitoEquipamentoFormSchema';
+import { GrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
 
 interface GrupoDefeitoEquipamentoFormProps {
     onSubmit: (values: GrupoDefeitoEquipamentoFormData) => void;

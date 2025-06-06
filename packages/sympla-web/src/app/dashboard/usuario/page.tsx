@@ -5,15 +5,10 @@ import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
-import { getAllUsers } from '@/lib/actions/user/getAll';
-import { createUser } from '@/lib/actions/user/create';
-import { updateUser } from '@/lib/actions/user/update';
-import { deleteUser } from '@/lib/actions/user/delete';
-
 import UserForm from './form';
-import { UserFormData } from '@/lib/actions/user/userFormSchema';
+import { UserFormData } from '@/lib/actions/user/schema';
 import { User } from '@sympla/prisma';
+import { createUser, deleteUser, getAllUsers, updateUser } from '@/lib/actions/user/actionsUser';
 
 export default function UserPage() {
     const controller = useCrudController<User>('user');

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { CentroTrabalhoFormData } from '@/lib/actions/centroTrabalho/centroTrabalhoFormSchema';
+import { CentroTrabalhoFormData } from '@/lib/actions/centroTrabalho/schema';
 import { Regional } from '@sympla/prisma';
 
 interface CentroTrabalhoFormProps {

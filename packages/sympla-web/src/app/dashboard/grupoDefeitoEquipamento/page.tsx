@@ -6,14 +6,10 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
-import { createGrupoDefeitoEquipamento } from '@/lib/actions/grupoDefeitoEquipamento/create';
-import { updateGrupoDefeitoEquipamento } from '@/lib/actions/grupoDefeitoEquipamento/update';
-import { deleteGrupoDefeitoEquipamento } from '@/lib/actions/grupoDefeitoEquipamento/delete';
-
 import GrupoDefeitoEquipamentoForm from './form';
-import { GrupoDefeitoEquipamentoFormData } from '@/lib/actions/grupoDefeitoEquipamento/grupoDefeitoEquipamentoFormSchema';
 import { GrupoDefeitoEquipamento } from '@sympla/prisma';
+import { createGrupoDefeitoEquipamento, deleteGrupoDefeitoEquipamento, getAllGrupoDefeitoEquipamentos, updateGrupoDefeitoEquipamento } from '@/lib/actions/defeito/actionsGrupoDefeito';
+import { GrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
 
 export default function GrupoDefeitoEquipamentoPage() {
     const controller = useCrudController<GrupoDefeitoEquipamento>('grupoDefeitoEquipamento');

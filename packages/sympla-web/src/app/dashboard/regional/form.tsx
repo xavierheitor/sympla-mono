@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { RegionalFormData } from '@/lib/actions/regional/regionalFormSchema';
+import { RegionalFormData } from '@/lib/actions/regional/schema';
 import { Distribuidora } from '@sympla/prisma';
 
 interface RegionalFormProps {

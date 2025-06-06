@@ -5,18 +5,12 @@ import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
-import { createAprModelo } from '@/lib/actions/aprModelo/create';
-import { updateAprModelo } from '@/lib/actions/aprModelo/update';
-import { deleteAprModelo } from '@/lib/actions/aprModelo/delete';
-import { getAllTipoAtividades } from '@/lib/actions/atividade/tipoAtividade/getAll';
-
 import AprModeloForm from './form';
-import { AprModeloFormData, } from '@/lib/actions/aprModelo/aprModeloFormSchema';
-import { getAllAprModelosWithIncludes } from '@/lib/actions/aprModelo/getAllWithIncludes';
-import { setTipoAtividadesDoModelo } from '@/lib/actions/aprModelo/aprModeloTipoAtividadeRelation/setRelations';
 import { ActionResult } from '@/lib/types/ActionResult';
 import { AprModelo } from '@sympla/prisma';
+import { createAprModelo, deleteAprModelo, getAllAprModelosWithIncludes, setTipoAtividadesDoModelo, updateAprModelo } from '@/lib/actions/apr/actionsAprModelo';
+import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
+import { AprModeloFormData } from '@/lib/actions/apr/schema';
 
 export default function AprModeloPage() {
     const controller = useCrudController<AprModelo>('aprModelo');

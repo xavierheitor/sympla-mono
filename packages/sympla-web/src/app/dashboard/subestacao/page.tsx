@@ -6,16 +6,11 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { createSubestacao } from '@/lib/actions/subestacao/create';
-import { updateSubestacao } from '@/lib/actions/subestacao/update';
-import { deleteSubestacao } from '@/lib/actions/subestacao/delete';
-import { getAllSubestacoesWithRegionais } from '@/lib/actions/subestacao/getAll';
-import { getAllRegionais } from '@/lib/actions/regional/getAll';
-import { getSubestacaoEnums } from '@/lib/actions/subestacao/getSubestacaoEnums';
-
 import SubestacaoForm from './form';
-import { SubestacaoFormData, SubestacaoWithRegional } from '@/lib/actions/subestacao/subestacaoFormSchema';
+import { SubestacaoFormData, SubestacaoWithRegional } from '@/lib/actions/subestacao/schema';
 import SubestacaoLoteForm from './formLote';
+import { createSubestacao, deleteSubestacao, getAllSubestacoesWithRegionais, getSubestacaoEnums, updateSubestacao } from '@/lib/actions/subestacao/actionsSubestacao';
+import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
 
 export default function SubestacaoPage() {
     const controller = useCrudController<SubestacaoWithRegional>('subestacoes');

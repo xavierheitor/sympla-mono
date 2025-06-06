@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
-import { DistribuidoraFormData } from '@/lib/actions/distribuidora/distribuidoraFormData';
+import { DistribuidoraFormData } from '@/lib/actions/distribuidora/schema';
 
 interface DistribuidoraFormProps {
     onSubmit: (values: DistribuidoraFormData) => void;

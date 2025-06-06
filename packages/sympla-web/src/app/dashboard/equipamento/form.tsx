@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { EquipamentoFormData } from '@/lib/actions/equipamento/equipamentoFormSchema';
+import { EquipamentoFormData } from '@/lib/actions/equipamento/schema';
 import {
     GrupoDefeitoEquipamento,
     Subestacao,

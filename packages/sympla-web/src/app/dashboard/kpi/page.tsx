@@ -6,14 +6,11 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllKpisWithIncludes } from '@/lib/actions/kpi/getAllWithIncludes';
-import { createKpi } from '@/lib/actions/kpi/create';
-import { updateKpi } from '@/lib/actions/kpi/update';
-import { deleteKpi } from '@/lib/actions/kpi/delete';
-import { getAllTipoManutencaos } from '@/lib/actions/tipoManutencao/getAll';
 
 import KpiForm from './form';
-import { KpiFormData, KpiWithRelations } from '@/lib/actions/kpi/kpiFormSchema';
+import { KpiFormData, KpiWithRelations } from '@/lib/actions/kpi/schema';
+import { createKpi, deleteKpi, getAllKpisWithIncludes, updateKpi } from '@/lib/actions/kpi/actionsKpi';
+import { getAllTipoManutencaos } from '@/lib/actions/tipoManutencao/actionsTipoManutencao';
 
 export default function KpiPage() {
     const controller = useCrudController<KpiWithRelations>('kpis');

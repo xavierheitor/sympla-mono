@@ -7,14 +7,10 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllDistribuidoras } from '@/lib/actions/distribuidora/getAll';
-import { getAllRegionais } from '@/lib/actions/regional/getAll';
-import { createRegional } from '@/lib/actions/regional/create';
-import { updateRegional } from '@/lib/actions/regional/update';
-import { deleteRegional } from '@/lib/actions/regional/delete';
-
 import RegionalForm from './form';
-import { RegionalFormData } from '@/lib/actions/regional/regionalFormSchema';
+import { RegionalFormData } from '@/lib/actions/regional/schema';
+import { getAllDistribuidoras } from '@/lib/actions/distribuidora/actionsDistribuidora';
+import { createRegional, deleteRegional, getAllRegionais, updateRegional } from '@/lib/actions/regional/actionsRegional';
 
 export default function RegionalPage() {
     const controller = useCrudController<Regional>('regionais');

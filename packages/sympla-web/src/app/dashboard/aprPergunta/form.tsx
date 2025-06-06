@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
-import { AprPerguntasFormData } from '@/lib/actions/aprModelo/aprPerguntas/aprPerguntasFormSchema';
+import { AprPerguntasFormData } from '@/lib/actions/apr/schema';
 
 interface AprPerguntasFormProps {
     onSubmit: (values: AprPerguntasFormData) => void;

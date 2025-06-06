@@ -1,11 +1,10 @@
 "use client";
 
 import useSWR from "swr";
-import {
-  getEquipamentosPaginated,
-  EquipamentoPaginatedParams,
-} from "@/lib/actions/equipamento/getPaginated";
+
 import { Equipamento, Subestacao } from "@sympla/prisma";
+import { getEquipamentosPaginated } from "../actions/equipamento/actionsEquipamento";
+import { EquipamentoPaginatedParams } from "../actions/equipamento/schema";
 
 export interface EquipamentoWithRelations extends Equipamento {
   subestacao: Subestacao | null;

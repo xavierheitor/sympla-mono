@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Form, Input, Button, Spin, Transfer } from 'antd';
-import { ChecklistModeloFormData } from '@/lib/actions/checklistModelo/checklistModeloFormSchema';
+import { ChecklistModeloFormData } from '@/lib/actions/checklist/schema';
 import { TipoAtividade } from '@sympla/prisma';
-import { getAllTipoAtividadesByChecklistModelo } from '@/lib/actions/checklistModelo/checklistModeloTipoAtividadeRelation/getAll';
+import { getAllTipoAtividadesByChecklistModelo } from '@/lib/actions/checklist/actionsChecklistModelo';
 
 interface ChecklistModeloFormProps {
     onSubmit: (values: ChecklistModeloFormData) => void;

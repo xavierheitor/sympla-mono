@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { KpiFormData } from '@/lib/actions/kpi/kpiFormSchema';
+import { KpiFormData } from '@/lib/actions/kpi/schema';
 import { TipoManutencao } from '@sympla/prisma';
 
 interface KpiFormProps {

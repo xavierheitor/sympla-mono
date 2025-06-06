@@ -5,12 +5,9 @@ import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-import { createTecnico } from '@/lib/actions/tecnico/create';
-import { updateTecnico } from '@/lib/actions/tecnico/update';
-import { deleteTecnico } from '@/lib/actions/tecnico/delete';
-import { getAllTecnicos } from '@/lib/actions/tecnico/getAll';
 import TecnicoForm from './form';
-import { TecnicoFormData } from '@/lib/actions/tecnico/tecnicoFormSchema';
+import { TecnicoFormData } from '@/lib/actions/tecnico/schema';
+import { createTecnico, deleteTecnico, getAllTecnicos, updateTecnico } from '@/lib/actions/tecnico/actionsTecnico';
 
 export default function TecnicoPage() {
     const controller = useCrudController<TecnicoFormData>('tecnico');

@@ -4,8 +4,8 @@
 import { useEffect } from 'react';
 import { Form, Button, Select, DatePicker } from 'antd';
 import dayjs from 'dayjs';
-import { AtividadeAtribuicaoFormData } from '@/lib/actions/atividade/atividadeAtribuicao/atividadeAtribuicaoFormSchema';
 import { Atividade, UsuarioMobile, StatusAtribuicao } from '@sympla/prisma';
+import { AtividadeAtribuicaoFormData } from '@/lib/actions/atividade/schema';
 
 interface AtividadeAtribuicaoFormProps {
     onSubmit: (values: AtividadeAtribuicaoFormData) => void;

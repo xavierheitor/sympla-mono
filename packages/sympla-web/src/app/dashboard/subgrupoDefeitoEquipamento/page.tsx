@@ -6,14 +6,10 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/subgrupoDefeitoEquipamento/getAllWithIncludes';
-import { createSubgrupoDefeitoEquipamento } from '@/lib/actions/subgrupoDefeitoEquipamento/create';
-import { updateSubgrupoDefeitoEquipamento } from '@/lib/actions/subgrupoDefeitoEquipamento/update';
-import { deleteSubgrupoDefeitoEquipamento } from '@/lib/actions/subgrupoDefeitoEquipamento/delete';
-
 import SubgrupoDefeitoEquipamentoForm from './form';
-import { SubgrupoDefeitoEquipamentoFormData } from '@/lib/actions/subgrupoDefeitoEquipamento/subgrupoDefeitoEquipamentoFormSchema';
 import { GrupoDefeitoEquipamento, SubgrupoDefeitoEquipamento } from '@sympla/prisma';
+import { createSubgrupoDefeitoEquipamento, deleteSubgrupoDefeitoEquipamento, getAllSubgrupoDefeitoEquipamentosWithIncludes, updateSubgrupoDefeitoEquipamento } from '@/lib/actions/defeito/actionsSubgrupoDefeito';
+import { SubgrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
 
 type SubgrupoWithGrupo = SubgrupoDefeitoEquipamento & { grupo: GrupoDefeitoEquipamento };
 
@@ -28,7 +24,7 @@ export default function SubgrupoDefeitoEquipamentoPage() {
     const { data: grupos } = useServerData(
         'gruposDefeito',
         async () => {
-            const all = await import('@/lib/actions/grupoDefeitoEquipamento/getAll');
+            const all = await import('@/lib/actions/defeito/actionsGrupoDefeito');
             return all.getAllGrupoDefeitoEquipamentos();
         }
     );

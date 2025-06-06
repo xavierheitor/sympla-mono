@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { Form, Input, Button, Select, DatePicker } from 'antd';
 import dayjs from 'dayjs';
-import { NotasSAPFormData } from '@/lib/actions/notasSap/notasSapFormSchema';
+import { NotasSAPFormData } from '@/lib/actions/notasSap/schema';
 import { CentroTrabalho, Equipamento, Kpi, Regional } from '@sympla/prisma';
 import { PrioridadeDefeito, StatusNota, TipoNota } from '@sympla/prisma';
 

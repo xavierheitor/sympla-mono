@@ -6,21 +6,18 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllChecklistModelosWithIncludes } from '@/lib/actions/checklistModelo/getAllWithIncludes';
-import { createChecklistModelo } from '@/lib/actions/checklistModelo/create';
-import { updateChecklistModelo } from '@/lib/actions/checklistModelo/update';
-import { deleteChecklistModelo } from '@/lib/actions/checklistModelo/delete';
-import { getAllTipoAtividades } from '@/lib/actions/atividade/tipoAtividade/getAll';
+
 
 import ChecklistModeloForm from './form';
 import {
     ChecklistModeloFormData,
     ChecklistModeloWithIncludes,
-} from '@/lib/actions/checklistModelo/checklistModeloFormSchema';
+} from '@/lib/actions/checklist/schema';
 
-import { setTipoAtividadesDoModelo } from '@/lib/actions/checklistModelo/checklistModeloTipoAtividadeRelation/setRelation';
 import { ActionResult } from '@/lib/types/ActionResult';
 import { ChecklistModelo } from '@sympla/prisma';
+import { createChecklistModelo, deleteChecklistModelo, getAllChecklistModelosWithIncludes, setTipoAtividadesDoModelo, updateChecklistModelo } from '@/lib/actions/checklist/actionsChecklistModelo';
+import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
 
 export default function ChecklistModeloPage() {
     const controller = useCrudController<ChecklistModeloWithIncludes>('checklistModelos');

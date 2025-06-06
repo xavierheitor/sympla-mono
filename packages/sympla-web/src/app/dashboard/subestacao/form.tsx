@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { SubestacaoFormData } from '@/lib/actions/subestacao/subestacaoFormSchema';
+import { SubestacaoFormData } from '@/lib/actions/subestacao/schema';
 import { Regional } from '@sympla/prisma';
 
 interface EnumOption {

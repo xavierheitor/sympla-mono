@@ -5,20 +5,12 @@ import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
-import { getAllUsuarioMobileRegionalsWithIncludes } from '@/lib/actions/usuarioMobileRegional/getAllWithIncludes';
-import { createUsuarioMobileRegional } from '@/lib/actions/usuarioMobileRegional/create';
-import { updateUsuarioMobileRegional } from '@/lib/actions/usuarioMobileRegional/update';
-import { deleteUsuarioMobileRegional } from '@/lib/actions/usuarioMobileRegional/delete';
-
-import { getAllRegionais } from '@/lib/actions/regional/getAll';
-import { getAllUsuarioMobiles } from '@/lib/actions/usuarioMobile/getAll';
-
 import UsuarioMobileRegionalForm from './form';
-import {
-    UsuarioMobileRegionalFormData,
-    UsuarioMobileRegionalWithIncludes,
-} from '@/lib/actions/usuarioMobileRegional/usuarioMobileRegionalFormSchema';
+import { UsuarioMobileRegionalFormData, UsuarioMobileRegionalWithIncludes } from '@/lib/actions/usuarioMobile/schema';
+import { createUsuarioMobileRegional, deleteUsuarioMobileRegional, getAllUsuarioMobileRegionalsWithIncludes, updateUsuarioMobileRegional } from '@/lib/actions/usuarioMobile/actionsUsuarioMobileRegional';
+import { getAllUsuarioMobiles } from '@/lib/actions/usuarioMobile/actionsUsuarioMobile';
+import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
+
 
 export default function UsuarioMobileRegionalPage() {
     const controller = useCrudController<UsuarioMobileRegionalWithIncludes>('usuarioMobileRegional');

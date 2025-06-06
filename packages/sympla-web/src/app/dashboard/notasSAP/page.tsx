@@ -5,17 +5,11 @@ import { Button, Card, Modal, Space, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-import { createNotasSap } from '@/lib/actions/notasSap/create';
-import { updateNotasSap } from '@/lib/actions/notasSap/update';
-import { deleteNotasSap } from '@/lib/actions/notasSap/delete';
-import { getAllCentroTrabalhos } from '@/lib/actions/centroTrabalho/getAll';
-import { getAllEquipamentos } from '@/lib/actions/equipamento/getAll';
-import { getAllKpis } from '@/lib/actions/kpi/getAll';
-import { getAllRegionais } from '@/lib/actions/regional/getAll';
+
 
 import NotasSapForm from './form';
 
-import { NotasSAPFormData } from '@/lib/actions/notasSap/notasSapFormSchema';
+import { NotasSAPFormData } from '@/lib/actions/notasSap/schema';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import 'dayjs/locale/pt-br';
@@ -23,7 +17,11 @@ import 'dayjs/locale/pt-br';
 dayjs.extend(utc);
 dayjs.locale('pt-br'); // 🔥 Importante! Isso ativa o locale como padrão.
 import NotasPmaLoteForm from './formLote';
-import { getAllNotasSapPMA } from '@/lib/actions/notasSap/getAll';
+import { getAllCentroTrabalhos } from '@/lib/actions/centroTrabalho/actionsCentroTrabalho';
+import { getAllEquipamentos } from '@/lib/actions/equipamento/actionsEquipamento';
+import { createNotasSap, deleteNotasSap, getAllNotasSapPMA, updateNotasSap } from '@/lib/actions/notasSap/actionsNotasSap';
+import { getAllKpis } from '@/lib/actions/kpi/actionsKpi';
+import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
 
 export default function NotasSapPage() {
     const controller = useCrudController<NotasSAPFormData>('notasSap');

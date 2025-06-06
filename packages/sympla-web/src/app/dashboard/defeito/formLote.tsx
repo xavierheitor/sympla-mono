@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Select, Space, Table, message } from 'antd';
 import { GrupoDefeitoEquipamento } from '@sympla/prisma';
-import { createManyDefeitos } from '@/lib/actions/defeito/createManyDefeitos';
-import { SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/subgrupoDefeitoEquipamento/subgrupoDefeitoEquipamentoFormSchema';
+import { createManyDefeitos } from '@/lib/actions/defeito/actionsDefeito';
+import { SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/defeito/schema';
 
 interface Props {
     grupoOptions: GrupoDefeitoEquipamento[];

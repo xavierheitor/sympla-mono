@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
-import { ChecklistPerguntaFormData } from '@/lib/actions/checklistModelo/checklistPergunta/checklistPerguntaFormSchema';
+import { ChecklistPerguntaFormData } from '@/lib/actions/checklist/schema';
 
 interface ChecklistPerguntaFormProps {
     onSubmit: (values: ChecklistPerguntaFormData) => void;

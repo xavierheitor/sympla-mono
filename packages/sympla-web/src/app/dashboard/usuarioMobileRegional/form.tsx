@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react';
 import { Form, Button, Select } from 'antd';
-import { UsuarioMobileRegionalFormData } from '@/lib/actions/usuarioMobileRegional/usuarioMobileRegionalFormSchema';
 import { UsuarioMobile, Regional } from '@sympla/prisma';
+import { UsuarioMobileRegionalFormData } from '@/lib/actions/usuarioMobile/schema';
 
 interface UsuarioMobileRegionalFormProps {
     onSubmit: (values: UsuarioMobileRegionalFormData) => void;

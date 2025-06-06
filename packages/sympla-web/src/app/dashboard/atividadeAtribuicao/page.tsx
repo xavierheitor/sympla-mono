@@ -6,18 +6,12 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { createAtividadeAtribuicao } from '@/lib/actions/atividade/atividadeAtribuicao/create';
-import { updateAtividadeAtribuicao } from '@/lib/actions/atividade/atividadeAtribuicao/update';
-import { deleteAtividadeAtribuicao } from '@/lib/actions/atividade/atividadeAtribuicao/delete';
-import { getAllAtividades } from '@/lib/actions/atividade/getAll';
-import { getAllUsuarioMobiles } from '@/lib/actions/usuarioMobile/getAll';
-import { getAllAtividadeAtribuicaosWithIncludes } from '@/lib/actions/atividade/atividadeAtribuicao/getAllWithIncludes';
-
 import AtividadeAtribuicaoForm from './form';
-import {
-    AtividadeAtribuicaoFormData,
-    AtividadeAtribuicaoWithIncludes,
-} from '@/lib/actions/atividade/atividadeAtribuicao/atividadeAtribuicaoFormSchema';
+import { createAtividadeAtribuicao, deleteAtividadeAtribuicao, getAllAtividadeAtribuicaosWithIncludes, updateAtividadeAtribuicao } from '@/lib/actions/atividade/actionsAtribuicaoAtividade';
+import { AtividadeAtribuicaoFormData, AtividadeAtribuicaoWithIncludes } from '@/lib/actions/atividade/schema';
+import { getAllAtividades } from '@/lib/actions/atividade/actionsAtividade';
+import { getAllUsuarioMobiles } from '@/lib/actions/usuarioMobile/actionsUsuarioMobile';
+
 
 export default function AtividadeAtribuicaoPage() {
     const controller = useCrudController<AtividadeAtribuicaoWithIncludes>('atividadeAtribuicao');

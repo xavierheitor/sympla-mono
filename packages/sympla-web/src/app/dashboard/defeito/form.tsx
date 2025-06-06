@@ -2,11 +2,10 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { DefeitoFormData, } from '@/lib/actions/defeito/defeitoFormSchema';
+import { DefeitoFormData, SubgrupoDefeitoEquipamentoWithRelations, } from '@/lib/actions/defeito/schema';
 import {
     GrupoDefeitoEquipamento,
 } from '@sympla/prisma';
-import { SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/subgrupoDefeitoEquipamento/subgrupoDefeitoEquipamentoFormSchema';
 
 interface DefeitoFormProps {
     onSubmit: (values: DefeitoFormData) => void;

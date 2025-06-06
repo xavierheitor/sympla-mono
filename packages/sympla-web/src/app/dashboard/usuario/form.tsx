@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
-import { UserFormData } from '@/lib/actions/user/userFormSchema';
+import { UserFormData } from '@/lib/actions/user/schema';
 
 type FormValues = UserFormData & { confirmPassword?: string };
 

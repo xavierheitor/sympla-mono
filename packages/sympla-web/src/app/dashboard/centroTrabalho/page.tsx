@@ -6,15 +6,12 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-import { getAllCentroTrabalhos } from '@/lib/actions/centroTrabalho/getAll';
-import { createCentroTrabalho } from '@/lib/actions/centroTrabalho/create';
-import { updateCentroTrabalho } from '@/lib/actions/centroTrabalho/update';
-import { deleteCentroTrabalho } from '@/lib/actions/centroTrabalho/delete';
 
 import CentroTrabalhoForm from './form';
-import { CentroTrabalhoFormData } from '@/lib/actions/centroTrabalho/centroTrabalhoFormSchema';
+import { CentroTrabalhoFormData } from '@/lib/actions/centroTrabalho/schema';
 import { CentroTrabalho } from '@sympla/prisma';
-import { getAllRegionais } from '@/lib/actions/regional/getAll';
+import { createCentroTrabalho, deleteCentroTrabalho, getAllCentroTrabalhos, updateCentroTrabalho } from '@/lib/actions/centroTrabalho/actionsCentroTrabalho';
+import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
 
 export default function CentroTrabalhoPage() {
     const controller = useCrudController<CentroTrabalho>('centroTrabalho');

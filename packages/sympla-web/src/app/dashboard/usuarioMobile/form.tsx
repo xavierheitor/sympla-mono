@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { Button, Form, Input, Switch } from 'antd';
-import { UsuarioMobileFormData } from '@/lib/actions/usuarioMobile/usuarioMobileFormSchema';
+import { UsuarioMobileFormData } from '@/lib/actions/usuarioMobile/schema';
 
 type FormValues = UsuarioMobileFormData & { confirmSenha?: string };
 

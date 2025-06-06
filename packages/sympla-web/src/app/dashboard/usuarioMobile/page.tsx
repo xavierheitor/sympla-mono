@@ -8,15 +8,10 @@ import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
-import { getAllUsuarioMobiles } from '@/lib/actions/usuarioMobile/getAll';
-import { createUsuarioMobile } from '@/lib/actions/usuarioMobile/create';
-import { updateUsuarioMobile } from '@/lib/actions/usuarioMobile/update';
-import { deleteUsuarioMobile } from '@/lib/actions/usuarioMobile/delete';
-
 import UsuarioMobileForm from './form';
-import { UsuarioMobileFormData } from '@/lib/actions/usuarioMobile/usuarioMobileFormSchema';
+import { UsuarioMobileFormData } from '@/lib/actions/usuarioMobile/schema';
 import { UsuarioMobile } from '@sympla/prisma';
+import { createUsuarioMobile, deleteUsuarioMobile, getAllUsuarioMobiles, updateUsuarioMobile } from '@/lib/actions/usuarioMobile/actionsUsuarioMobile';
 
 export default function UsuarioMobilePage() {
     const controller = useCrudController<UsuarioMobile>('usuarioMobile');

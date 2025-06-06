@@ -8,7 +8,7 @@ import {
     message,
     Typography,
 } from 'antd';
-import { createManyNotasPMA } from '@/lib/actions/notasSap/createManyNotasPMA';
+import { createManyNotasPMA } from '@/lib/actions/notasSap/actionsNotasSap';
 
 const { Text } = Typography;
 

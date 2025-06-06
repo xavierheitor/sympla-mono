@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Select, Space, Table, message, Typography } from 'antd';
 import { Regional } from '@sympla/prisma';
-import { createManySubestacoes } from '@/lib/actions/subestacao/createManySubestacoes';
+import { createManySubestacoes } from '@/lib/actions/subestacao/actionsSubestacao';
 
 const { Text } = Typography;
 

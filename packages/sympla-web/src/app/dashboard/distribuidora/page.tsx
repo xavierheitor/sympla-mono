@@ -7,13 +7,8 @@ import DistribuidoraForm from './form';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
-import { getAllDistribuidoras } from '@/lib/actions/distribuidora/getAll';
-import { createDistribuidora } from '@/lib/actions/distribuidora/create';
-import { updateDistribuidora } from '@/lib/actions/distribuidora/update';
-import { deleteDistribuidora } from '@/lib/actions/distribuidora/delete';
-
-import { DistribuidoraFormData } from '@/lib/actions/distribuidora/distribuidoraFormData';
+import { DistribuidoraFormData } from '@/lib/actions/distribuidora/schema';
+import { createDistribuidora, deleteDistribuidora, getAllDistribuidoras, updateDistribuidora } from '@/lib/actions/distribuidora/actionsDistribuidora';
 
 const MUTATE_KEY = 'distribuidoras';
 

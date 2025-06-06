@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select, DatePicker } from 'antd';
-import { AtividadeFormData } from '@/lib/actions/atividade/atividadeFormSchema';
 import { TipoAtividade, NotasSAP, StatusAtividade } from '@sympla/prisma';
 import dayjs from 'dayjs';
+import { AtividadeFormData } from '@/lib/actions/atividade/schema';
 
 interface AtividadeFormProps {
     onSubmit: (values: AtividadeFormData) => void;

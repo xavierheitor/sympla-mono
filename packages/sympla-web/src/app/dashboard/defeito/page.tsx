@@ -5,18 +5,12 @@ import { Button, Card, Modal, Table, Space } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
-import { createDefeito } from '@/lib/actions/defeito/create';
-import { updateDefeito } from '@/lib/actions/defeito/update';
-import { deleteDefeito } from '@/lib/actions/defeito/delete';
-
-import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/grupoDefeitoEquipamento/getAll';
-import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/subgrupoDefeitoEquipamento/getAllWithIncludes';
-import { getAllDefeitosWithIncludes } from '@/lib/actions/defeito/getAllWithIncludes';
-
-import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/defeitoFormSchema';
+import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/schema';
 import DefeitoForm from './form';
-import DefeitoLoteForm from './defeitoLoteForm';
+import { createDefeito, deleteDefeito, getAllDefeitosWithIncludes, updateDefeito } from '@/lib/actions/defeito/actionsDefeito';
+import DefeitoLoteForm from './formLote';
+import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/defeito/actionsGrupoDefeito';
+import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/defeito/actionsSubgrupoDefeito';
 
 export default function DefeitoPage() {
     const controller = useCrudController<DefeitoWithRelations>('defeitos');
