@@ -1,32 +1,28 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ZodSchema, z } from 'zod';
 import { handleServerAction } from './actionHandler';
 import { ActionResult } from '@/lib/actions/common/types';
 import { Session } from 'next-auth';
+import { PaginatedResult } from '../hooks/usePaginatedData';
 
-// Utilitário para schema com fallback de descrição
 function zAnyWithEntity(entityName?: string) {
     return entityName ? z.any().describe(entityName) : z.any();
 }
 
-// Criação
 export function createPrismaCreateAction<TInput, TOutput>(
     schema: ZodSchema<TInput>,
     createFn: (input: TInput & { createdBy: number }) => Promise<TOutput>,
     entityName?: string
 ): (input: TInput) => Promise<ActionResult<TOutput>> {
-
     return (input) =>
         handleServerAction(
             schema,
-            async (_input, session) => {
-                return await createFn({ ..._input, createdBy: Number(session.user.id) });
-            },
+            async (_input, session) => createFn({ ..._input, createdBy: Number(session.user.id) }),
             input,
             entityName ? { actionType: 'create', entityName } : undefined
         );
 }
 
-// Atualização
 export function createPrismaUpdateAction<TInput, TOutput>(
     schema: ZodSchema<TInput>,
     updateFn: (input: TInput & { updatedBy: number }) => Promise<TOutput>,
@@ -35,21 +31,17 @@ export function createPrismaUpdateAction<TInput, TOutput>(
     return (input) =>
         handleServerAction(
             schema,
-            async (_input, session) => {
-                return await updateFn({ ..._input, updatedBy: Number(session.user.id) });
-            },
+            async (_input, session) => updateFn({ ..._input, updatedBy: Number(session.user.id) }),
             input,
             entityName ? { actionType: 'update', entityName } : undefined
         );
 }
 
-// Exclusão
 export function createPrismaDeleteAction<TOutput>(
     deleteFn: (id: string, session: Session) => Promise<TOutput>,
     options?: {
         checkIfExists?: (id: string) => Promise<boolean>;
         defaultCheck?: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             prismaModel: any;
             modelName: string;
         };
@@ -82,7 +74,6 @@ export function createPrismaDeleteAction<TOutput>(
     };
 }
 
-// Busca por ID
 export function createPrismaGetByIdAction<TOutput>(
     getFn: (id: number) => Promise<TOutput>,
     entityName?: string
@@ -90,15 +81,12 @@ export function createPrismaGetByIdAction<TOutput>(
     return (id) =>
         handleServerAction(
             zAnyWithEntity(entityName),
-            async () => {
-                return await getFn(id);
-            },
+            async () => getFn(id),
             id,
             entityName ? { actionType: 'get', entityName } : undefined
         );
 }
 
-// Listagem
 export function createPrismaGetAllAction<TOutput>(
     getAllFn: (filter: { deletedAt: null }) => Promise<TOutput[]>,
     entityName?: string
@@ -106,10 +94,68 @@ export function createPrismaGetAllAction<TOutput>(
     return () =>
         handleServerAction(
             zAnyWithEntity(entityName),
-            async () => {
-                return await getAllFn({ deletedAt: null });
-            },
+            async () => getAllFn({ deletedAt: null }),
             {},
             entityName ? { actionType: 'list', entityName } : undefined
         );
+}
+
+export const paginatedParamsSchema = z.object({
+    page: z.number().min(1),
+    pageSize: z.number().min(1),
+    search: z.string().optional(),
+    orderBy: z.string().optional(),
+    orderDir: z.enum(['asc', 'desc']).optional(),
+    where: z.record(z.any()).optional(),
+    include: z.record(z.any()).optional(),
+});
+
+export function getPaginatedPrismaAction<T>(
+    prismaModel: {
+        findMany: (args: any) => Promise<T[]>;
+        count: (args: any) => Promise<number>;
+    },
+    entityName: string,
+    searchFields: string[] = ['nome', 'descricao']
+) {
+    return async function (
+        rawInput: unknown
+    ): Promise<ActionResult<PaginatedResult<T>>> {
+        return await handleServerAction(
+            paginatedParamsSchema,
+            async (params: z.infer<typeof paginatedParamsSchema>) => {
+                const { page, pageSize, orderBy, orderDir, search, where = {}, include = {} } = params;
+
+                const skip = (page - 1) * pageSize;
+
+                const finalWhere = { ...where };
+
+                if (search && searchFields.length > 0) {
+                    finalWhere.OR = searchFields.map((field) => ({
+                        [field]: { contains: search, mode: 'insensitive' },
+                    }));
+                }
+
+                const [data, total] = await Promise.all([
+                    prismaModel.findMany({
+                        skip,
+                        take: pageSize,
+                        where: finalWhere,
+                        include,
+                        orderBy: orderBy ? { [orderBy]: orderDir ?? 'asc' } : undefined,
+                    }),
+                    prismaModel.count({ where: finalWhere }),
+                ]);
+
+                return {
+                    success: true,
+                    data,
+                    total,
+                    totalPages: Math.ceil(total / pageSize),
+                };
+            },
+            rawInput,
+            { actionType: 'list', entityName }
+        );
+    };
 }

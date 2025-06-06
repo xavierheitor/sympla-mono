@@ -1,17 +1,16 @@
-// src/hooks/useCrudController.ts
-'use client';
+// src/lib/hooks/useCrudController.ts
+"use client";
 
-import { useState } from 'react';
-import { mutate } from 'swr';
-import { useActionHandler } from './useActionHandler';
-import { ActionResult } from '../types/ActionResult';
+import { useState } from "react";
+import { useActionHandler } from "./useActionHandler";
+import { ActionResult } from "../types/ActionResult";
 
 export function useCrudController<T>(mutateKey: string) {
     const [isOpen, setIsOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<T | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { handleAction } = useActionHandler(); // ✅ CORRETO
+    const { handleAction } = useActionHandler();
 
     const open = (item?: T) => {
         setEditingItem(item ?? null);
@@ -34,7 +33,6 @@ export function useCrudController<T>(mutateKey: string) {
             onSuccessMessage: successMessage,
             mutateKey,
             onSuccess: () => {
-                mutate(mutateKey);
                 onSuccess?.();
                 close();
             },

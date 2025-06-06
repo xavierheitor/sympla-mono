@@ -28,9 +28,16 @@ export async function handleServerAction<TInput, TOutput>(
         redirectToLogin: true,
       };
 
-    const input = schema.parse(rawInput);
+    const parseResult = schema.safeParse(rawInput);
+    if (!parseResult.success) {
+      return {
+        success: false,
+        error: parseResult.error.message,
+      };
+    }
+    const input = parseResult.data;
 
-    const entityName = options?.entityName || "UNKNOWN_ENTITY";
+    const entityName = options?.entityName || schema.description || "UNKNOWN_ENTITY";
     const actionType = options?.actionType || "unknown";
 
     // 🎯 Adiciona os campos de auditoria automaticamente
