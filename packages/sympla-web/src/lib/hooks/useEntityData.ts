@@ -5,19 +5,57 @@ import useSWR from 'swr';
 import { TableProps } from 'antd';
 import { PaginatedParams, PaginatedResult } from '../types/ActionTypes';
 
-interface UseEntityDataOptions<T> {
+// ✅ Primeiro definimos as duas variações de retorno:
+type UseEntityDataPaginated<T> = {
+    data: T[];
+    total: number;
+    totalPages: number;
+    params: PaginatedParams;
+    setParams: React.Dispatch<React.SetStateAction<PaginatedParams>>;
+    isLoading: boolean;
+    error: unknown;
+    mutate: () => void;
+    pagination: TableProps<T>['pagination'];
+    handleTableChange: TableProps<T>['onChange'];
+};
+
+type UseEntityDataSimple<T> = {
+    data: T[];
+    isLoading: boolean;
+    error: unknown;
+    mutate: () => void;
+};
+
+// ✅ Sobrecarga paginada
+export function useEntityData<T>(
+    options: {
+        key: string;
+        fetcher: (params?: PaginatedParams) => Promise<PaginatedResult<T> | T[]>;
+        initialParams?: Partial<PaginatedParams>;
+        paginationEnabled: true;
+    }
+): UseEntityDataPaginated<T>;
+
+// ✅ Sobrecarga simples
+export function useEntityData<T>(
+    options: {
+        key: string;
+        fetcher: (params?: PaginatedParams) => Promise<PaginatedResult<T> | T[]>;
+        initialParams?: Partial<PaginatedParams>;
+        paginationEnabled?: false;
+    }
+): UseEntityDataSimple<T>;
+
+// ✅ Implementação única
+export function useEntityData<T>(options: {
     key: string;
     fetcher: (params?: PaginatedParams) => Promise<PaginatedResult<T> | T[]>;
     initialParams?: Partial<PaginatedParams>;
     paginationEnabled?: boolean;
-}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}): any {
+    const { key, fetcher, initialParams = {}, paginationEnabled = false } = options;
 
-export function useEntityData<T>({
-    key,
-    fetcher,
-    initialParams = {},
-    paginationEnabled = false,
-}: UseEntityDataOptions<T>) {
     const [params, setParams] = useState<PaginatedParams>({
         page: 1,
         pageSize: 10,
@@ -59,23 +97,30 @@ export function useEntityData<T>({
         }));
     };
 
-    return {
-        data: result.data,
-        total: result.total,
-        totalPages: result.totalPages,
-        params,
-        setParams,
-        isLoading,
-        error,
-        mutate,
-        pagination: paginationEnabled
-            ? ({
+    if (paginationEnabled) {
+        return {
+            data: result.data,
+            total: result.total,
+            totalPages: result.totalPages,
+            params,
+            setParams,
+            isLoading,
+            error,
+            mutate,
+            pagination: {
                 current: params.page,
                 pageSize: params.pageSize,
                 total: result.total,
                 showSizeChanger: true,
-            } satisfies TableProps<T>['pagination'])
-            : false,
-        handleTableChange,
+            } as TableProps<T>['pagination'],
+            handleTableChange,
+        };
+    }
+
+    return {
+        data: result.data,
+        isLoading,
+        error,
+        mutate,
     };
 }

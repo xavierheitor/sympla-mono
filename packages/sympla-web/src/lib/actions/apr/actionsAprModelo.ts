@@ -8,6 +8,7 @@ import {
   createPrismaUpdateAction,
   createPrismaGetByIdAction,
   createPrismaSetManyRelationAction,
+  createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
 import {
   aprModeloFormSchema,
@@ -46,6 +47,19 @@ export const getAllAprModelos = createPrismaGetAllAction(prisma.aprModelo, "APR_
 export const getAprModeloById = createPrismaGetByIdAction(
   async (id) => prisma.aprModelo.findUniqueOrThrow({ where: { id } }),
   "APR_MODELO"
+);
+
+export const getAllTipoAtividadesByAprModelo = createPrismaGetAllWithIncludesAction(
+  async (params) => {
+    return await prisma.aprModeloTipoAtividadeRelation.findMany({
+      where: { deletedAt: null, modeloId: params.aprModeloId },
+      include: {
+        //includes aqui
+        modelo: true,
+      },
+    });
+  },
+  "TIPO_ATIVIDADE"
 );
 
 // Relação AprModelo <-> TipoAtividade (multi relation factory)

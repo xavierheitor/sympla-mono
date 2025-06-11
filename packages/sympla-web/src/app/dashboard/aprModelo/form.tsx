@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, } from 'react';
 import { Form, Input, Button, Transfer, Spin } from 'antd';
 import { TipoAtividade } from '@sympla/prisma';
 import { AprModeloFormData } from '@/lib/actions/apr/schema';
-import { getAllTipoAtividadesByAprModelo } from '@/lib/actions/apr/actionsAprModelo';
+import { getAllAprModeloTipoAtividadeRelation } from '@/lib/actions/apr/actionsAprModelo';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 interface AprModeloFormProps {
     onSubmit: (values: AprModeloFormData & { tipoAtividadeIds: string[] }) => void;
@@ -20,78 +21,80 @@ export default function AprModeloForm({
     loading = false,
 }: AprModeloFormProps) {
     const [form] = Form.useForm();
-
     const [selectedTipoAtividades, setSelectedTipoAtividades] = useState<string[]>([]);
-    const [selectetKeys, setSelectedKeys] = useState<string[]>([]);
-    const [loadingTipoAtividades, setLoadingTipoAtividades] = useState(false); // novo estado
+    const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+    const [loadingTipoAtividades, setLoadingTipoAtividades] = useState(false);
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        const carregarTipoAtividades = async () => {
+        const fetchRelations = async () => {
             setLoadingTipoAtividades(true);
             try {
                 if (initialValues?.id) {
-                    const associados = await getAllTipoAtividadesByAprModelo(initialValues.id)
-                    setSelectedTipoAtividades(associados)
-                } else {
-                    setSelectedTipoAtividades([])
+                    const res = await unwrapFetcher(getAllAprModeloTipoAtividadeRelation)({
+                        where: { modeloId: initialValues.id },
+                    });
+
+                    const relacionados = res.map((r) => String(r.tipoAtividadeId));
+                    setSelectedTipoAtividades(relacionados);
                 }
+            } catch (e) {
+                console.error("🔥 Erro:", e);
             } finally {
                 setLoadingTipoAtividades(false);
             }
         };
 
         form.setFieldsValue(initialValues ?? {});
-        carregarTipoAtividades();
+        fetchRelations();
     }, [initialValues, form]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleFinish = (values: any) => {
-        onSubmit({ ...values, tipoAtividadeIds: selectedTipoAtividades })
+    useEffect(() => {
+        if (!loadingTipoAtividades && tipoAtividades.length >= 0) {
+            setReady(true);
+        }
+    }, [loadingTipoAtividades, tipoAtividades]);
+
+    const handleFinish = (values: AprModeloFormData) => {
+        onSubmit({ ...values, tipoAtividadeIds: selectedTipoAtividades });
+    };
+
+    if (!ready || loading) {
+        return <Spin spinning />;
     }
 
     return (
-        <Spin spinning={loadingTipoAtividades}>
+        <Form form={form} layout="vertical" onFinish={handleFinish}>
+            <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
+                <Input />
+            </Form.Item>
 
+            <Form.Item name="descricao" label="Descrição">
+                <Input.TextArea rows={3} />
+            </Form.Item>
 
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleFinish}
-            >
-                <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
-                    <Input />
-                </Form.Item>
+            <Form.Item label="Tipos de Atividade">
+                <Transfer
+                    rowKey={(record) => record.id}
+                    dataSource={tipoAtividades}
+                    targetKeys={selectedTipoAtividades}
+                    selectedKeys={selectedKeys}
+                    onChange={(nextKeys) => setSelectedTipoAtividades(nextKeys as string[])}
+                    onSelectChange={(sourceSelected, targetSelected) =>
+                        setSelectedKeys([...sourceSelected, ...targetSelected] as string[])
+                    }
+                    render={(item) => item.nome || '[Sem Nome]'}
+                    showSearch
+                    pagination
+                    listStyle={{ width: 200, height: 300 }}
+                />
+            </Form.Item>
 
-                <Form.Item name="descricao" label="Descrição">
-                    <Input.TextArea rows={3} />
-                </Form.Item>
-
-                <Form.Item name="tipoAtividadeIds" label="Tipos de Atividade">
-                    <Transfer
-                        dataSource={tipoAtividades.map((tipoAtividade) => ({
-                            key: String(tipoAtividade.id),
-                            title: tipoAtividade.nome,
-                        }))}
-                        titles={['Disponíveis', 'Selecionados']}
-                        targetKeys={selectedTipoAtividades.map(String)} // 🔧 garante que são strings
-                        selectedKeys={selectetKeys.map(String)} // 🔧 garante que são strings
-                        onChange={(nextTargetKeys) => setSelectedTipoAtividades(nextTargetKeys.map(String))}
-                        onSelectChange={(sourceSelected, targetSelected) =>
-                            setSelectedKeys([...sourceSelected, ...targetSelected].map(String))
-                        }
-                        render={(item) => item.title!}
-                        showSearch
-                        pagination
-                        listStyle={{ width: 200, height: 300 }}
-                    />
-                </Form.Item>
-
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" block loading={loading}>
-                        Salvar
-                    </Button>
-                </Form.Item>
-            </Form>
-        </Spin>
+            <Form.Item>
+                <Button type="primary" htmlType="submit" block loading={loading}>
+                    Salvar
+                </Button>
+            </Form.Item>
+        </Form>
     );
 }

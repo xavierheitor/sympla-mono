@@ -3,59 +3,65 @@
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 import AprModeloForm from './form';
-import { ActionResult } from '@/lib/types/ActionResult';
 import { AprModelo } from '@sympla/prisma';
-import { createAprModelo, deleteAprModelo, getAllAprModelosWithIncludes, setTipoAtividadesDoModelo, updateAprModelo } from '@/lib/actions/apr/actionsAprModelo';
+import {
+    createAprModelo,
+    deleteAprModelo,
+    getAllAprModelos,
+    setTipoAtividadesDoModelo,
+    updateAprModelo,
+} from '@/lib/actions/apr/actionsAprModelo';
 import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
 import { AprModeloFormData } from '@/lib/actions/apr/schema';
+import { ActionResult } from '@/lib/types/ActionTypes';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function AprModeloPage() {
     const controller = useCrudController<AprModelo>('aprModelo');
 
-    const { data: modelos, isLoading, error } = useServerData(
-        'aprModelos',
-        getAllAprModelosWithIncludes
-    );
+    const modelos = useEntityData<AprModelo>({
+        key: 'aprModelos',
+        fetcher: unwrapFetcher(getAllAprModelos),
+        paginationEnabled: true,
+    });
 
-    const { data: tipoAtividades } = useServerData(
-        'tipoAtividades',
-        getAllTipoAtividades
-    );
+    const { data: tipoAtividades, } = useServerData('tipoAtividades', unwrapFetcher(getAllTipoAtividades));
 
     const columns = useTableColumnsWithActions<AprModelo>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
             { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
-
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteAprModelo(item.id), 'Modelo excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteAprModelo(item.id), 'Modelo excluído com sucesso!'),
+        }
     );
 
     const handleSubmit = async (values: AprModeloFormData & { tipoAtividadeIds: string[] }) => {
         const { tipoAtividadeIds, ...rest } = values;
 
         const action = async (): Promise<ActionResult<AprModelo>> => {
-            const modelo =
-                controller.editingItem?.id
-                    ? await updateAprModelo({ ...rest, id: controller.editingItem!.id })
-                    : await createAprModelo(rest);
+            const modelo = controller.editingItem?.id
+                ? await updateAprModelo({ ...rest, id: controller.editingItem.id })
+                : await createAprModelo(rest);
 
             await setTipoAtividadesDoModelo({
                 modeloId: modelo.data?.id ?? '',
                 tipoAtividadeIds,
             });
 
-            return { success: true, data: modelo.data }; // ✅ Agora retorna corretamente
+            return { success: true, data: modelo.data };
         };
 
         controller.exec(action, 'Modelo salvo com sucesso!');
     };
 
-    if (error) {
+    if (modelos.error) {
         return <p style={{ color: 'red' }}>Erro ao carregar modelos de APR.</p>;
     }
 
@@ -67,9 +73,11 @@ export default function AprModeloPage() {
             >
                 <Table<AprModelo>
                     columns={columns}
-                    dataSource={modelos?.data ?? []}
-                    loading={isLoading}
+                    dataSource={modelos.data}
+                    loading={modelos.isLoading}
                     rowKey="id"
+                    pagination={modelos.pagination}
+                    onChange={modelos.handleTableChange}
                 />
             </Card>
 
@@ -80,15 +88,12 @@ export default function AprModeloPage() {
                 footer={null}
                 destroyOnClose
             >
-                {tipoAtividades && (
-                    <AprModeloForm
-                        initialValues={controller.editingItem ?? undefined}
-                        tipoAtividades={tipoAtividades.data ?? []}
-                        onSubmit={handleSubmit}
-                        loading={controller.loading}
-                        // tipoAtividadeOptions={tipoAtividades.data ?? []}
-                    />
-                )}
+                <AprModeloForm
+                    initialValues={controller.editingItem ?? undefined}
+                    tipoAtividades={tipoAtividades ?? []}
+                    onSubmit={handleSubmit}
+                    loading={controller.loading || !tipoAtividades}
+                />
             </Modal>
         </>
     );

@@ -7,10 +7,12 @@ import {
   createPrismaGetAllAction,
   createPrismaUpdateAction,
   createPrismaGetAllWithIncludesAction,
+  createPrismaSetManyRelationAction,
 } from "@/lib/server-action/actionFactory";
 import {
   aprPerguntasFormSchema,
   aprPerguntasRelationFormSchema,
+  aprPerguntasRelationSetSchema,
 } from "./schema";
 
 // CRUD Perguntas
@@ -90,4 +92,30 @@ export const getAllAprPerguntasRelationsWithIncludes = createPrismaGetAllWithInc
     });
   },
   "APR_PERGUNTAS_RELATION"
+);
+
+// SET RELATIONS Pergunta -> Modelo
+export const setAprPerguntasRelations = createPrismaSetManyRelationAction(
+  aprPerguntasRelationSetSchema,
+  {
+    entityName: "APR_PERGUNTAS_RELATION",
+    deleteFn: async (perguntaId, userId, now) => {
+      await prisma.aprPerguntasRelation.updateMany({
+        where: { perguntaId },
+        data: { deletedAt: now, deletedBy: userId },
+      });
+    },
+    createFn: async (perguntaId, modeloIds, userId) => {
+      await prisma.aprPerguntasRelation.createMany({
+        data: modeloIds.map((modeloId) => ({
+          perguntaId,
+          modeloId,
+          ordem: 0, // aqui você pode customizar a ordem, ex: sempre iniciar com 0
+          createdBy: userId,
+        })),
+      });
+    },
+    getParentId: (input) => input.perguntaId,
+    getChildIds: (input) => input.modeloIds,
+  }
 );

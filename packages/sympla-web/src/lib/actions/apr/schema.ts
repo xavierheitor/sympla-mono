@@ -62,6 +62,11 @@ export const aprPerguntasRelationFormSchema = z.object({
   ordem: z.number().min(0, "ordem é obrigatório"),
 });
 
+export const aprPerguntasRelationSetSchema = z.object({
+  perguntaId: z.string().min(1, "perguntaId é obrigatório"),
+  modeloIds: z.array(z.string().min(1, "modeloId é obrigatório")),
+});
+
 type AprPerguntasRelationBaseFields = Required<
   Pick<AprPerguntasRelation, "perguntaId" | "modeloId" | "ordem">
 >;
