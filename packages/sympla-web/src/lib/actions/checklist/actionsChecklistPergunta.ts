@@ -6,141 +6,100 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
+  createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
 import {
-  checklisrPerguntaRelationFormSchema,
   checklistPerguntaFormSchema,
+  checklistPerguntaRelationFormSchema,
 } from "./schema";
+
+// ==================== CRUD ChecklistPergunta ====================
 
 export const createChecklistPergunta = createPrismaCreateAction(
   checklistPerguntaFormSchema,
-  async (data) => {
-    return await prisma.checklistPergunta.create({
-      data: {
-        ...data,
-        createdBy: data.createdBy?.toString?.() || "",
-      },
-    });
-  },
+  async (data) =>
+    prisma.checklistPergunta.create({
+      data: { ...data, createdBy: data.createdBy?.toString?.() || "" },
+    }),
   "CHECKLIST_PERGUNTA"
-);
-
-export const deleteChecklistPergunta = createPrismaDeleteAction(
-  async (id, session) => {
-    return await prisma.checklistPergunta.update({
-      where: { id },
-      data: {
-        deletedAt: new Date(),
-        deletedBy: session.user.id.toString(),
-      },
-    });
-  },
-  {
-    defaultCheck: {
-      prismaModel: prisma.checklistPergunta,
-      modelName: "ChecklistPergunta",
-    },
-    entityName: "CHECKLIST_PERGUNTA",
-  }
 );
 
 export const updateChecklistPergunta = createPrismaUpdateAction(
   checklistPerguntaFormSchema,
-  async (data) => {
-    return await prisma.checklistPergunta.update({
+  async (data) =>
+    prisma.checklistPergunta.update({
       where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
-      },
-    });
-  },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+    }),
   "CHECKLIST_PERGUNTA"
 );
 
-export const getAllChecklistPerguntas = createPrismaGetAllAction(async () => {
-  return await prisma.checklistPergunta.findMany({
-    where: { deletedAt: null },
-    orderBy: { pergunta: "asc" },
-  });
-}, "CHECKLIST_PERGUNTA");
-
-export const getAllChecklistPerguntasWithIncludes = createPrismaGetAllAction(
-  async () => {
-    return await prisma.checklistPergunta.findMany({
-      where: { deletedAt: null },
-      orderBy: { pergunta: "asc" },
-    });
-  },
-  "CHECKLIST_PERGUNTA"
-);
-
-export const createChecklisrPerguntaRelation = createPrismaCreateAction(
-  checklisrPerguntaRelationFormSchema,
-  async (data) => {
-    return await prisma.checklisrPerguntaRelation.create({
-      data: {
-        ...data,
-        createdBy: data.createdBy?.toString?.() || "",
-      },
-    });
-  },
-  "CHECKLIST_PERGUNTA_RELATION"
-);
-
-export const updateChecklisrPerguntaRelation = createPrismaUpdateAction(
-  checklisrPerguntaRelationFormSchema,
-  async (data) => {
-    return await prisma.checklisrPerguntaRelation.update({
-      where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
-      },
-    });
-  },
-  "CHECKLIST_PERGUNTA_RELATION"
-);
-
-export const deleteChecklisrPerguntaRelation = createPrismaDeleteAction(
-  async (id, session) => {
-    return await prisma.checklisrPerguntaRelation.update({
+export const deleteChecklistPergunta = createPrismaDeleteAction(
+  async (id, session) =>
+    prisma.checklistPergunta.update({
       where: { id },
-      data: {
-        deletedAt: new Date(),
-        deletedBy: session.user.id.toString(),
-      },
-    });
-  },
+      data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
+    }),
   {
-    defaultCheck: {
-      prismaModel: prisma.checklisrPerguntaRelation,
-      modelName: "ChecklisrPerguntaRelation",
-    },
+    defaultCheck: { prismaModel: prisma.checklistPergunta, modelName: "ChecklistPergunta" },
+    entityName: "CHECKLIST_PERGUNTA",
+  }
+);
+
+export const getAllChecklistPerguntas = createPrismaGetAllAction(
+  prisma.checklistPergunta,
+  "CHECKLIST_PERGUNTA"
+);
+
+// ==================== CRUD ChecklistPerguntaRelation ====================
+
+export const createChecklistPerguntaRelation = createPrismaCreateAction(
+  checklistPerguntaRelationFormSchema,
+  async (data) =>
+    prisma.checklisrPerguntaRelation.create({
+      data: { ...data, createdBy: data.createdBy?.toString?.() || "" },
+    }),
+  "CHECKLIST_PERGUNTA_RELATION"
+);
+
+export const updateChecklistPerguntaRelation = createPrismaUpdateAction(
+  checklistPerguntaRelationFormSchema,
+  async (data) =>
+    prisma.checklisrPerguntaRelation.update({
+      where: { id: data.id },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+    }),
+  "CHECKLIST_PERGUNTA_RELATION"
+);
+
+export const deleteChecklistPerguntaRelation = createPrismaDeleteAction(
+  async (id, session) =>
+    prisma.checklisrPerguntaRelation.update({
+      where: { id },
+      data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
+    }),
+  {
+    defaultCheck: { prismaModel: prisma.checklisrPerguntaRelation, modelName: "ChecklistPerguntaRelation" },
     entityName: "CHECKLIST_PERGUNTA_RELATION",
   }
 );
 
-export const getAllChecklisrPerguntaRelations = createPrismaGetAllAction(
-  async () => {
-    return await prisma.checklisrPerguntaRelation.findMany({
-      where: { deletedAt: null },
-      orderBy: { ordem: "asc" },
-    });
-  },
+export const getAllChecklistPerguntaRelations = createPrismaGetAllAction(
+  prisma.checklisrPerguntaRelation,
   "CHECKLIST_PERGUNTA_RELATION"
 );
 
-export const getAllChecklisrPerguntaWithIncludes = createPrismaGetAllAction(
-  async () => {
-    return await prisma.checklisrPerguntaRelation.findMany({
+// ==================== With Includes ====================
+
+export const getAllChecklistPerguntaRelationsWithIncludes = createPrismaGetAllWithIncludesAction(
+  async () =>
+    prisma.checklisrPerguntaRelation.findMany({
       where: { deletedAt: null },
       orderBy: { ordem: "asc" },
       include: {
         pergunta: true,
         modelo: true,
       },
-    });
-  },
+    }),
   "CHECKLIST_PERGUNTA_RELATION"
 );

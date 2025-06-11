@@ -9,10 +9,11 @@ import {
 } from "@/lib/server-action/actionFactory";
 import { tipoManutencaoFormSchema } from "./schema";
 
+// ========== CREATE ==========
 export const createTipoManutencao = createPrismaCreateAction(
   tipoManutencaoFormSchema,
   async (data) => {
-    return await prisma.tipoManutencao.create({
+    return prisma.tipoManutencao.create({
       data: {
         ...data,
         createdBy: data.createdBy?.toString?.() || "",
@@ -22,10 +23,11 @@ export const createTipoManutencao = createPrismaCreateAction(
   "TIPO_MANUTENCAO"
 );
 
+// ========== UPDATE ==========
 export const updateTipoManutencao = createPrismaUpdateAction(
   tipoManutencaoFormSchema,
   async (data) => {
-    return await prisma.tipoManutencao.update({
+    return prisma.tipoManutencao.update({
       where: { id: data.id },
       data: {
         ...data,
@@ -36,9 +38,10 @@ export const updateTipoManutencao = createPrismaUpdateAction(
   "TIPO_MANUTENCAO"
 );
 
+// ========== DELETE (soft delete) ==========
 export const deleteTipoManutencao = createPrismaDeleteAction(
   async (id, session) => {
-    return await prisma.tipoManutencao.update({
+    return prisma.tipoManutencao.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -55,22 +58,16 @@ export const deleteTipoManutencao = createPrismaDeleteAction(
   }
 );
 
-export const getAllTipoManutencaos = createPrismaGetAllAction(async () => {
-  return await prisma.tipoManutencao.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-  });
-}, "TIPO_MANUTENCAO");
+// ========== GET ALL ==========
+export const getAllTipoManutencaos = createPrismaGetAllAction(
+  prisma.tipoManutencao,
+  "TIPO_MANUTENCAO",
+  ["nome"]
+);
 
+// ========== GET ALL WITH INCLUDES ==========
 export const getAllTipoManutencaosWithIncludes = createPrismaGetAllAction(
-  async () => {
-    return await prisma.tipoManutencao.findMany({
-      where: { deletedAt: null },
-      orderBy: { nome: "asc" },
-      // include: {
-      //     relacaoExemplo: true,
-      // },
-    });
-  },
-  "TIPO_MANUTENCAO"
+  prisma.tipoManutencao,
+  "TIPO_MANUTENCAO",
+  ["nome"]
 );

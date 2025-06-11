@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useActionHandler } from "./useActionHandler";
-import { ActionResult } from "../types/ActionResult";
+import { ActionResult } from "../types/ActionTypes";
 
 export function useCrudController<T>(mutateKey: string) {
     const [isOpen, setIsOpen] = useState(false);

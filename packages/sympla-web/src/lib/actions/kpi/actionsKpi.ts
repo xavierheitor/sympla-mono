@@ -6,8 +6,11 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
+  createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
 import { kpiFormSchema } from "./schema";
+
+// ===== CREATE
 
 export const createKpi = createPrismaCreateAction(
   kpiFormSchema,
@@ -15,12 +18,14 @@ export const createKpi = createPrismaCreateAction(
     return await prisma.kpi.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString() || "",
       },
     });
   },
   "KPI"
 );
+
+// ===== UPDATE
 
 export const updateKpi = createPrismaUpdateAction(
   kpiFormSchema,
@@ -29,12 +34,14 @@ export const updateKpi = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString() || "",
       },
     });
   },
   "KPI"
 );
+
+// ===== DELETE
 
 export const deleteKpi = createPrismaDeleteAction(
   async (id, session) => {
@@ -55,22 +62,31 @@ export const deleteKpi = createPrismaDeleteAction(
   }
 );
 
-export const getAllKpisWithIncludes = createPrismaGetAllAction(
-  async (filter) => {
-    return await prisma.kpi.findMany({
-      where: filter,
-      orderBy: { nome: "asc" },
-      include: {
+// ===== GET ALL (com paginação e busca nativa)
+
+export const getAllKpis = createPrismaGetAllAction(
+  prisma.kpi,
+  "KPI",
+  ["nome", "descricao"]
+);
+
+// ===== GET ALL WITH INCLUDES
+
+export const getAllKpisWithIncludes = createPrismaGetAllWithIncludesAction(
+  async (params) => {
+    const {
+      where = {},
+      orderBy = { nome: "asc" },
+      include = {
         tipoManutencao: true,
       },
+    } = params;
+
+    return await prisma.kpi.findMany({
+      where: { ...where, deletedAt: null },
+      orderBy,
+      include,
     });
   },
   "KPI"
 );
-
-export const getAllKpis = createPrismaGetAllAction(async () => {
-  return await prisma.kpi.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-  });
-}, "KPI");

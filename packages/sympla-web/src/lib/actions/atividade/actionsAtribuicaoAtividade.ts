@@ -5,10 +5,12 @@ import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
+  createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
 import { atividadeAtribuicaoFormSchema } from "./schema";
 
+// ========== CRIAÇÃO ==========
 export const createAtividadeAtribuicao = createPrismaCreateAction(
   atividadeAtribuicaoFormSchema,
   async (data) => {
@@ -22,6 +24,7 @@ export const createAtividadeAtribuicao = createPrismaCreateAction(
   "ATIVIDADE_ATRIBUICAO"
 );
 
+// ========== ATUALIZAÇÃO ==========
 export const updateAtividadeAtribuicao = createPrismaUpdateAction(
   atividadeAtribuicaoFormSchema,
   async (data) => {
@@ -36,6 +39,7 @@ export const updateAtividadeAtribuicao = createPrismaUpdateAction(
   "ATIVIDADE_ATRIBUICAO"
 );
 
+// ========== REMOÇÃO LÓGICA ==========
 export const deleteAtividadeAtribuicao = createPrismaDeleteAction(
   async (id, session) => {
     return await prisma.atividadeAtribuicao.update({
@@ -55,14 +59,14 @@ export const deleteAtividadeAtribuicao = createPrismaDeleteAction(
   }
 );
 
-export const getAllAtividadeAtribuicaos = createPrismaGetAllAction(async () => {
-  return await prisma.atividadeAtribuicao.findMany({
-    where: { deletedAt: null },
-    orderBy: { id: "asc" },
-  });
-}, "ATIVIDADE_ATRIBUICAO");
+// ========== LISTAGEM SIMPLES ==========
+export const getAllAtividadeAtribuicaos = createPrismaGetAllAction(
+  prisma.atividadeAtribuicao,
+  "ATIVIDADE_ATRIBUICAO"
+);
 
-export const getAllAtividadeAtribuicaosWithIncludes = createPrismaGetAllAction(
+// ========== LISTAGEM COM RELACIONAMENTOS ==========
+export const getAllAtividadeAtribuicaosWithIncludes = createPrismaGetAllWithIncludesAction(
   async () => {
     return await prisma.atividadeAtribuicao.findMany({
       where: { deletedAt: null },

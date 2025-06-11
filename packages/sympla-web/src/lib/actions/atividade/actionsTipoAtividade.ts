@@ -5,12 +5,14 @@ import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
+  createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
 import { tipoAtividadeFormSchema } from "./schema";
 import { TipoAtividadeMobile } from "@sympla/prisma";
 import { logger } from "@/lib/utils/logger";
 
+// ========== CRIAÇÃO ==========
 export const createTipoAtividade = createPrismaCreateAction(
   tipoAtividadeFormSchema,
   async (data) => {
@@ -24,12 +26,28 @@ export const createTipoAtividade = createPrismaCreateAction(
   "TIPO_ATIVIDADE"
 );
 
+// ========== ATUALIZAÇÃO ==========
+export const updateTipoAtividade = createPrismaUpdateAction(
+  tipoAtividadeFormSchema,
+  async (data) => {
+    return await prisma.tipoAtividade.update({
+      where: { id: data.id },
+      data: {
+        ...data,
+        updatedBy: data.updatedBy?.toString?.() || "",
+      },
+    });
+  },
+  "TIPO_ATIVIDADE"
+);
+
+// ========== REMOÇÃO LÓGICA ==========
 export const deleteTipoAtividade = createPrismaDeleteAction(
   async (id, session) => {
     const now = new Date();
     const userId = session.user.id.toString();
 
-    // 🔁 Marca os relacionamentos como deletados (soft delete)
+    // 🔁 Marca os relacionamentos com KPI como deletados
     await prisma.tipoAtividadeKpi.updateMany({
       where: { tipoAtividadeId: id },
       data: {
@@ -38,7 +56,7 @@ export const deleteTipoAtividade = createPrismaDeleteAction(
       },
     });
 
-    // 🗑 Marca o tipo de atividade como deletado (soft delete)
+    // 🗑 Marca o tipo de atividade como deletado
     return await prisma.tipoAtividade.update({
       where: { id },
       data: {
@@ -56,43 +74,30 @@ export const deleteTipoAtividade = createPrismaDeleteAction(
   }
 );
 
-export const getAllTipoAtividades = createPrismaGetAllAction(async () => {
-  return await prisma.tipoAtividade.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-  });
-}, "TIPO_ATIVIDADE");
-
-export const updateTipoAtividade = createPrismaUpdateAction(
-  tipoAtividadeFormSchema,
-  async (data) => {
-    return await prisma.tipoAtividade.update({
-      where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
-      },
-    });
-  },
+// ========== LISTAGEM SIMPLES ==========
+export const getAllTipoAtividades = createPrismaGetAllAction(
+  prisma.tipoAtividade,
   "TIPO_ATIVIDADE"
 );
 
-export const getAllTipoAtividadesWithIncludes = createPrismaGetAllAction(
+// ========== LISTAGEM COM RELACIONAMENTOS ==========
+export const getAllTipoAtividadesWithIncludes = createPrismaGetAllWithIncludesAction(
   async () => {
     return await prisma.tipoAtividade.findMany({
       where: { deletedAt: null },
       orderBy: { nome: "asc" },
       include: {
-        // kpis: true,
+        //includes aqui
       },
     });
   },
   "TIPO_ATIVIDADE"
 );
 
+// ========== ENUM PARA SELECT ==========
 function enumToOptions<T extends object>(enumObj: T) {
   return Object.entries(enumObj).map(([key, value]) => ({
-    label: key.charAt(0).toUpperCase() + key.slice(1), // Mantém camelCase com a primeira letra maiúscula
+    label: key.charAt(0).toUpperCase() + key.slice(1),
     value,
   }));
 }

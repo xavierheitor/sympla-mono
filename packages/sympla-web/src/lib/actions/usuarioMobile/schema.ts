@@ -37,3 +37,8 @@ export type UsuarioMobileRegionalWithIncludes = UsuarioMobileRegional & {
   usuarioMobile: UsuarioMobile;
   regional: Regional;
 };
+
+export const inputSchema = z.object({
+  usuarioMobileId: z.string().min(1),
+  regionalIds: z.array(z.string().min(1)),
+});

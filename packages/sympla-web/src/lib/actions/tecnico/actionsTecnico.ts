@@ -9,10 +9,11 @@ import {
 } from "@/lib/server-action/actionFactory";
 import { tecnicoFormSchema } from "./schema";
 
+// ========== CREATE ==========
 export const createTecnico = createPrismaCreateAction(
   tecnicoFormSchema,
   async (data) => {
-    return await prisma.tecnico.create({
+    return prisma.tecnico.create({
       data: {
         ...data,
         createdBy: data.createdBy?.toString?.() || "",
@@ -22,10 +23,11 @@ export const createTecnico = createPrismaCreateAction(
   "TECNICO"
 );
 
+// ========== UPDATE ==========
 export const updateTecnico = createPrismaUpdateAction(
   tecnicoFormSchema,
   async (data) => {
-    return await prisma.tecnico.update({
+    return prisma.tecnico.update({
       where: { id: data.id },
       data: {
         ...data,
@@ -36,9 +38,10 @@ export const updateTecnico = createPrismaUpdateAction(
   "TECNICO"
 );
 
+// ========== DELETE (soft delete) ==========
 export const deleteTecnico = createPrismaDeleteAction(
   async (id, session) => {
-    return await prisma.tecnico.update({
+    return prisma.tecnico.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -55,19 +58,16 @@ export const deleteTecnico = createPrismaDeleteAction(
   }
 );
 
-export const getAllTecnicos = createPrismaGetAllAction(async () => {
-  return await prisma.tecnico.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-  });
-}, "TECNICO");
+// ========== GET ALL ==========
+export const getAllTecnicos = createPrismaGetAllAction(
+  prisma.tecnico,
+  "TECNICO",
+  ["nome"] // campos pesquisáveis no search
+);
 
-export const getAllTecnicosWithIncludes = createPrismaGetAllAction(async () => {
-  return await prisma.tecnico.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-    // include: {
-    //     relacaoExemplo: true,
-    // },
-  });
-}, "TECNICO");
+// ========== GET ALL WITH INCLUDES ==========
+export const getAllTecnicosWithIncludes = createPrismaGetAllAction(
+  prisma.tecnico,
+  "TECNICO",
+  ["nome"]
+);

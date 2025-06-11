@@ -6,151 +6,74 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
+  createPrismaGetByIdAction,
+  createPrismaSetManyRelationAction,
 } from "@/lib/server-action/actionFactory";
 import {
   aprModeloFormSchema,
-  aprModeloTipoAtividadeRelationFormSchema,
   inputSchema,
 } from "./schema";
-import { authOptions } from "@/lib/utils/auth.config";
-import { getServerSession } from "next-auth";
 
+// CRUD do AprModelo
 export const createAprModelo = createPrismaCreateAction(
   aprModeloFormSchema,
-  async (data) => {
-    return await prisma.aprModelo.create({
-      data: {
-        ...data,
-        createdBy: data.createdBy?.toString?.() || "",
-      },
-    });
-  },
+  async (data) => prisma.aprModelo.create({ data: { ...data, createdBy: data.createdBy?.toString?.() || "" } }),
   "APR_MODELO"
 );
 
 export const updateAprModelo = createPrismaUpdateAction(
   aprModeloFormSchema,
-  async (data) => {
-    return await prisma.aprModelo.update({
-      where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
-      },
-    });
-  },
+  async (data) => prisma.aprModelo.update({
+    where: { id: data.id },
+    data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+  }),
   "APR_MODELO"
 );
 
 export const deleteAprModelo = createPrismaDeleteAction(
-  async (id, session) => {
-    return await prisma.aprModelo.update({
-      where: { id },
-      data: {
-        deletedAt: new Date(),
-        deletedBy: session.user.id.toString(),
-      },
-    });
-  },
+  async (id, session) => prisma.aprModelo.update({
+    where: { id },
+    data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
+  }),
   {
-    defaultCheck: {
-      prismaModel: prisma.aprModelo,
-      modelName: "AprModelo",
-    },
+    defaultCheck: { prismaModel: prisma.aprModelo, modelName: "AprModelo" },
     entityName: "APR_MODELO",
   }
 );
 
-export const getAllAprModelos = createPrismaGetAllAction(async () => {
-  return await prisma.aprModelo.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-  });
-}, "APR_MODELO");
+export const getAllAprModelos = createPrismaGetAllAction(prisma.aprModelo, "APR_MODELO");
 
-export const getAllAprModelosWithIncludes = createPrismaGetAllAction(
-  async () => {
-    return await prisma.aprModelo.findMany({
-      where: { deletedAt: null },
-      orderBy: { nome: "asc" },
-      include: {},
-    });
-  },
+export const getAprModeloById = createPrismaGetByIdAction(
+  async (id) => prisma.aprModelo.findUniqueOrThrow({ where: { id } }),
   "APR_MODELO"
 );
 
-export const setTipoAtividadesDoModelo = async (input: unknown) => {
-  const { modeloId, tipoAtividadeIds } = inputSchema.parse(input);
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    throw new Error("Usuário não autenticado.");
+// Relação AprModelo <-> TipoAtividade (multi relation factory)
+export const setTipoAtividadesDoModelo = createPrismaSetManyRelationAction(
+  inputSchema,
+  {
+    entityName: "APR_MODELO_TIPO_ATIVIDADE_RELATION",
+    deleteFn: async (modeloId, userId, now) => {
+      await prisma.aprModeloTipoAtividadeRelation.updateMany({
+        where: { modeloId },
+        data: { deletedAt: now, deletedBy: userId },
+      });
+    },
+    createFn: async (modeloId, tipoAtividadeIds, userId) => {
+      await prisma.aprModeloTipoAtividadeRelation.createMany({
+        data: tipoAtividadeIds.map((tipoAtividadeId) => ({
+          modeloId,
+          tipoAtividadeId,
+          createdBy: userId,
+        })),
+      });
+    },
+    getParentId: (input) => input.modeloId,
+    getChildIds: (input) => input.tipoAtividadeIds,
   }
-
-  // Remove vínculos antigos
-  await prisma.aprModeloTipoAtividadeRelation.deleteMany({
-    where: { modeloId },
-  });
-
-  // Cria novos vínculos
-  if (tipoAtividadeIds.length > 0) {
-    await prisma.aprModeloTipoAtividadeRelation.createMany({
-      data: tipoAtividadeIds.map((tipoAtividadeId) => ({
-        modeloId,
-        tipoAtividadeId,
-        createdBy: session.user.id,
-      })),
-    });
-  }
-
-  return { success: true };
-};
-
-export const getAllAprModeloTipoAtividadeRelationWithIncludes =
-  createPrismaGetAllAction(async () => {
-    return await prisma.aprModeloTipoAtividadeRelation.findMany({
-      where: { deletedAt: null },
-      orderBy: { createdAt: "desc" },
-      include: {
-        modelo: true,
-        tipoAtividade: true,
-      },
-    });
-  }, "APR_MODELO_TIPO_ATIVIDADE_RELATION");
-
-export const getAllAprModeloTipoAtividadeRelation = createPrismaGetAllAction(
-  async () => {
-    return await prisma.aprModeloTipoAtividadeRelation.findMany({
-      where: { deletedAt: null },
-      orderBy: { createdAt: "desc" },
-    });
-  },
-  "APR_MODELO_TIPO_ATIVIDADE_RELATION"
 );
 
-export async function getAllTipoAtividadesByAprModelo(modeloId: string) {
-  const registros = await prisma.aprModeloTipoAtividadeRelation.findMany({
-    where: {
-      modeloId,
-      deletedAt: null,
-    },
-    select: {
-      tipoAtividadeId: true,
-    },
-  });
-
-  return registros.map((r) => r.tipoAtividadeId);
-}
-
-export const createAprModeloTipoAtividadeRelation = createPrismaCreateAction(
-  aprModeloTipoAtividadeRelationFormSchema,
-  async (data) => {
-    return await prisma.aprModeloTipoAtividadeRelation.create({
-      data: {
-        ...data,
-        createdBy: data.createdBy?.toString?.() || "",
-      },
-    });
-  },
+export const getAllAprModeloTipoAtividadeRelation = createPrismaGetAllAction(
+  prisma.aprModeloTipoAtividadeRelation,
   "APR_MODELO_TIPO_ATIVIDADE_RELATION"
 );

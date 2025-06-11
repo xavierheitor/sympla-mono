@@ -9,29 +9,37 @@ import {
 } from "@/lib/server-action/actionFactory";
 import { grupoDefeitoEquipamentoFormSchema } from "./schema";
 
+// ===== CREATE =====
+
 export const createGrupoDefeitoEquipamento = createPrismaCreateAction(
   grupoDefeitoEquipamentoFormSchema,
-  async (data) => {
-    return await prisma.grupoDefeitoEquipamento.create({
-      data: {
-        ...data,
-        createdBy: data.createdBy?.toString?.() || "",
-      },
-    });
-  },
+  async (data) =>
+    prisma.grupoDefeitoEquipamento.create({
+      data: { ...data, createdBy: data.createdBy?.toString?.() || "" },
+    }),
   "GRUPO_DEFEITO_EQUIPAMENTO"
 );
 
+// ===== UPDATE =====
+
+export const updateGrupoDefeitoEquipamento = createPrismaUpdateAction(
+  grupoDefeitoEquipamentoFormSchema,
+  async (data) =>
+    prisma.grupoDefeitoEquipamento.update({
+      where: { id: data.id },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+    }),
+  "GRUPO_DEFEITO_EQUIPAMENTO"
+);
+
+// ===== DELETE =====
+
 export const deleteGrupoDefeitoEquipamento = createPrismaDeleteAction(
-  async (id, session) => {
-    return await prisma.grupoDefeitoEquipamento.update({
+  async (id, session) =>
+    prisma.grupoDefeitoEquipamento.update({
       where: { id },
-      data: {
-        deletedAt: new Date(),
-        deletedBy: session.user.id.toString(),
-      },
-    });
-  },
+      data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
+    }),
   {
     defaultCheck: {
       prismaModel: prisma.grupoDefeitoEquipamento,
@@ -41,40 +49,9 @@ export const deleteGrupoDefeitoEquipamento = createPrismaDeleteAction(
   }
 );
 
-export const updateGrupoDefeitoEquipamento = createPrismaUpdateAction(
-  grupoDefeitoEquipamentoFormSchema,
-  async (data) => {
-    return await prisma.grupoDefeitoEquipamento.update({
-      where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
-      },
-    });
-  },
-  "GRUPO_DEFEITO_EQUIPAMENTO"
-);
+// ===== GET ALL =====
 
 export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllAction(
-  async () => {
-    return await prisma.grupoDefeitoEquipamento.findMany({
-      where: { deletedAt: null },
-      orderBy: { nome: "asc" },
-    });
-  },
+  prisma.grupoDefeitoEquipamento,
   "GRUPO_DEFEITO_EQUIPAMENTO"
 );
-
-export const createGrupoDefeitoEquipamentoWithIncludes =
-  createPrismaCreateAction(
-    grupoDefeitoEquipamentoFormSchema,
-    async (data) => {
-      return await prisma.grupoDefeitoEquipamento.create({
-        data: {
-          ...data,
-          createdBy: data.createdBy?.toString?.() || "",
-        },
-      });
-    },
-    "GRUPO_DEFEITO_EQUIPAMENTO"
-  );

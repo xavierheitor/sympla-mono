@@ -9,56 +9,47 @@ import {
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
 import { distribuidoraFormSchema } from "./schema";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/utils/auth.config";
+
+// ===== CREATE =====
 
 export const createDistribuidora = createPrismaCreateAction(
   distribuidoraFormSchema,
-  async (data) => {
-    return await prisma.distribuidora.create({
+  async (data) =>
+    prisma.distribuidora.create({
       data: {
         ...data,
-        createdBy: data.createdBy.toString(), // 🔥 Aqui usa o id da sessão
+        createdBy: data.createdBy?.toString?.() || "",
       },
-    });
-  },
+    }),
   "DISTRIBUIDORA"
 );
+
+// ===== UPDATE =====
 
 export const updateDistribuidora = createPrismaUpdateAction(
   distribuidoraFormSchema,
-  async (data) => {
-    if (!data.id) {
-      throw new Error("ID é obrigatório para atualização");
-    }
-
-    return await prisma.distribuidora.update({
-      where: { id: data.id.toString() },
+  async (data) =>
+    prisma.distribuidora.update({
+      where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy.toString(), // � Aqui usa o id da sessão
+        updatedBy: data.updatedBy?.toString?.() || "",
       },
-    });
-  },
+    }),
   "DISTRIBUIDORA"
 );
 
+// ===== DELETE =====
+
 export const deleteDistribuidora = createPrismaDeleteAction(
-  async (id) => {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      throw new Error("Usuário não autenticado.");
-    }
-
-    return await prisma.distribuidora.update({
+  async (id, session) =>
+    prisma.distribuidora.update({
       where: { id },
       data: {
         deletedAt: new Date(),
-        deletedBy: session.user.id,
+        deletedBy: session.user.id.toString(),
       },
-    });
-  },
+    }),
   {
     defaultCheck: {
       prismaModel: prisma.distribuidora,
@@ -68,18 +59,22 @@ export const deleteDistribuidora = createPrismaDeleteAction(
   }
 );
 
-export const getAllDistribuidoras = createPrismaGetAllAction(async (filter) => {
-  return prisma.distribuidora.findMany({
-    orderBy: { nome: "asc" },
-    where: filter,
-  });
-}, "DISTRIBUIDORA");
+// ===== GET ALL =====
 
-export const getDistribuidoraById = createPrismaGetByIdAction(async (id) => {
-  return await prisma.distribuidora.findUniqueOrThrow({
-    where: {
-      id: id.toString(),
-      deletedAt: null,
-    },
-  });
-}, "DISTRIBUIDORA");
+export const getAllDistribuidoras = createPrismaGetAllAction(
+  prisma.distribuidora,
+  "DISTRIBUIDORA"
+);
+
+// ===== GET BY ID =====
+
+export const getDistribuidoraById = createPrismaGetByIdAction(
+  async (id) =>
+    prisma.distribuidora.findUniqueOrThrow({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    }),
+  "DISTRIBUIDORA"
+);

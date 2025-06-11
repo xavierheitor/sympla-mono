@@ -6,46 +6,41 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
+  createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
 import { subgrupoDefeitoEquipamentoFormSchema } from "./schema";
 
+// ===== CREATE =====
+
 export const createSubgrupoDefeitoEquipamento = createPrismaCreateAction(
   subgrupoDefeitoEquipamentoFormSchema,
-  async (data) => {
-    return await prisma.subgrupoDefeitoEquipamento.create({
-      data: {
-        ...data,
-        createdBy: data.createdBy?.toString?.() || "",
-      },
-    });
-  },
+  async (data) =>
+    prisma.subgrupoDefeitoEquipamento.create({
+      data: { ...data, createdBy: data.createdBy?.toString?.() || "" },
+    }),
   "SUBGRUPO_DEFEITO_EQUIPAMENTO"
 );
+
+// ===== UPDATE =====
 
 export const updateSubgrupoDefeitoEquipamento = createPrismaUpdateAction(
   subgrupoDefeitoEquipamentoFormSchema,
-  async (data) => {
-    return await prisma.subgrupoDefeitoEquipamento.update({
+  async (data) =>
+    prisma.subgrupoDefeitoEquipamento.update({
       where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
-      },
-    });
-  },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+    }),
   "SUBGRUPO_DEFEITO_EQUIPAMENTO"
 );
 
+// ===== DELETE =====
+
 export const deleteSubgrupoDefeitoEquipamento = createPrismaDeleteAction(
-  async (id, session) => {
-    return await prisma.subgrupoDefeitoEquipamento.update({
+  async (id, session) =>
+    prisma.subgrupoDefeitoEquipamento.update({
       where: { id },
-      data: {
-        deletedAt: new Date(),
-        deletedBy: session.user.id.toString(),
-      },
-    });
-  },
+      data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
+    }),
   {
     defaultCheck: {
       prismaModel: prisma.subgrupoDefeitoEquipamento,
@@ -55,23 +50,21 @@ export const deleteSubgrupoDefeitoEquipamento = createPrismaDeleteAction(
   }
 );
 
+// ===== GET ALL (SEM INCLUDES) =====
+
 export const getAllSubgrupoDefeitoEquipamentos = createPrismaGetAllAction(
-  async () => {
-    return await prisma.subgrupoDefeitoEquipamento.findMany({
-      where: { deletedAt: null },
-      orderBy: { nome: "asc" },
-    });
-  },
+  prisma.subgrupoDefeitoEquipamento,
   "SUBGRUPO_DEFEITO_EQUIPAMENTO"
 );
 
-export const getAllSubgrupoDefeitoEquipamentosWithIncludes =
-  createPrismaGetAllAction(async () => {
-    return await prisma.subgrupoDefeitoEquipamento.findMany({
+// ===== GET ALL WITH INCLUDES =====
+
+export const getAllSubgrupoDefeitoEquipamentosWithIncludes = createPrismaGetAllWithIncludesAction(
+  async () =>
+    prisma.subgrupoDefeitoEquipamento.findMany({
       where: { deletedAt: null },
       orderBy: { nome: "asc" },
-      include: {
-        grupo: true,
-      },
-    });
-  }, "SUBGRUPO_DEFEITO_EQUIPAMENTO");
+      include: { grupo: true },
+    }),
+  "SUBGRUPO_DEFEITO_EQUIPAMENTO"
+);

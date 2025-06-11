@@ -6,13 +6,15 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
+  createPrismaSetManyRelationAction,
 } from "@/lib/server-action/actionFactory";
-import { usuarioMobileRegionalFormSchema } from "./schema";
+import { usuarioMobileRegionalFormSchema, inputSchema } from "./schema";
 
+// ========== CREATE ==========
 export const createUsuarioMobileRegional = createPrismaCreateAction(
   usuarioMobileRegionalFormSchema,
   async (data) => {
-    return await prisma.usuarioMobileRegional.create({
+    return prisma.usuarioMobileRegional.create({
       data: {
         ...data,
         createdBy: "seed",
@@ -22,9 +24,25 @@ export const createUsuarioMobileRegional = createPrismaCreateAction(
   "USUARIO_MOBILE_REGIONAL"
 );
 
+// ========== UPDATE ==========
+export const updateUsuarioMobileRegional = createPrismaUpdateAction(
+  usuarioMobileRegionalFormSchema,
+  async (data) => {
+    return prisma.usuarioMobileRegional.update({
+      where: { id: data.id },
+      data: {
+        ...data,
+        updatedBy: "seed",
+      },
+    });
+  },
+  "USUARIO_MOBILE_REGIONAL"
+);
+
+// ========== DELETE ==========
 export const deleteUsuarioMobileRegional = createPrismaDeleteAction(
   async (id) => {
-    return await prisma.usuarioMobileRegional.update({
+    return prisma.usuarioMobileRegional.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -41,38 +59,42 @@ export const deleteUsuarioMobileRegional = createPrismaDeleteAction(
   }
 );
 
-export const updateUsuarioMobileRegional = createPrismaUpdateAction(
-  usuarioMobileRegionalFormSchema,
-  async (data) => {
-    return await prisma.usuarioMobileRegional.update({
-      where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: "seed",
-      },
-    });
-  },
-  "USUARIO_MOBILE_REGIONAL"
-);
-
+// ========== GET ALL ==========
 export const getAllUsuarioMobileRegionals = createPrismaGetAllAction(
-  async () => {
-    return await prisma.usuarioMobileRegional.findMany({
-      where: { deletedAt: null },
-      orderBy: { createdAt: "asc" },
-    });
-  },
+  prisma.usuarioMobileRegional,
   "USUARIO_MOBILE_REGIONAL"
 );
 
-export const getAllUsuarioMobileRegionalsWithIncludes =
-  createPrismaGetAllAction(async () => {
-    return await prisma.usuarioMobileRegional.findMany({
-      where: { deletedAt: null },
-      orderBy: { createdAt: "asc" },
-      include: {
-        usuarioMobile: true,
-        regional: true,
-      },
-    });
-  }, "USUARIO_MOBILE_REGIONAL");
+// ========== GET ALL WITH INCLUDES ==========
+export const getAllUsuarioMobileRegionalsWithIncludes = createPrismaGetAllAction(
+  prisma.usuarioMobileRegional,
+  "USUARIO_MOBILE_REGIONAL"
+);
+
+// ========== SET MANY RELATIONS (TRANSFER) ==========
+export const setRegionaisDoUsuarioMobile = createPrismaSetManyRelationAction(
+  inputSchema,
+  {
+    entityName: "USUARIO_MOBILE_REGIONAL",
+    deleteFn: async (usuarioMobileId, userId, now) => {
+      await prisma.usuarioMobileRegional.updateMany({
+        where: { usuarioMobileId },
+        data: {
+          deletedAt: now,
+          deletedBy: userId,
+        },
+      });
+    },
+    createFn: async (usuarioMobileId, regionalIds, userId) => {
+      await prisma.usuarioMobileRegional.createMany({
+        data: regionalIds.map((regionalId) => ({
+          usuarioMobileId,
+          regionalId,
+          createdBy: userId,
+        })),
+      });
+    },
+    getParentId: (input) => input.usuarioMobileId,
+    getChildIds: (input) => input.regionalIds,
+  }
+);

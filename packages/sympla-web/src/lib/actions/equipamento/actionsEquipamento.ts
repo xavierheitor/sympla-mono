@@ -6,8 +6,11 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
+  createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
-import { equipamentoFormSchema, EquipamentoPaginatedParams } from "./schema";
+import { equipamentoFormSchema } from "./schema";
+
+// ===== CREATE =====
 
 export const createEquipamento = createPrismaCreateAction(
   equipamentoFormSchema,
@@ -15,12 +18,14 @@ export const createEquipamento = createPrismaCreateAction(
     return await prisma.equipamento.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString() || "",
       },
     });
   },
   "EQUIPAMENTO"
 );
+
+// ===== UPDATE =====
 
 export const updateEquipamento = createPrismaUpdateAction(
   equipamentoFormSchema,
@@ -29,12 +34,14 @@ export const updateEquipamento = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString() || "",
       },
     });
   },
   "EQUIPAMENTO"
 );
+
+// ===== DELETE =====
 
 export const deleteEquipamento = createPrismaDeleteAction(
   async (id, session) => {
@@ -55,91 +62,52 @@ export const deleteEquipamento = createPrismaDeleteAction(
   }
 );
 
-export const getAllEquipamentos = createPrismaGetAllAction(async () => {
-  return await prisma.equipamento.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-  });
-}, "EQUIPAMENTO");
+// ===== GET ALL com paginação e search =====
 
-export const getAllEquipamentosWithIncludes = createPrismaGetAllAction(
-  async (filter) => {
-    return await prisma.equipamento.findMany({
-      where: filter,
-      orderBy: { nome: "asc" },
-      include: {
+export const getAllEquipamentos = createPrismaGetAllAction(
+  prisma.equipamento,
+  "EQUIPAMENTO",
+  ["nome", "descricao"]
+);
+
+// ===== GET ALL WITH INCLUDES (para grids com relações carregadas) =====
+
+export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesAction(
+  async (params) => {
+    const {
+      where = {},
+      orderBy = { nome: "asc" },
+      include = {
         subestacao: {
           include: {
             regional: true,
           },
         },
       },
+    } = params;
+
+    return await prisma.equipamento.findMany({
+      where: { ...where, deletedAt: null },
+      orderBy,
+      include,
     });
   },
   "EQUIPAMENTO"
 );
 
-export const getEquipamentosPaginated = async (
-  params: EquipamentoPaginatedParams
-) => {
-  const { page, pageSize, search, subestacaoId, grupoDefeitoCodigo } = params;
-
-  const where = {
-    deletedAt: null,
-    ...(search
-      ? {
-          nome: {
-            contains: search,
-            mode: "insensitive",
-          },
-        }
-      : {}),
-    ...(subestacaoId ? { subestacaoId } : {}),
-    ...(grupoDefeitoCodigo ? { grupoDefeitoCodigo } : {}),
-  };
-
-  const [total, data] = await Promise.all([
-    prisma.equipamento.count({ where }),
-    prisma.equipamento.findMany({
-      where,
-      orderBy: { nome: "asc" },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      include: {
-        subestacao: {
-          include: { regional: true },
-        },
-      },
-    }),
-  ]);
-
-  return {
-    data,
-    total,
-    page,
-    pageSize,
-    totalPages: Math.ceil(total / pageSize),
-  };
-};
+// ===== CREATE MANY FROM EXCEL (lógica especial permanece) =====
 
 const detectGrupoDefeito = (nome: string) => {
   const nomeUpper = nome.toUpperCase();
   if (nomeUpper.includes("BC") || nomeUpper.includes("BANCAP")) return "SEBE";
-  if (
-    nomeUpper.includes("TR") &&
-    !nomeUpper.includes("TP") &&
-    !nomeUpper.includes("TC")
-  )
+  if (nomeUpper.includes("TR") && !nomeUpper.includes("TP") && !nomeUpper.includes("TC"))
     return "SETR";
   if (nomeUpper.includes("AUX") || nomeUpper.includes("TSA")) return "SESA";
   if (nomeUpper.includes("TP") || nomeUpper.includes("TC")) return "SETP";
   if (
-    nomeUpper
-      .match(/\d{3,4}/)
-      ?.some(
-        (code) =>
-          code.endsWith("13") || code.endsWith("14") || code.endsWith("24")
-      )
+    nomeUpper.match(/\d{3,4}/)?.some(
+      (code) => code.endsWith("13") || code.endsWith("14") || code.endsWith("24")
+    )
   )
     return "SEDJ";
   return "SECV";
@@ -150,15 +118,9 @@ const extractSiglaSubestacao = (nome: string) => {
   return match ? match[0] : null;
 };
 
-export const createManyEquipamentosFromExcel = async (
-  data: { nome?: string }[]
-) => {
+export const createManyEquipamentosFromExcel = async (data: { nome?: string }[]) => {
   const subestacoes = await prisma.subestacao.findMany();
-  const subestacaoMap = new Map(
-    subestacoes.map((s) => [s.sigla.toUpperCase(), s.id])
-  );
-
-  console.log(subestacaoMap);
+  const subestacaoMap = new Map(subestacoes.map((s) => [s.sigla.toUpperCase(), s.id]));
 
   const equipamentos = data.map((row, index) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -180,21 +142,15 @@ export const createManyEquipamentosFromExcel = async (
       return null;
     }
 
-    console.log(
-      `✅ Processando: ${nome} (Sigla: ${sigla}, SubestacaoID: ${subestacaoId})`
-    );
-
     return {
       nome,
-      descricao: nome, // 🔥 Descrição igual ao nome
+      descricao: nome,
       subestacaoId,
       grupoDefeitoCodigo: detectGrupoDefeito(nome),
     };
   });
 
-  const validEquipamentos = equipamentos.filter(
-    (e): e is NonNullable<typeof e> => !!e
-  );
+  const validEquipamentos = equipamentos.filter((e): e is NonNullable<typeof e> => !!e);
 
   if (validEquipamentos.length === 0) {
     return {

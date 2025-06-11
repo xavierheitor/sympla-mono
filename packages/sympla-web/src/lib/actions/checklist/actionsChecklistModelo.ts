@@ -6,111 +6,95 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
+  createPrismaGetAllWithIncludesAction,
+  createPrismaSetManyRelationAction,
 } from "@/lib/server-action/actionFactory";
+
 import { checklistModeloFormSchema, inputSchema } from "./schema";
-import { authOptions } from "@/lib/utils/auth.config";
-import { getServerSession } from "next-auth";
+
+// ===== CRUD ChecklistModelo =====
 
 export const createChecklistModelo = createPrismaCreateAction(
   checklistModeloFormSchema,
-  async (data) => {
-    return await prisma.checklistModelo.create({
-      data: {
-        ...data,
-        createdBy: data.createdBy?.toString?.() || "",
-      },
-    });
-  },
+  async (data) =>
+    prisma.checklistModelo.create({
+      data: { ...data, createdBy: data.createdBy?.toString?.() || "" },
+    }),
+  "CHECKLIST_MODELO"
+);
+
+export const updateChecklistModelo = createPrismaUpdateAction(
+  checklistModeloFormSchema,
+  async (data) =>
+    prisma.checklistModelo.update({
+      where: { id: data.id },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+    }),
   "CHECKLIST_MODELO"
 );
 
 export const deleteChecklistModelo = createPrismaDeleteAction(
-  async (id, session) => {
-    return await prisma.checklistModelo.update({
+  async (id, session) =>
+    prisma.checklistModelo.update({
       where: { id },
       data: {
         deletedAt: new Date(),
         deletedBy: session.user.id.toString(),
       },
-    });
-  },
+    }),
   {
-    defaultCheck: {
-      prismaModel: prisma.checklistModelo,
-      modelName: "ChecklistModelo",
-    },
+    defaultCheck: { prismaModel: prisma.checklistModelo, modelName: "ChecklistModelo" },
     entityName: "CHECKLIST_MODELO",
   }
 );
 
-export const updateChecklistModelo = createPrismaUpdateAction(
-  checklistModeloFormSchema,
-  async (data) => {
-    return await prisma.checklistModelo.update({
-      where: { id: data.id },
-      data: {
-        ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
-      },
-    });
-  },
+export const getAllChecklistModelos = createPrismaGetAllAction(
+  prisma.checklistModelo,
   "CHECKLIST_MODELO"
 );
 
-export const getAllChecklistModelos = createPrismaGetAllAction(async () => {
-  return await prisma.checklistModelo.findMany({
-    where: { deletedAt: null },
-    orderBy: { id: "asc" },
-  });
-}, "CHECKLIST_MODELO");
-
-export const getAllChecklistModelosWithIncludes = createPrismaGetAllAction(
-  async () => {
-    return await prisma.checklistModelo.findMany({
+export const getAllChecklistModelosWithIncludes = createPrismaGetAllWithIncludesAction(
+  async () =>
+    prisma.checklistModelo.findMany({
       where: { deletedAt: null },
       orderBy: { nome: "asc" },
       include: {},
-    });
-  },
+    }),
   "CHECKLIST_MODELO"
 );
 
-export const setTipoAtividadesDoModelo = async (input: unknown) => {
-  const { modeloId, tipoAtividadeIds } = inputSchema.parse(input);
-  const session = await getServerSession(authOptions);
+// ===== SET de relação múltipla com factory (tipoAtividades)
 
-  if (!session?.user?.id) {
-    throw new Error("Usuário não autenticado.");
+export const setTipoAtividadesDoModelo = createPrismaSetManyRelationAction(
+  inputSchema,
+  {
+    entityName: "CHECKLIST_MODELO_TIPO_ATIVIDADE_RELATION",
+    deleteFn: async (modeloId, userId, now) => {
+      await prisma.checklistModeloTipoAtividadeRelation.updateMany({
+        where: { modeloId },
+        data: { deletedAt: now, deletedBy: userId },
+      });
+    },
+    createFn: async (modeloId, tipoAtividadeIds, userId) => {
+      await prisma.checklistModeloTipoAtividadeRelation.createMany({
+        data: tipoAtividadeIds.map((tipoAtividadeId) => ({
+          modeloId,
+          tipoAtividadeId,
+          createdBy: userId,
+        })),
+      });
+    },
+    getParentId: (input) => input.modeloId,
+    getChildIds: (input) => input.tipoAtividadeIds,
   }
+);
 
-  // Remove vínculos antigos
-  await prisma.checklistModeloTipoAtividadeRelation.deleteMany({
-    where: { modeloId },
-  });
+// ===== Busca somente os IDs (usado no formulário)
 
-  // Cria novos vínculos
-  if (tipoAtividadeIds.length > 0) {
-    await prisma.checklistModeloTipoAtividadeRelation.createMany({
-      data: tipoAtividadeIds.map((tipoAtividadeId) => ({
-        modeloId,
-        tipoAtividadeId,
-        createdBy: session.user.id,
-      })),
-    });
-  }
-
-  return { success: true };
-};
-
-export async function getAllTipoAtividadesByChecklistModelo(modeloId: string) {
+export async function getAllTipoAtividadesByChecklistModelo(modeloId: string): Promise<string[]> {
   const registros = await prisma.checklistModeloTipoAtividadeRelation.findMany({
-    where: {
-      deletedAt: null,
-      modeloId,
-    },
-    select: {
-      tipoAtividadeId: true,
-    },
+    where: { modeloId, deletedAt: null },
+    select: { tipoAtividadeId: true },
   });
 
   return registros.map((r) => r.tipoAtividadeId);

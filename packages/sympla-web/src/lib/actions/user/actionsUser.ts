@@ -9,10 +9,11 @@ import {
 } from "@/lib/server-action/actionFactory";
 import { userFormSchema } from "./schema";
 
+// ========== CREATE ==========
 export const createUser = createPrismaCreateAction(
   userFormSchema,
   async (data) => {
-    return await prisma.user.create({
+    return prisma.user.create({
       data: {
         ...data,
         createdBy: data.createdBy?.toString?.() || "",
@@ -22,10 +23,11 @@ export const createUser = createPrismaCreateAction(
   "USER"
 );
 
+// ========== UPDATE ==========
 export const updateUser = createPrismaUpdateAction(
   userFormSchema,
   async (data) => {
-    return await prisma.user.update({
+    return prisma.user.update({
       where: { id: data.id },
       data: {
         ...data,
@@ -36,9 +38,10 @@ export const updateUser = createPrismaUpdateAction(
   "USER"
 );
 
+// ========== DELETE (soft delete) ==========
 export const deleteUser = createPrismaDeleteAction(
   async (id, session) => {
-    return await prisma.user.update({
+    return prisma.user.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -55,19 +58,16 @@ export const deleteUser = createPrismaDeleteAction(
   }
 );
 
-export const getAllUsers = createPrismaGetAllAction(async () => {
-  return await prisma.user.findMany({
-    where: { deletedAt: null },
-    orderBy: { name: "asc" },
-  });
-}, "USER");
+// ========== GET ALL ==========
+export const getAllUsers = createPrismaGetAllAction(
+  prisma.user,
+  "USER",
+  ["name", "email"] // ✅ adicionei aqui campos úteis para buscas por search genérico
+);
 
-export const getAllUsersWithIncludes = createPrismaGetAllAction(async () => {
-  return await prisma.user.findMany({
-    where: { deletedAt: null },
-    orderBy: { name: "asc" },
-    // include: {
-    //     relacaoExemplo: true,
-    // },
-  });
-}, "USER");
+// ========== GET ALL WITH INCLUDES ==========
+export const getAllUsersWithIncludes = createPrismaGetAllAction(
+  prisma.user,
+  "USER",
+  ["name", "email"]
+);

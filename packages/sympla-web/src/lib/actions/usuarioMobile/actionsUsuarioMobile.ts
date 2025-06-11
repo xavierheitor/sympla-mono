@@ -10,12 +10,13 @@ import {
 import { usuarioMobileFormSchema } from "./schema";
 import bcrypt from "bcrypt";
 
+// ========== CREATE ==========
 export const createUsuarioMobile = createPrismaCreateAction(
   usuarioMobileFormSchema,
   async (data) => {
     const hashedPassword = await bcrypt.hash(data.senha, 10);
 
-    return await prisma.usuarioMobile.create({
+    return prisma.usuarioMobile.create({
       data: {
         ...data,
         senha: hashedPassword,
@@ -26,10 +27,12 @@ export const createUsuarioMobile = createPrismaCreateAction(
   "USUARIO_MOBILE"
 );
 
+// ========== UPDATE ==========
 export const updateUsuarioMobile = createPrismaUpdateAction(
   usuarioMobileFormSchema,
   async (data) => {
-    const updateData = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: any = {
       ...data,
       updatedBy: data.updatedBy?.toString?.() || "",
     };
@@ -38,7 +41,7 @@ export const updateUsuarioMobile = createPrismaUpdateAction(
       updateData.senha = await bcrypt.hash(data.senha, 10);
     }
 
-    return await prisma.usuarioMobile.update({
+    return prisma.usuarioMobile.update({
       where: { id: data.id },
       data: updateData,
     });
@@ -46,9 +49,10 @@ export const updateUsuarioMobile = createPrismaUpdateAction(
   "USUARIO_MOBILE"
 );
 
+// ========== DELETE ==========
 export const deleteUsuarioMobile = createPrismaDeleteAction(
   async (id, session) => {
-    return await prisma.usuarioMobile.update({
+    return prisma.usuarioMobile.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -65,22 +69,16 @@ export const deleteUsuarioMobile = createPrismaDeleteAction(
   }
 );
 
-export const getAllUsuarioMobiles = createPrismaGetAllAction(async () => {
-  return await prisma.usuarioMobile.findMany({
-    where: { deletedAt: null },
-    orderBy: { nome: "asc" },
-  });
-}, "USUARIO_MOBILE");
+// ========== GET ALL ==========
+export const getAllUsuarioMobiles = createPrismaGetAllAction(
+  prisma.usuarioMobile,
+  "USUARIO_MOBILE",
+  ["nome", "email"] // ✅ campos habilitados pro search
+);
 
+// ========== GET ALL WITH INCLUDES ==========
 export const getAllUsuarioMobilesWithIncludes = createPrismaGetAllAction(
-  async () => {
-    return await prisma.usuarioMobile.findMany({
-      where: { deletedAt: null },
-      orderBy: { nome: "asc" },
-      // include: {
-      //     relacaoExemplo: true,
-      // },
-    });
-  },
-  "USUARIO_MOBILE"
+  prisma.usuarioMobile,
+  "USUARIO_MOBILE",
+  ["nome", "email"]
 );

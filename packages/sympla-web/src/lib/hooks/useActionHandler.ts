@@ -3,12 +3,7 @@
 
 import { App } from 'antd';
 import { mutate } from 'swr';
-
-interface ActionResult {
-    success: boolean;
-    data?: unknown;
-    error?: string;
-}
+import { ActionResult } from '../types/ActionTypes';
 
 interface HandleActionParams<T> {
     action: (payload: T) => Promise<ActionResult>;

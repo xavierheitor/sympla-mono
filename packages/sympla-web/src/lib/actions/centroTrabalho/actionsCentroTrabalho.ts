@@ -5,10 +5,12 @@ import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
+  createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
 import { centroTrabalhoFormSchema } from "./schema";
 
+// ===== CREATE =====
 export const createCentroTrabalho = createPrismaCreateAction(
   centroTrabalhoFormSchema,
   async (data) => {
@@ -22,6 +24,7 @@ export const createCentroTrabalho = createPrismaCreateAction(
   "CENTRO_TRABALHO"
 );
 
+// ===== UPDATE =====
 export const updateCentroTrabalho = createPrismaUpdateAction(
   centroTrabalhoFormSchema,
   async (data) => {
@@ -36,6 +39,7 @@ export const updateCentroTrabalho = createPrismaUpdateAction(
   "CENTRO_TRABALHO"
 );
 
+// ===== DELETE (soft delete) =====
 export const deleteCentroTrabalho = createPrismaDeleteAction(
   async (id, session) => {
     return await prisma.centroTrabalho.update({
@@ -55,14 +59,14 @@ export const deleteCentroTrabalho = createPrismaDeleteAction(
   }
 );
 
-export const getAllCentroTrabalhos = createPrismaGetAllAction(async () => {
-  return await prisma.centroTrabalho.findMany({
-    where: { deletedAt: null },
-    orderBy: { id: "asc" },
-  });
-}, "CENTRO_TRABALHO");
+// ===== GET ALL (sem includes) =====
+export const getAllCentroTrabalhos = createPrismaGetAllAction(
+  prisma.centroTrabalho,
+  "CENTRO_TRABALHO"
+);
 
-export const getAllCentroTrabalhosWithIncludes = createPrismaGetAllAction(
+// ===== GET ALL WITH INCLUDES (usando nova factory) =====
+export const getAllCentroTrabalhosWithIncludes = createPrismaGetAllWithIncludesAction(
   async () => {
     return await prisma.centroTrabalho.findMany({
       where: { deletedAt: null },

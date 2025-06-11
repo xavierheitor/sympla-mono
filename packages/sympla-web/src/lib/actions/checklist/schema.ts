@@ -46,6 +46,13 @@ export const checklistPerguntaFormSchema = z.object({
   pergunta: z.string().min(1, "pergunta é obrigatório"),
 });
 
+export const checklistPerguntaRelationFormSchema = z.object({
+  id: z.string().optional(),
+  perguntaId: z.string().min(1, "perguntaId é obrigatório"),
+  modeloId: z.string().min(1, "modeloId é obrigatório"),
+  ordem: z.number().min(0, "ordem é obrigatório"),
+});
+
 type ChecklistPerguntaBaseFields = Required<
   Pick<ChecklistPergunta, "pergunta">
 >;
