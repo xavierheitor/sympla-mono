@@ -30,7 +30,9 @@ export default function AprPerguntasPage() {
         [{ title: 'Pergunta', dataIndex: 'pergunta', key: 'pergunta' }],
         {
             onEdit: controller.open,
-            onDelete: (item) => controller.exec(() => deleteAprPerguntas(item.id), 'Pergunta excluída com sucesso!'),
+            onDelete: (item) => controller.exec(() => deleteAprPerguntas(item.id), 'Pergunta excluída com sucesso!').finally(() => {
+                perguntas.mutate();
+            }),
         }
     );
 
@@ -43,7 +45,9 @@ export default function AprPerguntasPage() {
             return { success: true, data: pergunta.data };
         };
 
-        controller.exec(action, 'Pergunta salva com sucesso!');
+        controller.exec(action, 'Pergunta salva com sucesso!').finally(() => {
+            perguntas.mutate();
+        });
     };
 
     if (perguntas.error) {

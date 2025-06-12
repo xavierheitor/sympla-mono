@@ -41,7 +41,9 @@ export default function AprModeloPage() {
         ],
         {
             onEdit: controller.open,
-            onDelete: (item) => controller.exec(() => deleteAprModelo(item.id), 'Modelo excluído com sucesso!'),
+            onDelete: (item) => controller.exec(() => deleteAprModelo(item.id), 'Modelo excluído com sucesso!').finally(() => {
+                modelos.mutate();
+            }),
         }
     );
 
@@ -66,7 +68,9 @@ export default function AprModeloPage() {
             return { success: true, data: modelo.data };
         };
 
-        controller.exec(action, 'Modelo salvo com sucesso!');
+        controller.exec(action, 'Modelo salvo com sucesso!').finally(() => {
+            modelos.mutate();
+        });
     };
 
     if (modelos.error) {

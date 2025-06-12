@@ -1,4 +1,5 @@
 // src/lib/hooks/useActionHandler.ts
+
 'use client';
 
 import { App } from 'antd';
@@ -10,7 +11,8 @@ interface HandleActionParams<T> {
     payload?: T;
     onSuccessMessage?: string;
     onErrorMessage?: string;
-    mutateKey?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutateKey?: string | any[]; // 🔥 Aqui a correção definitiva
     onSuccess?: () => void;
 }
 

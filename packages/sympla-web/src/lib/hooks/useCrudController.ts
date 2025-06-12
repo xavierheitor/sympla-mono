@@ -1,11 +1,11 @@
-// src/lib/hooks/useCrudController.ts
-"use client";
+'use client';
 
 import { useState } from "react";
 import { useActionHandler } from "./useActionHandler";
 import { ActionResult } from "../types/ActionTypes";
 
-export function useCrudController<T>(mutateKey: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useCrudController<T>(mutateKey: string | any[]) {
     const [isOpen, setIsOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<T | null>(null);
     const [loading, setLoading] = useState(false);
@@ -40,12 +40,5 @@ export function useCrudController<T>(mutateKey: string) {
         setLoading(false);
     };
 
-    return {
-        isOpen,
-        editingItem,
-        loading,
-        open,
-        close,
-        exec,
-    };
+    return { isOpen, editingItem, loading, open, close, exec };
 }
