@@ -1,16 +1,17 @@
 'use client';
 
-import { useEffect, useState, } from 'react';
+import { useEffect, useState } from 'react';
 import { Form, Input, Button, Transfer, Spin } from 'antd';
-import { TipoAtividade } from '@sympla/prisma';
+import { TipoAtividade, AprPerguntas } from '@sympla/prisma';
 import { AprModeloFormData } from '@/lib/actions/apr/schema';
-import { getAllAprModeloTipoAtividadeRelation } from '@/lib/actions/apr/actionsAprModelo';
+import { getAllAprModeloTipoAtividadeRelation, getAllAprModeloPerguntaRelation } from '@/lib/actions/apr/actionsAprModelo';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 interface AprModeloFormProps {
-    onSubmit: (values: AprModeloFormData & { tipoAtividadeIds: string[] }) => void;
+    onSubmit: (values: AprModeloFormData & { tipoAtividadeIds: string[], perguntaIds: string[] }) => void;
     initialValues?: Partial<AprModeloFormData>;
     tipoAtividades: TipoAtividade[];
+    perguntas: AprPerguntas[];
     loading?: boolean;
 }
 
@@ -18,30 +19,40 @@ export default function AprModeloForm({
     onSubmit,
     initialValues,
     tipoAtividades,
+    perguntas,
     loading = false,
 }: AprModeloFormProps) {
     const [form] = Form.useForm();
+
+    // Estado para os dois transfers
     const [selectedTipoAtividades, setSelectedTipoAtividades] = useState<string[]>([]);
-    const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-    const [loadingTipoAtividades, setLoadingTipoAtividades] = useState(false);
+    const [selectedPerguntas, setSelectedPerguntas] = useState<string[]>([]);
+    const [selectedKeysTipo, setSelectedKeysTipo] = useState<string[]>([]);
+    const [selectedKeysPergunta, setSelectedKeysPergunta] = useState<string[]>([]);
+    const [loadingRelations, setLoadingRelations] = useState(false);
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
         const fetchRelations = async () => {
-            setLoadingTipoAtividades(true);
+            setLoadingRelations(true);
             try {
                 if (initialValues?.id) {
-                    const res = await unwrapFetcher(getAllAprModeloTipoAtividadeRelation)({
+                    const resTipo = await unwrapFetcher(getAllAprModeloTipoAtividadeRelation)({
                         where: { modeloId: initialValues.id },
                     });
+                    const relacionadosTipo = resTipo.map((r) => String(r.tipoAtividadeId));
+                    setSelectedTipoAtividades(relacionadosTipo);
 
-                    const relacionados = res.map((r) => String(r.tipoAtividadeId));
-                    setSelectedTipoAtividades(relacionados);
+                    const resPergunta = await unwrapFetcher(getAllAprModeloPerguntaRelation)({
+                        where: { modeloId: initialValues.id },
+                    });
+                    const relacionadosPergunta = resPergunta.map((r) => String(r.perguntaId));
+                    setSelectedPerguntas(relacionadosPergunta);
                 }
             } catch (e) {
-                console.error("🔥 Erro:", e);
+                console.error("🔥 Erro ao carregar relations:", e);
             } finally {
-                setLoadingTipoAtividades(false);
+                setLoadingRelations(false);
             }
         };
 
@@ -50,13 +61,17 @@ export default function AprModeloForm({
     }, [initialValues, form]);
 
     useEffect(() => {
-        if (!loadingTipoAtividades && tipoAtividades.length >= 0) {
+        if (!loadingRelations && tipoAtividades.length >= 0 && perguntas.length >= 0) {
             setReady(true);
         }
-    }, [loadingTipoAtividades, tipoAtividades]);
+    }, [loadingRelations, tipoAtividades, perguntas]);
 
     const handleFinish = (values: AprModeloFormData) => {
-        onSubmit({ ...values, tipoAtividadeIds: selectedTipoAtividades });
+        onSubmit({
+            ...values,
+            tipoAtividadeIds: selectedTipoAtividades,
+            perguntaIds: selectedPerguntas,
+        });
     };
 
     if (!ready || loading) {
@@ -78,12 +93,29 @@ export default function AprModeloForm({
                     rowKey={(record) => record.id}
                     dataSource={tipoAtividades}
                     targetKeys={selectedTipoAtividades}
-                    selectedKeys={selectedKeys}
+                    selectedKeys={selectedKeysTipo}
                     onChange={(nextKeys) => setSelectedTipoAtividades(nextKeys as string[])}
                     onSelectChange={(sourceSelected, targetSelected) =>
-                        setSelectedKeys([...sourceSelected, ...targetSelected] as string[])
+                        setSelectedKeysTipo([...sourceSelected, ...targetSelected] as string[])
                     }
                     render={(item) => item.nome || '[Sem Nome]'}
+                    showSearch
+                    pagination
+                    listStyle={{ width: 200, height: 300 }}
+                />
+            </Form.Item>
+
+            <Form.Item label="Perguntas">
+                <Transfer
+                    rowKey={(record) => record.id}
+                    dataSource={perguntas}
+                    targetKeys={selectedPerguntas}
+                    selectedKeys={selectedKeysPergunta}
+                    onChange={(nextKeys) => setSelectedPerguntas(nextKeys as string[])}
+                    onSelectChange={(sourceSelected, targetSelected) =>
+                        setSelectedKeysPergunta([...sourceSelected, ...targetSelected] as string[])
+                    }
+                    render={(item) => item.pergunta || '[Sem Pergunta]'}
                     showSearch
                     pagination
                     listStyle={{ width: 200, height: 300 }}

@@ -4,7 +4,6 @@ import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useEntityData } from '@/lib/hooks/useEntityData';
-import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 import AprPerguntasForm from './form';
 import { AprPerguntas } from '@sympla/prisma';
@@ -12,10 +11,8 @@ import {
     createAprPerguntas,
     deleteAprPerguntas,
     getAllAprPerguntas,
-    setAprPerguntasRelations, // novo
     updateAprPerguntas,
 } from '@/lib/actions/apr/actionsAprPergunta';
-import { getAllAprModelos } from '@/lib/actions/apr/actionsAprModelo';
 import { AprPerguntasFormData } from '@/lib/actions/apr/schema';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 import { ActionResult } from '@/lib/types/ActionTypes';
@@ -29,8 +26,6 @@ export default function AprPerguntasPage() {
         paginationEnabled: true,
     });
 
-    const { data: modelos } = useServerData('aprModelos', unwrapFetcher(getAllAprModelos));
-
     const columns = useTableColumnsWithActions<AprPerguntas>(
         [{ title: 'Pergunta', dataIndex: 'pergunta', key: 'pergunta' }],
         {
@@ -39,18 +34,11 @@ export default function AprPerguntasPage() {
         }
     );
 
-    const handleSubmit = async (values: AprPerguntasFormData & { modeloIds: string[] }) => {
-        const { modeloIds, ...rest } = values;
-
+    const handleSubmit = async (values: AprPerguntasFormData) => {
         const action = async (): Promise<ActionResult<AprPerguntas>> => {
             const pergunta = controller.editingItem?.id
-                ? await updateAprPerguntas({ ...rest, id: controller.editingItem.id })
-                : await createAprPerguntas(rest);
-
-            await setAprPerguntasRelations({
-                perguntaId: pergunta.data?.id ?? '',
-                modeloIds,
-            });
+                ? await updateAprPerguntas({ ...values, id: controller.editingItem.id })
+                : await createAprPerguntas(values);
 
             return { success: true, data: pergunta.data };
         };
@@ -87,9 +75,8 @@ export default function AprPerguntasPage() {
             >
                 <AprPerguntasForm
                     initialValues={controller.editingItem ?? undefined}
-                    modelos={modelos ?? []}
                     onSubmit={handleSubmit}
-                    loading={controller.loading || !modelos}
+                    loading={controller.loading}
                 />
             </Modal>
         </>

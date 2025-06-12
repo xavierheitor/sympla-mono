@@ -3,7 +3,6 @@ import {
   AprModelo,
   AprModeloTipoAtividadeRelation,
   AprPerguntas,
-  AprPerguntasRelation,
   TipoAtividade,
 } from "@sympla/prisma";
 
@@ -14,8 +13,7 @@ export const aprModeloFormSchema = z.object({
 });
 
 type AprModeloBaseFields = Required<Pick<AprModelo, "nome" | "descricao">>;
-export type AprModeloFormData = Partial<Pick<AprModelo, "id">> &
-  AprModeloBaseFields;
+export type AprModeloFormData = Partial<Pick<AprModelo, "id">> & AprModeloBaseFields;
 
 export type AprModeloWithIncludes = AprModelo & {
   tipoAtividades: TipoAtividade[];
@@ -32,8 +30,7 @@ type AprModeloTipoAtividadeRelationBaseFields = Required<
 >;
 export type AprModeloTipoAtividadeRelationFormData = Partial<
   Pick<AprModeloTipoAtividadeRelation, "id">
-> &
-  AprModeloTipoAtividadeRelationBaseFields;
+  > & AprModeloTipoAtividadeRelationBaseFields;
 
 export type AprModeloTipoAtividadeRelationWithIncludes =
   AprModeloTipoAtividadeRelation & {
@@ -41,9 +38,15 @@ export type AprModeloTipoAtividadeRelationWithIncludes =
     tipoAtividade: TipoAtividade;
   };
 
+// Agora temos dois input schemas para set relations
 export const inputSchema = z.object({
   modeloId: z.string().min(1),
   tipoAtividadeIds: z.array(z.string().min(1)),
+});
+
+export const inputPerguntaSchema = z.object({
+  modeloId: z.string().min(1),
+  perguntaIds: z.array(z.string().min(1)),
 });
 
 export const aprPerguntasFormSchema = z.object({
@@ -52,30 +55,4 @@ export const aprPerguntasFormSchema = z.object({
 });
 
 type AprPerguntasBaseFields = Required<Pick<AprPerguntas, "pergunta">>;
-export type AprPerguntasFormData = Partial<Pick<AprPerguntas, "id">> &
-  AprPerguntasBaseFields;
-
-export const aprPerguntasRelationFormSchema = z.object({
-  id: z.string().optional(),
-  perguntaId: z.string().min(1, "perguntaId é obrigatório"),
-  modeloId: z.string().min(1, "modeloId é obrigatório"),
-  ordem: z.number().min(0, "ordem é obrigatório"),
-});
-
-export const aprPerguntasRelationSetSchema = z.object({
-  perguntaId: z.string().min(1, "perguntaId é obrigatório"),
-  modeloIds: z.array(z.string().min(1, "modeloId é obrigatório")),
-});
-
-type AprPerguntasRelationBaseFields = Required<
-  Pick<AprPerguntasRelation, "perguntaId" | "modeloId" | "ordem">
->;
-export type AprPerguntasRelationFormData = Partial<
-  Pick<AprPerguntasRelation, "id">
-> &
-  AprPerguntasRelationBaseFields;
-
-export type AprPerguntasRelationWithIncludes = AprPerguntasRelation & {
-  pergunta: AprPerguntas;
-  modelo: AprModelo;
-};
+export type AprPerguntasFormData = Partial<Pick<AprPerguntas, "id">> & AprPerguntasBaseFields;

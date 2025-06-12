@@ -6,16 +6,15 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
-  createPrismaGetByIdAction,
   createPrismaSetManyRelationAction,
-  createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
 import {
   aprModeloFormSchema,
   inputSchema,
+  inputPerguntaSchema,
 } from "./schema";
 
-// CRUD do AprModelo
+// CRUD AprModelo
 export const createAprModelo = createPrismaCreateAction(
   aprModeloFormSchema,
   async (data) => prisma.aprModelo.create({ data: { ...data, createdBy: data.createdBy?.toString?.() || "" } }),
@@ -36,33 +35,22 @@ export const deleteAprModelo = createPrismaDeleteAction(
     where: { id },
     data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
   }),
-  {
-    defaultCheck: { prismaModel: prisma.aprModelo, modelName: "AprModelo" },
-    entityName: "APR_MODELO",
-  }
+  { defaultCheck: { prismaModel: prisma.aprModelo, modelName: "AprModelo" }, entityName: "APR_MODELO" }
 );
 
 export const getAllAprModelos = createPrismaGetAllAction(prisma.aprModelo, "APR_MODELO");
 
-export const getAprModeloById = createPrismaGetByIdAction(
-  async (id) => prisma.aprModelo.findUniqueOrThrow({ where: { id } }),
-  "APR_MODELO"
+export const getAllAprModeloTipoAtividadeRelation = createPrismaGetAllAction(
+  prisma.aprModeloTipoAtividadeRelation,
+  "APR_MODELO_TIPO_ATIVIDADE_RELATION"
 );
 
-export const getAllTipoAtividadesByAprModelo = createPrismaGetAllWithIncludesAction(
-  async (params) => {
-    return await prisma.aprModeloTipoAtividadeRelation.findMany({
-      where: { deletedAt: null, modeloId: params.aprModeloId },
-      include: {
-        //includes aqui
-        modelo: true,
-      },
-    });
-  },
-  "TIPO_ATIVIDADE"
+export const getAllAprModeloPerguntaRelation = createPrismaGetAllAction(
+  prisma.aprPerguntasRelation,
+  "APR_MODELO_PERGUNTAS_RELATION"
 );
 
-// Relação AprModelo <-> TipoAtividade (multi relation factory)
+// SET: TipoAtividade
 export const setTipoAtividadesDoModelo = createPrismaSetManyRelationAction(
   inputSchema,
   {
@@ -87,7 +75,28 @@ export const setTipoAtividadesDoModelo = createPrismaSetManyRelationAction(
   }
 );
 
-export const getAllAprModeloTipoAtividadeRelation = createPrismaGetAllAction(
-  prisma.aprModeloTipoAtividadeRelation,
-  "APR_MODELO_TIPO_ATIVIDADE_RELATION"
+// SET: Perguntas
+export const setPerguntasDoModelo = createPrismaSetManyRelationAction(
+  inputPerguntaSchema,
+  {
+    entityName: "APR_MODELO_PERGUNTAS_RELATION",
+    deleteFn: async (modeloId, userId, now) => {
+      await prisma.aprPerguntasRelation.updateMany({
+        where: { modeloId },
+        data: { deletedAt: now, deletedBy: userId },
+      });
+    },
+    createFn: async (modeloId, perguntaIds, userId) => {
+      await prisma.aprPerguntasRelation.createMany({
+        data: perguntaIds.map((perguntaId) => ({
+          modeloId,
+          perguntaId,
+          ordem: 0,
+          createdBy: userId,
+        })),
+      });
+    },
+    getParentId: (input) => input.modeloId,
+    getChildIds: (input) => input.perguntaIds,
+  }
 );

@@ -13,9 +13,11 @@ import {
     deleteAprModelo,
     getAllAprModelos,
     setTipoAtividadesDoModelo,
+    setPerguntasDoModelo,
     updateAprModelo,
 } from '@/lib/actions/apr/actionsAprModelo';
 import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
+import { getAllAprPerguntas } from '@/lib/actions/apr/actionsAprPergunta';
 import { AprModeloFormData } from '@/lib/actions/apr/schema';
 import { ActionResult } from '@/lib/types/ActionTypes';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
@@ -29,7 +31,8 @@ export default function AprModeloPage() {
         paginationEnabled: true,
     });
 
-    const { data: tipoAtividades, } = useServerData('tipoAtividades', unwrapFetcher(getAllTipoAtividades));
+    const { data: tipoAtividades } = useServerData('tipoAtividades', unwrapFetcher(getAllTipoAtividades));
+    const { data: perguntas } = useServerData('aprPerguntas', unwrapFetcher(getAllAprPerguntas));
 
     const columns = useTableColumnsWithActions<AprModelo>(
         [
@@ -42,8 +45,8 @@ export default function AprModeloPage() {
         }
     );
 
-    const handleSubmit = async (values: AprModeloFormData & { tipoAtividadeIds: string[] }) => {
-        const { tipoAtividadeIds, ...rest } = values;
+    const handleSubmit = async (values: AprModeloFormData & { tipoAtividadeIds: string[], perguntaIds: string[] }) => {
+        const { tipoAtividadeIds, perguntaIds, ...rest } = values;
 
         const action = async (): Promise<ActionResult<AprModelo>> => {
             const modelo = controller.editingItem?.id
@@ -53,6 +56,11 @@ export default function AprModeloPage() {
             await setTipoAtividadesDoModelo({
                 modeloId: modelo.data?.id ?? '',
                 tipoAtividadeIds,
+            });
+
+            await setPerguntasDoModelo({
+                modeloId: modelo.data?.id ?? '',
+                perguntaIds,
             });
 
             return { success: true, data: modelo.data };
@@ -91,8 +99,9 @@ export default function AprModeloPage() {
                 <AprModeloForm
                     initialValues={controller.editingItem ?? undefined}
                     tipoAtividades={tipoAtividades ?? []}
+                    perguntas={perguntas ?? []}
                     onSubmit={handleSubmit}
-                    loading={controller.loading || !tipoAtividades}
+                    loading={controller.loading || !tipoAtividades || !perguntas}
                 />
             </Modal>
         </>
