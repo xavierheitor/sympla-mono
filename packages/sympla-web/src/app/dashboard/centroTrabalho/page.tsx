@@ -6,34 +6,32 @@ import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-
 import CentroTrabalhoForm from './form';
-import { CentroTrabalhoFormData } from '@/lib/actions/centroTrabalho/schema';
-import { CentroTrabalho } from '@sympla/prisma';
-import { createCentroTrabalho, deleteCentroTrabalho, getAllCentroTrabalhos, updateCentroTrabalho } from '@/lib/actions/centroTrabalho/actionsCentroTrabalho';
+import { CentroTrabalhoFormData, CentroTrabalhoWithRelations } from '@/lib/actions/centroTrabalho/schema';
+import { createCentroTrabalho, deleteCentroTrabalho, getAllCentroTrabalhosWithIncludes, updateCentroTrabalho } from '@/lib/actions/centroTrabalho/actionsCentroTrabalho';
 import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function CentroTrabalhoPage() {
-    const controller = useCrudController<CentroTrabalho>('centroTrabalho');
+    const controller = useCrudController<CentroTrabalhoWithRelations>('centroTrabalho');
 
     const { data: centrosTrabalho, isLoading, error } = useServerData(
         'centroTrabalho',
-        getAllCentroTrabalhos
+        unwrapFetcher(getAllCentroTrabalhosWithIncludes)
     );
 
-    const { data: regionals } = useServerData(
-        'regional',
-        getAllRegionais
-    );
+    const { data: regionals } = useServerData('regional', unwrapFetcher(getAllRegionais));
 
-    const columns = useTableColumnsWithActions<CentroTrabalho>(
+    const columns = useTableColumnsWithActions<CentroTrabalhoWithRelations>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
+            { title: 'Regional', dataIndex: ['regional', 'nome'], key: 'regional.nome' },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteCentroTrabalho(item.id), 'Centro de trabalho excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteCentroTrabalho(item.id), 'Centro de trabalho excluído com sucesso!'),
+        }
     );
-
     const handleSubmit = (values: CentroTrabalhoFormData) => {
         const action = controller.editingItem?.id
             ? () => updateCentroTrabalho({ ...values, id: controller.editingItem!.id })
@@ -50,9 +48,9 @@ export default function CentroTrabalhoPage() {
                 title="Centros de Trabalho"
                 extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
             >
-                <Table<CentroTrabalho>
+                <Table<CentroTrabalhoWithRelations>
                     columns={columns}
-                    dataSource={centrosTrabalho?.data ?? []}
+                    dataSource={centrosTrabalho ?? []}
                     loading={isLoading}
                     rowKey="id"
                 />
@@ -69,7 +67,7 @@ export default function CentroTrabalhoPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
-                    regionals={regionals?.data ?? []}
+                    regionals={regionals ?? []}
                 />
             </Modal>
         </>
