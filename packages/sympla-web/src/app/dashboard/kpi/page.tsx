@@ -28,7 +28,13 @@ export default function KpiPage() {
     const columns = useTableColumnsWithActions<KpiWithRelations>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
-            { title: 'Tipo de Manutenção', dataIndex: ['tipoManutencao', 'nome'], key: 'tipoManutencao.nome' },
+            {
+                title: 'Tipo de Manutenção',
+                dataIndex: ['tipoManutencao', 'nome'],
+                key: 'tipoManutencao.nome',
+                filters: tipos?.map((t) => ({ text: t.nome, value: t.id })),
+                onFilter: (value, record) => record.tipoManutencao?.id === value,
+            },
         ],
         {
             onEdit: controller.open,

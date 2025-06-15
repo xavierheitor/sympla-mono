@@ -18,6 +18,7 @@ export interface PaginatedParams {
     orderDir?: OrderDirection;
     where?: Record<string, any>;     // Pode ser estendido para Zod futuramente
     include?: Record<string, any>;   // Ex: { relacao: true }
+    filters?: Record<string, any>;
 }
 
 export interface PaginatedResult<T> {

@@ -72,13 +72,14 @@ export function useEntityData<T>(options: {
         ? { data, total: data.length, totalPages: 1 }
         : { data: data?.data ?? [], total: data?.total ?? 0, totalPages: data?.totalPages ?? 0 };
 
-    const handleTableChange: TableProps<T>['onChange'] = (pagination, _, sorter) => {
+    const handleTableChange: TableProps<T>['onChange'] = (pagination, filters, sorter) => {
         setParams(prev => ({
             ...prev,
             page: pagination.current || 1,
             pageSize: pagination.pageSize || 10,
             orderBy: typeof sorter === 'object' && !Array.isArray(sorter) ? (sorter.field as string) : prev.orderBy,
             orderDir: typeof sorter === 'object' && !Array.isArray(sorter) && sorter.order === 'descend' ? 'desc' : 'asc',
+            filters: filters,
         }));
     };
 
