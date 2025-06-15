@@ -3,42 +3,54 @@
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
-import { useServerData } from '@/lib/hooks/useServerData';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 import ChecklistPerguntaForm from './form';
-import { createChecklistPergunta, deleteChecklistPergunta, getAllChecklistPerguntas, updateChecklistPergunta } from '@/lib/actions/checklist/actionsChecklistPergunta';
-import { ChecklistPerguntaFormData } from '@/lib/actions/checklist/schema';
 import { ChecklistPergunta } from '@sympla/prisma';
+import {
+    createChecklistPergunta,
+    deleteChecklistPergunta,
+    getAllChecklistPerguntas,
+    updateChecklistPergunta,
+} from '@/lib/actions/checklist/actionsChecklistPergunta';
+import { ChecklistPerguntaFormData } from '@/lib/actions/checklist/schema';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { ActionResult } from '@/lib/types/ActionTypes';
 
 export default function ChecklistPerguntaPage() {
     const controller = useCrudController<ChecklistPergunta>('checklistPergunta');
 
-    const { data: perguntas, isLoading, error } = useServerData(
-        'checklistPerguntas',
-        getAllChecklistPerguntas
-    );
+    const perguntas = useEntityData<ChecklistPergunta>({
+        key: 'checklistPerguntas',
+        fetcher: unwrapFetcher(getAllChecklistPerguntas),
+        paginationEnabled: true,
+    });
 
     const columns = useTableColumnsWithActions<ChecklistPergunta>(
-        [
-            { title: 'Pergunta', dataIndex: 'pergunta', key: 'pergunta' },
-        ],
-        controller.open,
-        (item) =>
-            controller.exec(
-                () => deleteChecklistPergunta(item.id),
-                'Pergunta excluída com sucesso!'
-            )
+        [{ title: 'Pergunta', dataIndex: 'pergunta', key: 'pergunta' }],
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteChecklistPergunta(item.id), 'Pergunta excluída com sucesso!').finally(() => {
+                perguntas.mutate();
+            }),
+        }
     );
 
-    const handleSubmit = (values: ChecklistPerguntaFormData) => {
-        const action = controller.editingItem?.id
-            ? () => updateChecklistPergunta({ ...values, id: controller.editingItem!.id })
-            : () => createChecklistPergunta(values);
+    const handleSubmit = async (values: ChecklistPerguntaFormData) => {
+        const action = async (): Promise<ActionResult<ChecklistPergunta>> => {
+            const pergunta = controller.editingItem?.id
+                ? await updateChecklistPergunta({ ...values, id: controller.editingItem.id })
+                : await createChecklistPergunta(values);
 
-        controller.exec(action, 'Pergunta salva com sucesso!');
+            return { success: true, data: pergunta.data };
+        };
+
+        controller.exec(action, 'Pergunta salva com sucesso!').finally(() => {
+            perguntas.mutate();
+        });
     };
 
-    if (error) {
+    if (perguntas.error) {
         return <p style={{ color: 'red' }}>Erro ao carregar perguntas.</p>;
     }
 
@@ -50,9 +62,11 @@ export default function ChecklistPerguntaPage() {
             >
                 <Table<ChecklistPergunta>
                     columns={columns}
-                    dataSource={perguntas?.data ?? []}
-                    loading={isLoading}
+                    dataSource={perguntas.data}
+                    loading={perguntas.isLoading}
                     rowKey="id"
+                    pagination={perguntas.pagination}
+                    onChange={perguntas.handleTableChange}
                 />
             </Card>
 

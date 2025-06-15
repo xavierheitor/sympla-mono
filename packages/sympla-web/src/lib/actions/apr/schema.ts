@@ -13,6 +13,7 @@ export const aprModeloFormSchema = z.object({
 });
 
 type AprModeloBaseFields = Required<Pick<AprModelo, "nome" | "descricao">>;
+
 export type AprModeloFormData = Partial<Pick<AprModelo, "id">> & AprModeloBaseFields;
 
 export type AprModeloWithIncludes = AprModelo & {

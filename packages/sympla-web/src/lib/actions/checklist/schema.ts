@@ -1,26 +1,62 @@
 import { z } from "zod";
 import {
-  ChecklisrPerguntaRelation,
   ChecklistModelo,
+  ChecklistModeloTipoAtividadeRelation,
   ChecklistPergunta,
+  ChecklisrPerguntaRelation,
+  TipoAtividade,
 } from "@sympla/prisma";
+
+// ===== Formulário principal do modelo =====
 
 export const checklistModeloFormSchema = z.object({
   id: z.string().optional(),
   nome: z.string().min(1, "nome é obrigatório"),
   descricao: z.string().nullable(),
-  tipoAtividadeIds: z.array(z.string().min(1)).optional(),
 });
 
-type ChecklistModeloBaseFields = Required<
-  Pick<ChecklistModelo, "nome" | "descricao">
+type ChecklistModeloBaseFields = Required<Pick<ChecklistModelo, "nome" | "descricao">>;
+
+export type ChecklistModeloFormData = Partial<Pick<ChecklistModelo, "id">> & ChecklistModeloBaseFields;
+
+export type ChecklistModeloWithIncludes = ChecklistModelo & {
+  tipoAtividades: TipoAtividade[];
+};
+
+// ===== Relation TipoAtividade =====
+
+export const checklistModeloTipoAtividadeRelationFormSchema = z.object({
+  id: z.string(),
+  modeloId: z.string(),
+  tipoAtividadeId: z.string(),
+});
+
+type ChecklistModeloTipoAtividadeRelationBaseFields = Required<
+  Pick<ChecklistModeloTipoAtividadeRelation, "modeloId" | "tipoAtividadeId">
 >;
-export type ChecklistModeloFormData = Partial<Pick<ChecklistModelo, "id">> &
-  ChecklistModeloBaseFields & { tipoAtividadeIds: string[] };
 
-export type ChecklistModeloWithIncludes = ChecklistModelo & {};
+export type ChecklistModeloTipoAtividadeRelationFormData = Partial<
+  Pick<ChecklistModeloTipoAtividadeRelation, "id">
+> & ChecklistModeloTipoAtividadeRelationBaseFields;
 
-export const checklisrPerguntaRelationFormSchema = z.object({
+export type ChecklistModeloTipoAtividadeRelationWithIncludes = ChecklistModeloTipoAtividadeRelation & {
+  modelo: ChecklistModelo;
+  tipoAtividade: TipoAtividade;
+};
+
+// ===== Formulário de Perguntas =====
+
+export const checklistPerguntaFormSchema = z.object({
+  id: z.string().optional(),
+  pergunta: z.string().min(1, "pergunta é obrigatório"),
+});
+
+type ChecklistPerguntaBaseFields = Required<Pick<ChecklistPergunta, "pergunta">>;
+export type ChecklistPerguntaFormData = Partial<Pick<ChecklistPergunta, "id">> & ChecklistPerguntaBaseFields;
+
+// ===== Relation Pergunta -> Modelo =====
+
+export const checklistPerguntaRelationFormSchema = z.object({
   id: z.string().optional(),
   perguntaId: z.string().min(1, "perguntaId é obrigatório"),
   modeloId: z.string().min(1, "modeloId é obrigatório"),
@@ -30,36 +66,23 @@ export const checklisrPerguntaRelationFormSchema = z.object({
 type ChecklistPerguntaRelationBaseFields = Required<
   Pick<ChecklisrPerguntaRelation, "perguntaId" | "modeloId" | "ordem">
 >;
-export type ChecklisrPerguntaRelationFormData = Partial<
+export type ChecklistPerguntaRelationFormData = Partial<
   Pick<ChecklisrPerguntaRelation, "id">
-> &
-  ChecklistPerguntaRelationBaseFields;
+> & ChecklistPerguntaRelationBaseFields;
 
-export type ChecklisrPerguntaRelationWithIncludes =
-  ChecklisrPerguntaRelation & {
-    pergunta: ChecklistPergunta;
-    modelo: ChecklistModelo;
-  };
+export type ChecklistPerguntaRelationWithIncludes = ChecklisrPerguntaRelation & {
+  pergunta: ChecklistPergunta;
+  modelo: ChecklistModelo;
+};
 
-export const checklistPerguntaFormSchema = z.object({
-  id: z.string().optional(),
-  pergunta: z.string().min(1, "pergunta é obrigatório"),
-});
-
-export const checklistPerguntaRelationFormSchema = z.object({
-  id: z.string().optional(),
-  perguntaId: z.string().min(1, "perguntaId é obrigatório"),
-  modeloId: z.string().min(1, "modeloId é obrigatório"),
-  ordem: z.number().min(0, "ordem é obrigatório"),
-});
-
-type ChecklistPerguntaBaseFields = Required<
-  Pick<ChecklistPergunta, "pergunta">
->;
-export type ChecklistPerguntaFormData = Partial<Pick<ChecklistPergunta, "id">> &
-  ChecklistPerguntaBaseFields;
+// ===== Agora os dois inputs para SetRelations (MULTI-RELATION FACTORY) =====
 
 export const inputSchema = z.object({
   modeloId: z.string().min(1),
   tipoAtividadeIds: z.array(z.string().min(1)),
+});
+
+export const inputPerguntaSchema = z.object({
+  modeloId: z.string().min(1),
+  perguntaIds: z.array(z.string().min(1)),
 });

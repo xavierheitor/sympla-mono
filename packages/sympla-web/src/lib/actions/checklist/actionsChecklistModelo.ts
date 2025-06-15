@@ -6,14 +6,15 @@ import {
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
-  createPrismaGetAllWithIncludesAction,
   createPrismaSetManyRelationAction,
 } from "@/lib/server-action/actionFactory";
+import {
+  checklistModeloFormSchema,
+  inputSchema,
+  inputPerguntaSchema,
+} from "./schema";
 
-import { checklistModeloFormSchema, inputSchema } from "./schema";
-
-// ===== CRUD ChecklistModelo =====
-
+// CRUD ChecklistModelo
 export const createChecklistModelo = createPrismaCreateAction(
   checklistModeloFormSchema,
   async (data) =>
@@ -37,10 +38,7 @@ export const deleteChecklistModelo = createPrismaDeleteAction(
   async (id, session) =>
     prisma.checklistModelo.update({
       where: { id },
-      data: {
-        deletedAt: new Date(),
-        deletedBy: session.user.id.toString(),
-      },
+      data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
     }),
   {
     defaultCheck: { prismaModel: prisma.checklistModelo, modelName: "ChecklistModelo" },
@@ -53,17 +51,19 @@ export const getAllChecklistModelos = createPrismaGetAllAction(
   "CHECKLIST_MODELO"
 );
 
-export const getAllChecklistModelosWithIncludes = createPrismaGetAllWithIncludesAction(
-  async () =>
-    prisma.checklistModelo.findMany({
-      where: { deletedAt: null },
-      orderBy: { nome: "asc" },
-      include: {},
-    }),
-  "CHECKLIST_MODELO"
+// Relations TipoAtividade
+
+export const getAllChecklistModeloTipoAtividadeRelation = createPrismaGetAllAction(
+  prisma.checklistModeloTipoAtividadeRelation,
+  "CHECKLIST_MODELO_TIPO_ATIVIDADE_RELATION"
 );
 
-// ===== SET de relação múltipla com factory (tipoAtividades)
+export const getAllChecklistModeloPerguntaRelation = createPrismaGetAllAction(
+  prisma.checklisrPerguntaRelation,
+  "CHECKLIST_MODELO_PERGUNTAS_RELATION"
+);
+
+// SET: TipoAtividade
 
 export const setTipoAtividadesDoModelo = createPrismaSetManyRelationAction(
   inputSchema,
@@ -89,13 +89,29 @@ export const setTipoAtividadesDoModelo = createPrismaSetManyRelationAction(
   }
 );
 
-// ===== Busca somente os IDs (usado no formulário)
+// SET: Perguntas
 
-export async function getAllTipoAtividadesByChecklistModelo(modeloId: string): Promise<string[]> {
-  const registros = await prisma.checklistModeloTipoAtividadeRelation.findMany({
-    where: { modeloId, deletedAt: null },
-    select: { tipoAtividadeId: true },
-  });
-
-  return registros.map((r) => r.tipoAtividadeId);
-}
+export const setPerguntasDoModelo = createPrismaSetManyRelationAction(
+  inputPerguntaSchema,
+  {
+    entityName: "CHECKLIST_MODELO_PERGUNTAS_RELATION",
+    deleteFn: async (modeloId, userId, now) => {
+      await prisma.checklisrPerguntaRelation.updateMany({
+        where: { modeloId },
+        data: { deletedAt: now, deletedBy: userId },
+      });
+    },
+    createFn: async (modeloId, perguntaIds, userId) => {
+      await prisma.checklisrPerguntaRelation.createMany({
+        data: perguntaIds.map((perguntaId) => ({
+          modeloId,
+          perguntaId,
+          ordem: 0,
+          createdBy: userId,
+        })),
+      });
+    },
+    getParentId: (input) => input.modeloId,
+    getChildIds: (input) => input.perguntaIds,
+  }
+);

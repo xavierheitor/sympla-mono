@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Spin } from 'antd';
 import { ChecklistPerguntaFormData } from '@/lib/actions/checklist/schema';
 
 interface ChecklistPerguntaFormProps {
@@ -25,8 +25,10 @@ export default function ChecklistPerguntaForm({
         }
     }, [initialValues, form]);
 
+    if (loading) return <Spin spinning />;
+
     return (
-        <Form form={form} layout="vertical" onFinish={onSubmit} initialValues={initialValues}>
+        <Form form={form} layout="vertical" onFinish={onSubmit}>
             <Form.Item name="pergunta" label="Pergunta" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
