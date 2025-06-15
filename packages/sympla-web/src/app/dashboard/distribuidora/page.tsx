@@ -1,39 +1,25 @@
 'use client';
 
+import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { Distribuidora } from '@sympla/prisma';
-import DistribuidoraForm from './form';
-
 import { useCrudController } from '@/lib/hooks/useCrudController';
-import { useServerData } from '@/lib/hooks/useServerData';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
+import DistribuidoraForm from './form';
 import { DistribuidoraFormData } from '@/lib/actions/distribuidora/schema';
 import { createDistribuidora, deleteDistribuidora, getAllDistribuidoras, updateDistribuidora } from '@/lib/actions/distribuidora/actionsDistribuidora';
-
-const MUTATE_KEY = 'distribuidoras';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { ActionResult } from '@/lib/types/ActionTypes';
 
 export default function DistribuidoraPage() {
-    const {
-        isOpen,
-        editingItem,
-        open,
-        close,
-        exec,
-        loading,
-    } = useCrudController<Distribuidora>(MUTATE_KEY);
+    const controller = useCrudController<Distribuidora>('distribuidoras');
 
-    const { data, error, isLoading } = useServerData(MUTATE_KEY, getAllDistribuidoras);
-
-    const handleSubmit = (values: DistribuidoraFormData) => {
-        if (editingItem?.id) {
-            return exec(() => updateDistribuidora({ ...values, id: editingItem.id }), 'Distribuidora atualizada com sucesso!');
-        }
-        return exec(() => createDistribuidora(values), 'Distribuidora criada com sucesso!');
-    };
-
-    const handleDelete = (record: Distribuidora) => {
-        return exec(() => deleteDistribuidora(record.id), 'Distribuidora excluída com sucesso!');
-    };
+    const distribuidoras = useEntityData<Distribuidora>({
+        key: 'distribuidoras',
+        fetcher: unwrapFetcher(getAllDistribuidoras),
+        paginationEnabled: true,
+    });
 
     const columns = useTableColumnsWithActions<Distribuidora>(
         [
@@ -41,37 +27,55 @@ export default function DistribuidoraPage() {
             { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
             { title: 'Código SAP', dataIndex: 'codigoSap', key: 'codigoSap' },
         ],
-        open,
-        handleDelete
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteDistribuidora(item.id), 'Distribuidora excluída com sucesso!').finally(() => distribuidoras.mutate()),
+        }
     );
 
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar distribuidoras.</p>;
+    const handleSubmit = async (values: DistribuidoraFormData) => {
+        const action = async (): Promise<ActionResult<Distribuidora>> => {
+            const distribuidora = controller.editingItem?.id
+                ? await updateDistribuidora({ ...values, id: controller.editingItem.id })
+                : await createDistribuidora(values);
+
+            return { success: true, data: distribuidora.data };
+        };
+
+        controller.exec(action, 'Distribuidora salva com sucesso!').finally(() => distribuidoras.mutate());
+    };
+
+    if (distribuidoras.error) {
+        return <p style={{ color: 'red' }}>Erro ao carregar distribuidoras.</p>;
+    }
 
     return (
         <>
             <Card
                 title="Distribuidoras"
-                extra={<Button type="primary" onClick={() => open()}>Adicionar</Button>}
+                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
             >
                 <Table<Distribuidora>
                     columns={columns}
-                    dataSource={data?.data ?? []}
-                    loading={isLoading}
+                    dataSource={distribuidoras.data}
+                    loading={distribuidoras.isLoading}
                     rowKey="id"
+                    pagination={distribuidoras.pagination}
+                    onChange={distribuidoras.handleTableChange}
                 />
             </Card>
 
             <Modal
-                title={editingItem ? 'Editar Distribuidora' : 'Nova Distribuidora'}
-                open={isOpen}
-                onCancel={close}
+                title={controller.editingItem ? 'Editar Distribuidora' : 'Nova Distribuidora'}
+                open={controller.isOpen}
+                onCancel={controller.close}
                 footer={null}
                 destroyOnClose
             >
                 <DistribuidoraForm
-                    initialValues={editingItem ?? undefined}
+                    initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
-                    loading={loading}
+                    loading={controller.loading}
                 />
             </Modal>
         </>

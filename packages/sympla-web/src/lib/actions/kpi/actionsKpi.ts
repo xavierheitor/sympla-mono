@@ -8,7 +8,7 @@ import {
   createPrismaUpdateAction,
   createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
-import { kpiFormSchema } from "./schema";
+import { kpiFormSchema, KpiWithRelations } from "./schema";
 
 // ===== CREATE
 
@@ -72,11 +72,10 @@ export const getAllKpis = createPrismaGetAllAction(
 
 // ===== GET ALL WITH INCLUDES
 
-export const getAllKpisWithIncludes = createPrismaGetAllWithIncludesAction(
+export const getAllKpisWithIncludes = createPrismaGetAllWithIncludesAction<KpiWithRelations>(
   async (params) => {
     const {
       where = {},
-      orderBy = { nome: "asc" },
       include = {
         tipoManutencao: true,
       },
@@ -84,7 +83,6 @@ export const getAllKpisWithIncludes = createPrismaGetAllWithIncludesAction(
 
     return await prisma.kpi.findMany({
       where: { ...where, deletedAt: null },
-      orderBy,
       include,
     });
   },

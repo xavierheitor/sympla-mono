@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { useEffect, useState } from 'react';
+import { Form, Input, Button, Spin, Select } from 'antd';
 import { KpiFormData } from '@/lib/actions/kpi/schema';
 import { TipoManutencao } from '@sympla/prisma';
 
@@ -19,17 +19,23 @@ export default function KpiForm({
     tipoOptions,
 }: KpiFormProps) {
     const [form] = Form.useForm();
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        if (initialValues) {
-            form.setFieldsValue(initialValues);
-        } else {
-            form.resetFields();
-        }
+        form.setFieldsValue(initialValues ?? {});
+        setReady(true);
     }, [initialValues, form]);
 
+    if (!ready || loading) {
+        return <Spin spinning />;
+    }
+
+    const handleFinish = (values: KpiFormData) => {
+        onSubmit(values);
+    };
+
     return (
-        <Form form={form} layout="vertical" onFinish={onSubmit}>
+        <Form form={form} layout="vertical" onFinish={handleFinish}>
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>

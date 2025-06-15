@@ -3,17 +3,23 @@
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
-import { useServerData } from '@/lib/hooks/useServerData';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 import UserForm from './form';
 import { UserFormData } from '@/lib/actions/user/schema';
 import { User } from '@sympla/prisma';
 import { createUser, deleteUser, getAllUsers, updateUser } from '@/lib/actions/user/actionsUser';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { ActionResult } from '@/lib/types/ActionTypes';
 
 export default function UserPage() {
     const controller = useCrudController<User>('user');
 
-    const { data: users, isLoading, error } = useServerData('users', getAllUsers);
+    const users = useEntityData<User>({
+        key: 'users',
+        fetcher: unwrapFetcher(getAllUsers),
+        paginationEnabled: true,
+    });
 
     const columns = useTableColumnsWithActions<User>(
         [
@@ -21,19 +27,25 @@ export default function UserPage() {
             { title: 'Nome', dataIndex: 'name', key: 'name' },
             { title: 'Email', dataIndex: 'email', key: 'email' },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteUser(item.id), 'Usuário excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteUser(item.id), 'Usuário excluído com sucesso!').finally(() => users.mutate()),
+        }
     );
 
-    const handleSubmit = (values: UserFormData) => {
-        const action = controller.editingItem?.id
-            ? () => updateUser({ ...values, id: controller.editingItem!.id })
-            : () => createUser(values);
+    const handleSubmit = async (values: UserFormData) => {
+        const action = async (): Promise<ActionResult<User>> => {
+            const user = controller.editingItem?.id
+                ? await updateUser({ ...values, id: controller.editingItem.id })
+                : await createUser(values);
 
-        controller.exec(action, 'Usuário salvo com sucesso!');
+            return { success: true, data: user.data };
+        };
+
+        controller.exec(action, 'Usuário salvo com sucesso!').finally(() => users.mutate());
     };
 
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar usuários.</p>;
+    if (users.error) return <p style={{ color: 'red' }}>Erro ao carregar usuários.</p>;
 
     return (
         <>
@@ -43,9 +55,11 @@ export default function UserPage() {
             >
                 <Table<User>
                     columns={columns}
-                    dataSource={users?.data ?? []}
-                    loading={isLoading}
+                    dataSource={users.data}
+                    loading={users.isLoading}
                     rowKey="id"
+                    pagination={users.pagination}
+                    onChange={users.handleTableChange}
                 />
             </Card>
 

@@ -1,22 +1,35 @@
-
-
-// page.tsx
 'use client';
 
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
-import { useServerData } from '@/lib/hooks/useServerData';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 import UsuarioMobileForm from './form';
 import { UsuarioMobileFormData } from '@/lib/actions/usuarioMobile/schema';
 import { UsuarioMobile } from '@sympla/prisma';
-import { createUsuarioMobile, deleteUsuarioMobile, getAllUsuarioMobiles, updateUsuarioMobile } from '@/lib/actions/usuarioMobile/actionsUsuarioMobile';
+import {
+    createUsuarioMobile,
+    deleteUsuarioMobile,
+    getAllUsuarioMobiles,
+    updateUsuarioMobile
+} from '@/lib/actions/usuarioMobile/actionsUsuarioMobile';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { ActionResult } from '@/lib/types/ActionTypes';
+import { setRegionaisDoUsuarioMobile } from '@/lib/actions/usuarioMobile/actionsUsuarioMobileRegional';
+import { useServerData } from '@/lib/hooks/useServerData';
+import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
 
 export default function UsuarioMobilePage() {
     const controller = useCrudController<UsuarioMobile>('usuarioMobile');
 
-    const { data: usuarios, isLoading, error } = useServerData('usuariosMobile', getAllUsuarioMobiles);
+    const usuarios = useEntityData<UsuarioMobile>({
+        key: 'usuariosMobile',
+        fetcher: unwrapFetcher(getAllUsuarioMobiles),
+        paginationEnabled: true,
+    });
+
+    const { data: regionais } = useServerData('regionais', unwrapFetcher(getAllRegionais));
 
     const columns = useTableColumnsWithActions<UsuarioMobile>(
         [
@@ -26,20 +39,40 @@ export default function UsuarioMobilePage() {
             { title: 'Função', dataIndex: 'funcao', key: 'funcao' },
             { title: 'Ativo', dataIndex: 'ativo', key: 'ativo', render: (v) => (v ? 'Sim' : 'Não') },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteUsuarioMobile(item.id), 'Usuário excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteUsuarioMobile(item.id), 'Usuário excluído com sucesso!').finally(() => usuarios.mutate()),
+        }
     );
 
-    const handleSubmit = (values: UsuarioMobileFormData) => {
-        console.log(values);
-        const action = controller.editingItem?.id
-            ? () => updateUsuarioMobile({ ...values, id: controller.editingItem!.id })
-            : () => createUsuarioMobile(values);
+    const handleSubmit = async (values: UsuarioMobileFormData & { regionalIds: string[] }) => {
+        const { regionalIds, ...rest } = values;
 
-        controller.exec(action, 'Usuário salvo com sucesso!');
+        const action = async (): Promise<ActionResult<UsuarioMobile>> => {
+            let usuarioResult;
+
+            if (controller.editingItem?.id) {
+                usuarioResult = await updateUsuarioMobile({ ...rest, id: controller.editingItem.id });
+            } else {
+                usuarioResult = await createUsuarioMobile(rest);
+            }
+
+            // ⚠ Aqui a correção: garantir o ID
+            const usuarioId = usuarioResult.data?.id ?? controller.editingItem?.id ?? '';
+
+            await setRegionaisDoUsuarioMobile({
+                usuarioMobileId: usuarioId,
+                regionalIds,
+            });
+
+            return { success: true, data: usuarioResult.data };
+        };
+
+        controller.exec(action, 'Usuário salvo com sucesso!').finally(() => usuarios.mutate());
     };
 
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar usuários.</p>;
+
+    if (usuarios.error) return <p style={{ color: 'red' }}>Erro ao carregar usuários.</p>;
 
     return (
         <>
@@ -49,9 +82,11 @@ export default function UsuarioMobilePage() {
             >
                 <Table<UsuarioMobile>
                     columns={columns}
-                    dataSource={usuarios?.data ?? []}
-                    loading={isLoading}
+                    dataSource={usuarios.data}
+                    loading={usuarios.isLoading}
                     rowKey="id"
+                    pagination={usuarios.pagination}
+                    onChange={usuarios.handleTableChange}
                 />
             </Card>
 
@@ -66,6 +101,7 @@ export default function UsuarioMobilePage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
+                    regionais={regionais ?? []}
                 />
             </Modal>
         </>

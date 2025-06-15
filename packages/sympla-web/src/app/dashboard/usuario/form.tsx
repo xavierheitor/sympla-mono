@@ -1,8 +1,7 @@
-// form.tsx
 'use client';
 
-import { useEffect } from 'react';
-import { Button, Form, Input } from 'antd';
+import { useEffect, useState } from 'react';
+import { Button, Form, Input, Spin } from 'antd';
 import { UserFormData } from '@/lib/actions/user/schema';
 
 type FormValues = UserFormData & { confirmPassword?: string };
@@ -15,17 +14,19 @@ interface UserFormProps {
 
 export default function UserForm({ onSubmit, initialValues, loading = false }: UserFormProps) {
     const [form] = Form.useForm();
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        if (initialValues) {
-            form.setFieldsValue({ ...initialValues, password: '', confirmPassword: '' });
-        } else {
-            form.resetFields();
-        }
+        form.setFieldsValue({ ...initialValues, password: '', confirmPassword: '' });
+        setReady(true);
     }, [initialValues, form]);
 
+    if (!ready || loading) {
+        return <Spin spinning />;
+    }
+
     const handleFinish = (values: FormValues) => {
-        const { ...data } = values;
+        const data = { ...values };
         if (!data.password) {
             data.password = undefined as unknown as string;
         }

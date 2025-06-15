@@ -3,39 +3,52 @@
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
 
 import KpiForm from './form';
 import { KpiFormData, KpiWithRelations } from '@/lib/actions/kpi/schema';
 import { createKpi, deleteKpi, getAllKpisWithIncludes, updateKpi } from '@/lib/actions/kpi/actionsKpi';
 import { getAllTipoManutencaos } from '@/lib/actions/tipoManutencao/actionsTipoManutencao';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { ActionResult } from '@/lib/types/ActionTypes';
 
 export default function KpiPage() {
     const controller = useCrudController<KpiWithRelations>('kpis');
 
-    const { data: kpis, isLoading, error } = useServerData('kpis', getAllKpisWithIncludes);
-    const { data: tipos } = useServerData('tipoManutencao', getAllTipoManutencaos);
+    const kpis = useEntityData<KpiWithRelations>({
+        key: 'kpis',
+        fetcher: unwrapFetcher(getAllKpisWithIncludes),
+        paginationEnabled: true,
+    });
+
+    const { data: tipos } = useServerData('tipoManutencao', unwrapFetcher(getAllTipoManutencaos));
 
     const columns = useTableColumnsWithActions<KpiWithRelations>(
         [
             { title: 'Nome', dataIndex: 'nome', key: 'nome' },
             { title: 'Tipo de Manutenção', dataIndex: ['tipoManutencao', 'nome'], key: 'tipoManutencao.nome' },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteKpi(item.id), 'KPI excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteKpi(item.id), 'KPI excluído com sucesso!').finally(() => kpis.mutate()),
+        }
     );
 
-    const handleSubmit = (values: KpiFormData) => {
-        const action = controller.editingItem?.id
-            ? () => updateKpi({ ...values, id: controller.editingItem!.id })
-            : () => createKpi(values);
+    const handleSubmit = async (values: KpiFormData) => {
+        const action = async (): Promise<ActionResult<KpiWithRelations>> => {
+            const kpi = controller.editingItem?.id
+                ? await updateKpi({ ...values, id: controller.editingItem.id })
+                : await createKpi(values);
 
-        controller.exec(action, 'KPI salvo com sucesso!');
+            return { success: true, data: kpi.data };
+        };
+
+        controller.exec(action, 'KPI salvo com sucesso!').finally(() => kpis.mutate());
     };
 
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar KPIs.</p>;
+    if (kpis.error) return <p style={{ color: 'red' }}>Erro ao carregar KPIs.</p>;
 
     return (
         <>
@@ -45,9 +58,11 @@ export default function KpiPage() {
             >
                 <Table<KpiWithRelations>
                     columns={columns}
-                    dataSource={kpis?.data ?? []}
-                    loading={isLoading}
+                    dataSource={kpis.data}
+                    loading={kpis.isLoading}
                     rowKey="id"
+                    pagination={kpis.pagination}
+                    onChange={kpis.handleTableChange}
                 />
             </Card>
 
@@ -62,7 +77,7 @@ export default function KpiPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
-                    tipoOptions={tipos?.data ?? []}
+                    tipoOptions={tipos ?? []}
                 />
             </Modal>
         </>
