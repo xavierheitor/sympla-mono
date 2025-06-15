@@ -131,10 +131,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
                             key: '/dashboard/checklistPergunta',
                             label: <Link href="/dashboard/checklistPergunta">Perguntas</Link>,
                         },
-                        {
-                            key: '/dashboard/checklistPerguntaRelation',
-                            label: <Link href="/dashboard/checklistPerguntaRelation">Relação de Perguntas</Link>,
-                        },
                     ],
                 },
                 {
