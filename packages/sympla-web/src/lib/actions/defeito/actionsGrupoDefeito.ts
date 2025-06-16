@@ -4,10 +4,11 @@ import { prisma } from "@/lib/db/prisma";
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
-  createPrismaGetAllAction,
+  createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
-import { grupoDefeitoEquipamentoFormSchema } from "./schema";
+import { grupoDefeitoEquipamentoFormSchema, } from "./schema";
+import { GrupoDefeitoEquipamento } from "@sympla/prisma";
 
 // ===== CREATE =====
 
@@ -49,9 +50,30 @@ export const deleteGrupoDefeitoEquipamento = createPrismaDeleteAction(
   }
 );
 
-// ===== GET ALL =====
+// ===== GET ALL com paginação e filtros =====
 
-export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllAction(
-  prisma.grupoDefeitoEquipamento,
+export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesAction<GrupoDefeitoEquipamento>(
+  async (params) => {
+    const {
+      where = {},
+      orderBy = 'nome',
+      orderDir = 'asc',
+      filters = {},
+    } = params;
+
+    const finalWhere = {
+      ...where,
+      deletedAt: null,
+      ...(filters.nome && { nome: { contains: filters.nome[0], mode: "insensitive" } }),
+      ...(filters.codigo && { codigo: { contains: filters.codigo[0], mode: "insensitive" } }),
+    };
+
+    const prismaOrderBy = { [orderBy]: orderDir };
+
+    return prisma.grupoDefeitoEquipamento.findMany({
+      where: finalWhere,
+      orderBy: prismaOrderBy,
+    });
+  },
   "GRUPO_DEFEITO_EQUIPAMENTO"
 );

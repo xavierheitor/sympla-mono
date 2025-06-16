@@ -3,29 +3,46 @@
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
-import { useServerData } from '@/lib/hooks/useServerData';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-
 import GrupoDefeitoEquipamentoForm from './form';
-import { GrupoDefeitoEquipamento } from '@sympla/prisma';
+import { GrupoDefeitoEquipamento, GrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
 import { createGrupoDefeitoEquipamento, deleteGrupoDefeitoEquipamento, getAllGrupoDefeitoEquipamentos, updateGrupoDefeitoEquipamento } from '@/lib/actions/defeito/actionsGrupoDefeito';
-import { GrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function GrupoDefeitoEquipamentoPage() {
     const controller = useCrudController<GrupoDefeitoEquipamento>('grupoDefeitoEquipamento');
 
-    const { data, isLoading, error } = useServerData(
-        'grupoDefeitoEquipamento',
-        getAllGrupoDefeitoEquipamentos
-    );
+    const grupos = useEntityData<GrupoDefeitoEquipamento>({
+        key: 'grupoDefeitoEquipamento',
+        fetcher: unwrapFetcher(getAllGrupoDefeitoEquipamentos),
+        paginationEnabled: true,
+    });
 
     const columns = useTableColumnsWithActions<GrupoDefeitoEquipamento>(
         [
-            { title: 'Nome', dataIndex: 'nome', key: 'nome' },
-            { title: 'Código', dataIndex: 'codigo', key: 'codigo' }
+            {
+                title: 'Nome',
+                dataIndex: 'nome',
+                key: 'nome',
+                filteredValue: grupos.params.filters?.nome ?? null,
+                onFilter: (value, record) => record.nome.includes(value as string),
+                sorter: true,
+            },
+            {
+                title: 'Código',
+                dataIndex: 'codigo',
+                key: 'codigo',
+                filteredValue: grupos.params.filters?.codigo ?? null,
+                onFilter: (value, record) => record.codigo.includes(value as string),
+                sorter: true,
+            },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteGrupoDefeitoEquipamento(item.id), 'Grupo excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteGrupoDefeitoEquipamento(item.id), 'Grupo excluído com sucesso!')
+                .finally(() => grupos.mutate()),
+        }
     );
 
     const handleSubmit = (values: GrupoDefeitoEquipamentoFormData) => {
@@ -33,12 +50,10 @@ export default function GrupoDefeitoEquipamentoPage() {
             ? () => updateGrupoDefeitoEquipamento({ ...values, id: controller.editingItem!.id })
             : () => createGrupoDefeitoEquipamento(values);
 
-        controller.exec(action, 'Grupo salvo com sucesso!');
+        controller.exec(action, 'Grupo salvo com sucesso!').finally(() => grupos.mutate());
     };
 
-    if (error) {
-        return <p style={{ color: 'red' }}>Erro ao carregar os grupos.</p>;
-    }
+    if (grupos.error) return <p style={{ color: 'red' }}>Erro ao carregar os grupos.</p>;
 
     return (
         <>
@@ -48,9 +63,11 @@ export default function GrupoDefeitoEquipamentoPage() {
             >
                 <Table<GrupoDefeitoEquipamento>
                     columns={columns}
-                    dataSource={data?.data ?? []}
-                    loading={isLoading}
+                    dataSource={grupos.data}
+                    loading={grupos.isLoading}
                     rowKey="id"
+                    pagination={grupos.pagination}
+                    onChange={grupos.handleTableChange}
                 />
             </Card>
 
