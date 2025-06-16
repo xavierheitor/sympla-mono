@@ -4,11 +4,10 @@ import { prisma } from "@/lib/db/prisma";
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
-  createPrismaGetAllAction,
   createPrismaUpdateAction,
   createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
-import { subgrupoDefeitoEquipamentoFormSchema } from "./schema";
+import { subgrupoDefeitoEquipamentoFormSchema, SubgrupoDefeitoEquipamentoWithRelations } from "./schema";
 
 // ===== CREATE =====
 
@@ -50,21 +49,31 @@ export const deleteSubgrupoDefeitoEquipamento = createPrismaDeleteAction(
   }
 );
 
-// ===== GET ALL (SEM INCLUDES) =====
+// ===== GET ALL PAGINATED COM INCLUDES E FILTROS =====
 
-export const getAllSubgrupoDefeitoEquipamentos = createPrismaGetAllAction(
-  prisma.subgrupoDefeitoEquipamento,
-  "SUBGRUPO_DEFEITO_EQUIPAMENTO"
-);
+export const getAllSubgrupoDefeitoEquipamentosWithIncludes = createPrismaGetAllWithIncludesAction<SubgrupoDefeitoEquipamentoWithRelations>(
+  async (params) => {
+    const {
+      where = {},
+      orderBy = 'nome',
+      orderDir = 'asc',
+      filters = {},
+    } = params;
 
-// ===== GET ALL WITH INCLUDES =====
+    const finalWhere = {
+      ...where,
+      deletedAt: null,
+      ...(filters.nome && { nome: { contains: filters.nome[0], mode: "insensitive" } }),
+      ...(filters.grupoId && { grupoId: { in: filters.grupoId } }),
+    };
 
-export const getAllSubgrupoDefeitoEquipamentosWithIncludes = createPrismaGetAllWithIncludesAction(
-  async () =>
-    prisma.subgrupoDefeitoEquipamento.findMany({
-      where: { deletedAt: null },
-      orderBy: { nome: "asc" },
+    const prismaOrderBy = { [orderBy]: orderDir };
+
+    return prisma.subgrupoDefeitoEquipamento.findMany({
+      where: finalWhere,
+      orderBy: prismaOrderBy,
       include: { grupo: true },
-    }),
+    });
+  },
   "SUBGRUPO_DEFEITO_EQUIPAMENTO"
 );

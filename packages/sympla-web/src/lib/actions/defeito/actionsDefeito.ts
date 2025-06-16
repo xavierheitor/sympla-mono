@@ -8,12 +8,12 @@ import {
   createPrismaUpdateAction,
   createPrismaGetAllWithIncludesAction,
 } from "@/lib/server-action/actionFactory";
-import { createManyDefeitoSchema, defeitoFormSchema } from "./schema";
+import { createManyDefeitoSchema, defeitoFormSchema, DefeitoWithRelations } from "./schema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/utils/auth.config";
 import { z } from "zod";
 
-// ===== CRUD Defeito =====
+// ===== CREATE =====
 
 export const createDefeito = createPrismaCreateAction(
   defeitoFormSchema,
@@ -24,6 +24,8 @@ export const createDefeito = createPrismaCreateAction(
   "DEFEITO"
 );
 
+// ===== UPDATE =====
+
 export const updateDefeito = createPrismaUpdateAction(
   defeitoFormSchema,
   async (data) =>
@@ -33,6 +35,8 @@ export const updateDefeito = createPrismaUpdateAction(
     }),
   "DEFEITO"
 );
+
+// ===== DELETE =====
 
 export const deleteDefeito = createPrismaDeleteAction(
   async (id, session) =>
@@ -46,6 +50,8 @@ export const deleteDefeito = createPrismaDeleteAction(
   }
 );
 
+// ===== GET ALL (sem includes) =====
+
 export const getAllDefeitos = createPrismaGetAllAction(
   prisma.defeito,
   "DEFEITO"
@@ -53,20 +59,35 @@ export const getAllDefeitos = createPrismaGetAllAction(
 
 // ===== GET ALL WITH INCLUDES =====
 
-export const getAllDefeitosWithIncludes = createPrismaGetAllWithIncludesAction(
-  async () =>
-    prisma.defeito.findMany({
-      where: { deletedAt: null },
-      orderBy: { codigoSap: "asc" },
+export const getAllDefeitosWithIncludes = createPrismaGetAllWithIncludesAction<DefeitoWithRelations>(
+  async (params) => {
+    const {
+      where = {},
+      orderBy = 'codigoSap',
+      orderDir = 'asc',
+      filters = {},
+    } = params;
+
+    const finalWhere = {
+      ...where,
+      deletedAt: null,
+      ...(filters.codigoSap && { codigoSap: { contains: filters.codigoSap[0], mode: "insensitive" } }),
+      ...(filters.descricao && { descricao: { contains: filters.descricao[0], mode: "insensitive" } }),
+      ...(filters.grupoId && { grupoId: { in: filters.grupoId } }),
+      ...(filters.subgrupoId && { subgrupoId: { in: filters.subgrupoId } }),
+    };
+
+    const prismaOrderBy = { [orderBy]: orderDir };
+
+    return prisma.defeito.findMany({
+      where: finalWhere,
+      orderBy: prismaOrderBy,
       include: {
         grupo: true,
-        subgrupo: {
-          include: {
-            grupo: true,
-          },
-        },
+        subgrupo: { include: { grupo: true } }
       },
-    }),
+    });
+  },
   "DEFEITO"
 );
 

@@ -3,55 +3,55 @@
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import SubgrupoDefeitoEquipamentoForm from './form';
-import { GrupoDefeitoEquipamento, SubgrupoDefeitoEquipamento } from '@sympla/prisma';
+import { SubgrupoDefeitoEquipamentoFormData, SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/defeito/schema';
 import { createSubgrupoDefeitoEquipamento, deleteSubgrupoDefeitoEquipamento, getAllSubgrupoDefeitoEquipamentosWithIncludes, updateSubgrupoDefeitoEquipamento } from '@/lib/actions/defeito/actionsSubgrupoDefeito';
-import { SubgrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
-
-type SubgrupoWithGrupo = SubgrupoDefeitoEquipamento & { grupo: GrupoDefeitoEquipamento };
+import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/defeito/actionsGrupoDefeito';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function SubgrupoDefeitoEquipamentoPage() {
-    const controller = useCrudController<SubgrupoWithGrupo>('subgrupoDefeitoEquipamento');
+    const controller = useCrudController<SubgrupoDefeitoEquipamentoWithRelations>('subgrupoDefeitoEquipamento');
 
-    const { data: subgrupos, isLoading, error } = useServerData(
-        'subgrupos',
-        getAllSubgrupoDefeitoEquipamentosWithIncludes
-    );
+    const subgrupos = useEntityData<SubgrupoDefeitoEquipamentoWithRelations>({
+        key: 'subgrupoDefeitoEquipamento',
+        fetcher: unwrapFetcher(getAllSubgrupoDefeitoEquipamentosWithIncludes),
+        paginationEnabled: true,
+    });
 
     const { data: grupos } = useServerData(
-        'gruposDefeito',
-        async () => {
-            const all = await import('@/lib/actions/defeito/actionsGrupoDefeito');
-            return all.getAllGrupoDefeitoEquipamentos();
-        }
+        'grupoDefeitoEquipamento',
+        unwrapFetcher(getAllGrupoDefeitoEquipamentos)
     );
 
-    const columns = useTableColumnsWithActions<SubgrupoWithGrupo>(
+    const columns = useTableColumnsWithActions<SubgrupoDefeitoEquipamentoWithRelations>(
         [
-            { title: 'Nome', dataIndex: 'nome', key: 'nome' },
+            {
+                title: 'Nome',
+                dataIndex: 'nome',
+                key: 'nome',
+                filteredValue: subgrupos.params.filters?.nome ?? null,
+                onFilter: (value, record) => record.nome.includes(value as string),
+                sorter: true,
+            },
             {
                 title: 'Grupo',
                 dataIndex: ['grupo', 'nome'],
                 key: 'grupo.nome',
-                filters: grupos?.data?.map((g) => ({
-                    text: g.nome,
-                    value: g.nome,
-                })) ?? [],
-                onFilter: (value, record) => record.grupo.nome.includes(value as string),
-                sorter: (a, b) => a.grupo.nome.localeCompare(b.grupo.nome),
-                sortDirections: ['descend'],
-                render: (text, record) => `${record.grupo.codigo} - ${record.nome}`,
-            }
+                filters: grupos?.map((g) => ({ text: g.nome, value: g.id })) ?? [],
+                filteredValue: subgrupos.params.filters?.grupoId ?? null,
+                onFilter: (value, record) => record.grupo.id === value,
+            },
         ],
-        controller.open,
-        (item) =>
-            controller.exec(
-                () => deleteSubgrupoDefeitoEquipamento(item.id),
-                'Subgrupo excluído com sucesso!'
-            )
+        {
+            onEdit: controller.open,
+            onDelete: (item) =>
+                controller.exec(() => deleteSubgrupoDefeitoEquipamento(item.id), 'Subgrupo excluído com sucesso!')
+                    .finally(() => subgrupos.mutate()),
+        }
     );
 
     const handleSubmit = (values: SubgrupoDefeitoEquipamentoFormData) => {
@@ -59,10 +59,10 @@ export default function SubgrupoDefeitoEquipamentoPage() {
             ? () => updateSubgrupoDefeitoEquipamento({ ...values, id: controller.editingItem!.id })
             : () => createSubgrupoDefeitoEquipamento(values);
 
-        controller.exec(action, 'Subgrupo salvo com sucesso!');
+        controller.exec(action, 'Subgrupo salvo com sucesso!').finally(() => subgrupos.mutate());
     };
 
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar subgrupos.</p>;
+    if (subgrupos.error) return <p style={{ color: 'red' }}>Erro ao carregar subgrupos.</p>;
 
     return (
         <>
@@ -70,11 +70,13 @@ export default function SubgrupoDefeitoEquipamentoPage() {
                 title="Subgrupos de Defeito"
                 extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
             >
-                <Table<SubgrupoWithGrupo>
+                <Table<SubgrupoDefeitoEquipamentoWithRelations>
                     columns={columns}
-                    dataSource={subgrupos?.data ?? []}
-                    loading={isLoading}
+                    dataSource={subgrupos.data}
+                    loading={subgrupos.isLoading}
                     rowKey="id"
+                    pagination={subgrupos.pagination}
+                    onChange={subgrupos.handleTableChange}
                 />
             </Card>
 
@@ -89,7 +91,7 @@ export default function SubgrupoDefeitoEquipamentoPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
-                    grupoOptions={grupos?.data ?? []}
+                    grupoOptions={grupos ?? []}
                 />
             </Modal>
         </>

@@ -5,7 +5,7 @@ import {
   SubgrupoDefeitoEquipamento as PrismaSubgrupoDefeitoEquipamento,
 } from "@sympla/prisma";
 
-// Reexports dos tipos Prisma (para manter o padrão global)
+// Reexports dos tipos Prisma (padronização global)
 export type Defeito = PrismaDefeito;
 export type GrupoDefeitoEquipamento = PrismaGrupoDefeitoEquipamento;
 export type SubgrupoDefeitoEquipamento = PrismaSubgrupoDefeitoEquipamento;
@@ -51,8 +51,12 @@ export const grupoDefeitoEquipamentoFormSchema = z.object({
   codigo: z.string().min(1, "codigo é obrigatório"),
 });
 
-type GrupoDefeitoBaseFields = Required<Pick<GrupoDefeitoEquipamento, "nome" | "codigo">>;
-export type GrupoDefeitoEquipamentoFormData = Partial<Pick<GrupoDefeitoEquipamento, "id">> & GrupoDefeitoBaseFields;
+type GrupoDefeitoBaseFields = Required<
+  Pick<GrupoDefeitoEquipamento, "nome" | "codigo">
+>;
+export type GrupoDefeitoEquipamentoFormData = Partial<
+  Pick<GrupoDefeitoEquipamento, "id">
+> & GrupoDefeitoBaseFields;
 
 export type GrupoDefeitoEquipamentoWithRelations = GrupoDefeitoEquipamento & {
   subgrupos: SubgrupoDefeitoEquipamento[];
@@ -66,7 +70,12 @@ export const subgrupoDefeitoEquipamentoFormSchema = z.object({
   grupoId: z.string().min(1, "grupo é obrigatório"),
 });
 
-export type SubgrupoDefeitoEquipamentoFormData = z.infer<typeof subgrupoDefeitoEquipamentoFormSchema>;
+type SubgrupoBaseFields = Required<
+  Pick<SubgrupoDefeitoEquipamento, "nome" | "grupoId">
+>;
+export type SubgrupoDefeitoEquipamentoFormData = Partial<
+  Pick<SubgrupoDefeitoEquipamento, "id">
+> & SubgrupoBaseFields;
 
 export type SubgrupoDefeitoEquipamentoWithRelations = SubgrupoDefeitoEquipamento & {
   grupo: GrupoDefeitoEquipamento;

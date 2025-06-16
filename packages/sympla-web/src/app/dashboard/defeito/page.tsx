@@ -1,29 +1,39 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Card, Modal, Table, Space } from 'antd';
+import { Button, Card, Modal, Space, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
-import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/schema';
+
 import DefeitoForm from './form';
-import { createDefeito, deleteDefeito, getAllDefeitosWithIncludes, updateDefeito } from '@/lib/actions/defeito/actionsDefeito';
 import DefeitoLoteForm from './formLote';
+import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/schema';
+import { createDefeito, deleteDefeito, getAllDefeitosWithIncludes, updateDefeito } from '@/lib/actions/defeito/actionsDefeito';
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/defeito/actionsGrupoDefeito';
 import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/defeito/actionsSubgrupoDefeito';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function DefeitoPage() {
     const controller = useCrudController<DefeitoWithRelations>('defeitos');
-
     const [loteModalOpen, setLoteModalOpen] = useState(false);
 
-    const { data: defeitos, isLoading, error, mutate } = useServerData(
-        'defeitos',
-        getAllDefeitosWithIncludes
+    const defeitos = useEntityData<DefeitoWithRelations>({
+        key: 'defeitos',
+        fetcher: unwrapFetcher(getAllDefeitosWithIncludes),
+        paginationEnabled: true,
+    });
+
+    const { data: grupos } = useServerData(
+        'grupoDefeitoEquipamento',
+        unwrapFetcher(getAllGrupoDefeitoEquipamentos)
     );
 
-    const { data: grupos } = useServerData('grupoDefeitoEquipamento', getAllGrupoDefeitoEquipamentos);
-    const { data: subgrupos } = useServerData('subgrupoDefeitoEquipamento', getAllSubgrupoDefeitoEquipamentosWithIncludes);
+    const { data: subgrupos } = useServerData(
+        'subgrupoDefeitoEquipamento',
+        unwrapFetcher(getAllSubgrupoDefeitoEquipamentosWithIncludes)
+    );
 
     const columns = useTableColumnsWithActions<DefeitoWithRelations>(
         [
@@ -31,53 +41,53 @@ export default function DefeitoPage() {
                 title: 'Código SAP',
                 dataIndex: 'codigoSap',
                 key: 'codigoSap',
-                sorter: (a, b) => a.codigoSap.localeCompare(b.codigoSap),
-                sortDirections: ['descend', 'ascend'],
-            },
-            {
-                title: 'Prioridade',
-                dataIndex: 'prioridade',
-                key: 'prioridade',
-                sorter: (a, b) => a.prioridade?.localeCompare(b.prioridade ?? '') ?? 0,
-                sortDirections: ['descend', 'ascend'],
+                filteredValue: defeitos.params.filters?.codigoSap ?? null,
+                onFilter: (value, record) => record.codigoSap.includes(value as string),
+                sorter: true,
             },
             {
                 title: 'Descrição',
                 dataIndex: 'descricao',
                 key: 'descricao',
-                sorter: (a, b) => a.descricao.localeCompare(b.descricao),
-                sortDirections: ['descend', 'ascend'],
+                filteredValue: defeitos.params.filters?.descricao ?? null,
+                onFilter: (value, record) => record.descricao.includes(value as string),
+                sorter: true,
+            },
+            {
+                title: 'Prioridade',
+                dataIndex: 'prioridade',
+                key: 'prioridade',
+                sorter: true,
             },
             {
                 title: 'Grupo',
                 dataIndex: ['grupo', 'nome'],
                 key: 'grupo.nome',
-                filters: grupos?.data?.map((g) => ({
+                filters: grupos?.map((g) => ({
                     text: `${g.codigo ? g.codigo + ' - ' : ''}${g.nome}`,
-                    value: g.nome,
+                    value: g.id,
                 })) ?? [],
-                onFilter: (value, record) => record.grupo.nome.includes(value as string),
-                sorter: (a, b) => a.grupo.nome.localeCompare(b.grupo.nome),
-                sortDirections: ['descend', 'ascend'],
-                render: (_, record) => `${record.grupo.codigo ? record.grupo.codigo + ' - ' : ''}${record.grupo.nome}`,
+                filteredValue: defeitos.params.filters?.grupoId ?? null,
+                onFilter: (value, record) => record.grupo.id === value,
             },
             {
                 title: 'Subgrupo',
                 dataIndex: ['subgrupo', 'nome'],
                 key: 'subgrupo.nome',
-                filters: subgrupos?.data?.map((s) => ({
+                filters: subgrupos?.map((s) => ({
                     text: `${s.grupo.codigo ? s.grupo.codigo + ' - ' : ''}${s.nome}`,
-                    value: s.nome,
+                    value: s.id,
                 })) ?? [],
-                onFilter: (value, record) => record.subgrupo.nome.includes(value as string),
-                sorter: (a, b) => a.subgrupo.nome.localeCompare(b.subgrupo.nome),
-                sortDirections: ['descend', 'ascend'],
-                render: (_, record) => `${record.subgrupo.grupo.codigo ? record.subgrupo.grupo.codigo + ' - ' : ''}${record.subgrupo.nome}`,
+                filteredValue: defeitos.params.filters?.subgrupoId ?? null,
+                onFilter: (value, record) => record.subgrupo.id === value,
             },
         ],
-        controller.open,
-        (item) =>
-            controller.exec(() => deleteDefeito(item.id), 'Defeito excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) =>
+                controller.exec(() => deleteDefeito(item.id), 'Defeito excluído com sucesso!')
+                    .finally(() => defeitos.mutate()),
+        }
     );
 
     const handleSubmit = (values: DefeitoFormData) => {
@@ -85,10 +95,10 @@ export default function DefeitoPage() {
             ? () => updateDefeito({ ...values, id: controller.editingItem!.id })
             : () => createDefeito(values);
 
-        controller.exec(action, 'Defeito salvo com sucesso!');
+        controller.exec(action, 'Defeito salvo com sucesso!').finally(() => defeitos.mutate());
     };
 
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar defeitos.</p>;
+    if (defeitos.error) return <p style={{ color: 'red' }}>Erro ao carregar defeitos.</p>;
 
     return (
         <>
@@ -96,20 +106,18 @@ export default function DefeitoPage() {
                 title="Defeitos"
                 extra={
                     <Space>
-                        <Button type="primary" onClick={() => controller.open()}>
-                            Adicionar
-                        </Button>
-                        <Button onClick={() => setLoteModalOpen(true)}>
-                            Adicionar em Lote
-                        </Button>
+                        <Button type="primary" onClick={() => controller.open()}>Adicionar</Button>
+                        <Button onClick={() => setLoteModalOpen(true)}>Adicionar em Lote</Button>
                     </Space>
                 }
             >
                 <Table<DefeitoWithRelations>
                     columns={columns}
-                    dataSource={defeitos?.data ?? []}
-                    loading={isLoading}
+                    dataSource={defeitos.data}
+                    loading={defeitos.isLoading}
                     rowKey="id"
+                    pagination={defeitos.pagination}
+                    onChange={defeitos.handleTableChange}
                 />
             </Card>
 
@@ -124,8 +132,8 @@ export default function DefeitoPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
-                    grupoOptions={grupos?.data ?? []}
-                    subgrupoOptions={subgrupos?.data ?? []}
+                    grupoOptions={grupos ?? []}
+                    subgrupoOptions={subgrupos ?? []}
                 />
             </Modal>
 
@@ -140,10 +148,10 @@ export default function DefeitoPage() {
                 <DefeitoLoteForm
                     onSuccess={() => {
                         setLoteModalOpen(false);
-                        mutate(); // 🔥 Atualiza a tabela após salvar
+                        defeitos.mutate();
                     }}
-                    grupoOptions={grupos?.data ?? []}
-                    subgrupoOptions={subgrupos?.data ?? []}
+                    grupoOptions={grupos ?? []}
+                    subgrupoOptions={subgrupos ?? []}
                 />
             </Modal>
         </>
