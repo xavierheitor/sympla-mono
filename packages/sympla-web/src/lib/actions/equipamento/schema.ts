@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Equipamento, Subestacao } from "@sympla/prisma";
+import { Equipamento, Subestacao, Regional } from "@sympla/prisma";
 
 export const equipamentoFormSchema = z.object({
   id: z.string().optional(),
@@ -15,13 +15,5 @@ type BaseFields = Required<
 export type EquipamentoFormData = Partial<Pick<Equipamento, "id">> & BaseFields;
 
 export type EquipamentoWithRelations = Equipamento & {
-  subestacao?: Subestacao;
+  subestacao: Subestacao & { regional: Regional };
 };
-
-export interface EquipamentoPaginatedParams {
-  page: number;
-  pageSize: number;
-  search?: string;
-  subestacaoId?: string;
-  grupoDefeitoCodigo?: string;
-}

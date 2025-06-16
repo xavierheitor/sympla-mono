@@ -1,51 +1,75 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState } from 'react';
-import { Button, Card, Input, Modal, Select, Space, Table } from 'antd';
-import { useEquipamentoPaginated } from '@/lib/hooks/useEquipamentoPaginated';
-import { useServerData } from '@/lib/hooks/useServerData';
+import React, { useState } from 'react';
+import { Button, Card, Input, Modal, Space, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
+import { useServerData } from '@/lib/hooks/useServerData';
+import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
+
 import EquipamentoForm from './form';
 import EquipamentoLoteForm from './formLote';
+import { createEquipamento, deleteEquipamento, getAllEquipamentosWithIncludes, updateEquipamento } from '@/lib/actions/equipamento/actionsEquipamento';
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/defeito/actionsGrupoDefeito';
-import { createEquipamento, updateEquipamento } from '@/lib/actions/equipamento/actionsEquipamento';
 import { getAllSubestacoes } from '@/lib/actions/subestacao/actionsSubestacao';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { EquipamentoFormData, EquipamentoWithRelations } from '@/lib/actions/equipamento/schema';
 
 export default function EquipamentoPage() {
-    const [page, setPage] = useState(1);
-    const [pageSize] = useState(20);
-    const [search, setSearch] = useState('');
-    const [subestacaoId, setSubestacaoId] = useState<string | undefined>(undefined);
-    const [grupoDefeitoCodigo, setGrupoDefeitoCodigo] = useState<string | undefined>(undefined);
+    const controller = useCrudController<EquipamentoWithRelations>('equipamentos');
     const [loteModalOpen, setLoteModalOpen] = useState(false);
 
-    const { data, total, isLoading, mutate } = useEquipamentoPaginated({
-        page,
-        pageSize,
-        search,
-        subestacaoId,
-        grupoDefeitoCodigo,
+    const equipamentos = useEntityData<EquipamentoWithRelations>({
+        key: 'equipamentos',
+        fetcher: unwrapFetcher(getAllEquipamentosWithIncludes),
+        paginationEnabled: true,
     });
 
-    const { data: grupos } = useServerData('grupoDefeitoEquipamento', getAllGrupoDefeitoEquipamentos);
-    const { data: subestacoes } = useServerData('subestacao', getAllSubestacoes);
+    const { data: subestacoes } = useServerData('subestacoes', unwrapFetcher(getAllSubestacoes));
+    const { data: grupos } = useServerData('gruposDefeito', unwrapFetcher(getAllGrupoDefeitoEquipamentos));
 
-    const controller = useCrudController('equipamentos-paginated');
+    const columns = useTableColumnsWithActions<EquipamentoWithRelations>(
+        [
+            {
+                title: 'Nome',
+                dataIndex: 'nome',
+                key: 'nome',
+                filteredValue: equipamentos.params.filters?.nome ?? null,
+                onFilter: (value, record) => record.nome.includes(value as string),
+                sorter: true,
+            },
+            {
+                title: 'Subestação',
+                dataIndex: ['subestacao', 'nome'],
+                key: 'subestacao.nome',
+                filters: subestacoes?.map((s) => ({ text: s.nome, value: s.id })) ?? [],
+                filteredValue: equipamentos.params.filters?.subestacaoId ?? null,
+            },
+            {
+                title: 'Grupo Defeito',
+                dataIndex: 'grupoDefeitoCodigo',
+                key: 'grupoDefeitoCodigo',
+                filters: grupos?.map((g) => ({ text: `${g.codigo} - ${g.nome}`, value: g.codigo })) ?? [],
+                filteredValue: equipamentos.params.filters?.grupoDefeitoCodigo ?? null,
+            },
+        ],
+        {
+            onEdit: controller.open,
+            onDelete: (item) =>
+                controller.exec(() => deleteEquipamento(item.id), 'Equipamento excluído com sucesso!')
+                    .finally(() => equipamentos.mutate()),
+        }
+    );
 
-    const columns = [
-        { title: 'Nome', dataIndex: 'nome', key: 'nome' },
-        { title: 'Subestação', dataIndex: ['subestacao', 'nome'], key: 'subestacao.nome' },
-        { title: 'Código', dataIndex: 'grupoDefeitoCodigo', key: 'grupoDefeitoCodigo' },
-    ];
-
-    const handleSubmit = (values: any) => {
+    const handleSubmit = (values: EquipamentoFormData) => {
         const action = controller.editingItem?.id
             ? () => updateEquipamento({ ...values, id: controller.editingItem!.id })
             : () => createEquipamento(values);
 
-        controller.exec(action, 'Equipamento salvo com sucesso!', () => mutate());
+        controller.exec(action, 'Equipamento salvo com sucesso!').finally(() => equipamentos.mutate());
     };
+
+    if (equipamentos.error) return <p style={{ color: 'red' }}>Erro ao carregar equipamentos.</p>;
 
     return (
         <>
@@ -53,61 +77,34 @@ export default function EquipamentoPage() {
                 title="Equipamentos"
                 extra={
                     <Space>
+                        {/* 🔥 Aqui entra o campo de filtro texto */}
                         <Input.Search
                             placeholder="Buscar por nome"
-                            onSearch={(v) => {
-                                setSearch(v);
-                                setPage(1);
-                            }}
                             allowClear
-                            style={{ width: 200 }}
-                        />
-                        <Select
-                            allowClear
-                            placeholder="Subestação"
-                            style={{ width: 200 }}
-                            options={subestacoes?.data?.map((s) => ({
-                                label: s.nome,
-                                value: s.id,
-                            }))}
-                            onChange={(v) => {
-                                setSubestacaoId(v);
-                                setPage(1);
+                            onSearch={(value) => {
+                                equipamentos.setParams((prev) => ({
+                                    ...prev,
+                                    page: 1,
+                                    filters: {
+                                        ...prev.filters,
+                                        nome: value ? [value] : undefined,
+                                    }
+                                }));
                             }}
+                            style={{ width: 250 }}
                         />
-                        <Select
-                            allowClear
-                            placeholder="Grupo"
-                            style={{ width: 200 }}
-                            options={grupos?.data?.map((g) => ({
-                                label: `${g.codigo} - ${g.nome}`,
-                                value: g.codigo,
-                            }))}
-                            onChange={(v) => {
-                                setGrupoDefeitoCodigo(v);
-                                setPage(1);
-                            }}
-                        />
-                        <Button type="primary" onClick={() => controller.open()}>
-                            Adicionar
-                        </Button>
-                        <Button onClick={() => setLoteModalOpen(true)}>
-                            Adicionar em Lote
-                        </Button>
+                        <Button type="primary" onClick={() => controller.open()}>Adicionar</Button>
+                        <Button onClick={() => setLoteModalOpen(true)}>Adicionar em Lote</Button>
                     </Space>
                 }
             >
-                <Table
+                <Table<EquipamentoWithRelations>
                     columns={columns}
-                    dataSource={data}
+                    dataSource={equipamentos.data}
+                    loading={equipamentos.isLoading}
                     rowKey="id"
-                    pagination={{
-                        current: page,
-                        pageSize,
-                        total,
-                        onChange: (p) => setPage(p),
-                    }}
-                    loading={isLoading}
+                    pagination={equipamentos.pagination}
+                    onChange={equipamentos.handleTableChange}
                 />
             </Card>
 
@@ -122,8 +119,8 @@ export default function EquipamentoPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
-                    grupoOptions={grupos?.data ?? []}
-                    subestacaoOptions={subestacoes?.data ?? []}
+                    grupoOptions={grupos ?? []}
+                    subestacaoOptions={subestacoes ?? []}
                 />
             </Modal>
 
@@ -138,7 +135,7 @@ export default function EquipamentoPage() {
                 <EquipamentoLoteForm
                     onSuccess={() => {
                         setLoteModalOpen(false);
-                        mutate();
+                        equipamentos.mutate();
                     }}
                 />
             </Modal>
