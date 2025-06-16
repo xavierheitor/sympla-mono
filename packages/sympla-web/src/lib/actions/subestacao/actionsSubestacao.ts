@@ -8,13 +8,14 @@ import {
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
-import { subestacaoFormSchema, subestacaoLoteSchema } from "./schema";
+import { subestacaoFormSchema, subestacaoLoteSchema, SubestacaoWithRegional } from "./schema";
 import {
   CategoriaSubestacao,
   PropriedadeSubestacao,
   TensaoSubestacao,
 } from "@sympla/prisma";
 import { logger } from "@/lib/utils/logger";
+import { buildPrismaOrderBy } from "@/lib/server-action/prismaOrderHelper";
 
 // ===== CRUD principal (factory padrão) =====
 
@@ -71,18 +72,34 @@ export const getAllSubestacoes = createPrismaGetAllAction(
 );
 
 // ===== Get all (com includes de regionais) =====
-export const getAllSubestacoesWithRegionais = createPrismaGetAllWithIncludesAction(
+export const getAllSubestacoesWithRegionais = createPrismaGetAllWithIncludesAction<SubestacaoWithRegional>(
   async (params) => {
     const {
-      where = { deletedAt: null },
-      orderBy = { nome: "asc" },
-      include = { regional: true },
-    } = params || {};
+      where = {},
+      orderBy = 'nome',
+      orderDir = 'asc',
+
+      filters = {}
+    } = params;
+
+    const finalWhere = {
+      ...where,
+      deletedAt: null,
+      ...(filters.nome && { nome: { contains: filters.nome[0], mode: "insensitive" } }),
+      ...(filters.sigla && { sigla: { contains: filters.sigla[0], mode: "insensitive" } }),
+      ...(filters.codigoSap && { codigoSap: { contains: filters.codigoSap[0], mode: "insensitive" } }),
+      ...(filters.propriedade && { propriedade: { in: filters.propriedade } }),
+      ...(filters.categoria && { categoria: { in: filters.categoria } }),
+      ...(filters.tensao && { tensao: { in: filters.tensao } }),
+      ...(filters.regionalId && { regionalId: { in: filters.regionalId } }),
+    };
+
+    const prismaOrderBy = buildPrismaOrderBy(orderBy, orderDir);
 
     return prisma.subestacao.findMany({
-      where: { ...where, deletedAt: null },
-      orderBy,
-      include,
+      where: finalWhere,
+      orderBy: prismaOrderBy,
+      include: { regional: true },
     });
   },
   "SUBESTACAO"
