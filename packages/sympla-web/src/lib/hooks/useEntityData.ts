@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { TableProps } from 'antd';
 import { PaginatedParams, PaginatedResult } from '../types/ActionTypes';
@@ -27,8 +27,6 @@ type UseEntityDataSimple<T> = {
     mutateKey: string;
 };
 
-// Sobrecargas
-
 export function useEntityData<T>(options: {
     key: string;
     fetcher: (params?: PaginatedParams) => Promise<PaginatedResult<T> | T[]>;
@@ -43,7 +41,7 @@ export function useEntityData<T>(options: {
     paginationEnabled?: false;
 }): UseEntityDataSimple<T>;
 
-// Implementação única
+// Implementação
 export function useEntityData<T>(options: {
     key: string;
     fetcher: (params?: PaginatedParams) => Promise<PaginatedResult<T> | T[]>;
@@ -61,6 +59,11 @@ export function useEntityData<T>(options: {
         ...initialParams,
     });
 
+    // 🧪 Log de params usados
+    useEffect(() => {
+        console.log(`[useEntityData] 🧪 Parâmetros atualizados para ${key}:`, params);
+    }, [params]);
+
     const swrKey = paginationEnabled ? [key, params] : key;
 
     const { data, error, isLoading, mutate } = useSWR(
@@ -72,13 +75,26 @@ export function useEntityData<T>(options: {
         ? { data, total: data.length, totalPages: 1 }
         : { data: data?.data ?? [], total: data?.total ?? 0, totalPages: data?.totalPages ?? 0 };
 
+    // 🧪 Log de resposta dos dados
+    useEffect(() => {
+        if (data) {
+            console.log(`[useEntityData] 📦 Dados carregados para ${key}:`, result);
+        }
+    }, [data]);
+
     const handleTableChange: TableProps<T>['onChange'] = (pagination, filters, sorter) => {
+        const field = !Array.isArray(sorter) && sorter?.field;
+        const order = !Array.isArray(sorter) && sorter?.order;
+
+        console.log(`[useEntityData] 🎯 Filtros recebidos do AntD (${key}):`, filters);
+        console.log(`[useEntityData] 🎯 Ordenação recebida:`, field, order);
+
         setParams(prev => ({
             ...prev,
             page: pagination.current || 1,
             pageSize: pagination.pageSize || 10,
-            orderBy: typeof sorter === 'object' && !Array.isArray(sorter) ? (sorter.field as string) : prev.orderBy,
-            orderDir: typeof sorter === 'object' && !Array.isArray(sorter) && sorter.order === 'descend' ? 'desc' : 'asc',
+            orderBy: typeof field === 'string' ? field : prev.orderBy,
+            orderDir: order === 'descend' ? 'desc' : 'asc',
             filters: filters,
         }));
     };
@@ -93,7 +109,7 @@ export function useEntityData<T>(options: {
             isLoading,
             error,
             mutate,
-            mutateKey: swrKey, // 🔥 chave correta que o SWR usa
+            mutateKey: swrKey,
             pagination: {
                 current: params.page,
                 pageSize: params.pageSize,

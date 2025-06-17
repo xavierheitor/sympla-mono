@@ -1,4 +1,4 @@
-"use server";
+'use server';
 
 import { prisma } from "@/lib/db/prisma";
 import {
@@ -76,17 +76,39 @@ export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesActi
       filters = {}
     } = params;
 
+    console.log("🧪 [Equipamento] Filtros recebidos:", filters);
+
+    const filtroNome = filters.nome?.[0];
+    const filtroSubestacaoIds = Array.isArray(filters.subestacaoId)
+      ? filters.subestacaoId.filter(Boolean)
+      : [];
+    const filtroGrupoIds = Array.isArray(filters.grupoDefeitoCodigo)
+      ? filters.grupoDefeitoCodigo.filter(Boolean)
+      : [];
+
+    console.log("🧪 [Equipamento] Nome (filtro):", filtroNome);
+    console.log("🧪 [Equipamento] SubestacaoId (filtrado):", filtroSubestacaoIds);
+    console.log("🧪 [Equipamento] GrupoDefeitoCodigo (filtrado):", filtroGrupoIds);
+
     const finalWhere = {
       ...where,
       deletedAt: null,
-      ...(filters.nome && { nome: { contains: filters.nome[0], mode: "insensitive" } }),
-      ...(filters.subestacaoId && { subestacaoId: { in: filters.subestacaoId } }),
-      ...(filters.grupoDefeitoCodigo && { grupoDefeitoCodigo: { in: filters.grupoDefeitoCodigo } }),
+      ...(filtroNome && {
+        nome: { contains: filtroNome, mode: 'insensitive' },
+      }),
+      ...(filtroSubestacaoIds.length > 0 && {
+        subestacaoId: { in: filtroSubestacaoIds },
+      }),
+      ...(filtroGrupoIds.length > 0 && {
+        grupoDefeitoCodigo: { in: filtroGrupoIds },
+      }),
     };
+
+    console.log("🔍 [Equipamento] Filtro final aplicado ao Prisma:", finalWhere);
 
     const prismaOrderBy = { [orderBy]: orderDir };
 
-    return prisma.equipamento.findMany({
+    const result = await prisma.equipamento.findMany({
       where: finalWhere,
       orderBy: prismaOrderBy,
       include: {
@@ -95,6 +117,10 @@ export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesActi
         }
       }
     });
+
+    console.log(`📦 [Equipamento] ${result.length} registros encontrados`);
+
+    return result;
   },
   "EQUIPAMENTO"
 );

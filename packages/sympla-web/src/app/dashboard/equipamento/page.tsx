@@ -35,23 +35,22 @@ export default function EquipamentoPage() {
                 dataIndex: 'nome',
                 key: 'nome',
                 filteredValue: equipamentos.params.filters?.nome ?? null,
-                onFilter: (value, record) => record.nome.includes(value as string),
                 sorter: true,
             },
             {
                 title: 'Subestação',
-                dataIndex: ['subestacao', 'nome'],
+                dataIndex: ['subestacao', 'nome'], // ⚠️ isso é o que o filtro precisa enviar
                 key: 'subestacao.nome',
                 filters: subestacoes?.map((s) => ({ text: s.nome, value: s.id })) ?? [],
-                filteredValue: equipamentos.params.filters?.subestacaoId ?? null,
+                onFilter: (value, record) => record.subestacao?.id === value,
             },
             {
                 title: 'Grupo Defeito',
                 dataIndex: 'grupoDefeitoCodigo',
                 key: 'grupoDefeitoCodigo',
+                onFilter: (value, record) => record.grupoDefeitoCodigo === value,
                 filters: grupos?.map((g) => ({ text: `${g.codigo} - ${g.nome}`, value: g.codigo })) ?? [],
-                filteredValue: equipamentos.params.filters?.grupoDefeitoCodigo ?? null,
-            },
+            }
         ],
         {
             onEdit: controller.open,
@@ -104,7 +103,24 @@ export default function EquipamentoPage() {
                     loading={equipamentos.isLoading}
                     rowKey="id"
                     pagination={equipamentos.pagination}
-                    onChange={equipamentos.handleTableChange}
+                    onChange={(pagination, filters, sorter) => {
+                        const sort = Array.isArray(sorter) ? sorter[0] : sorter;
+
+                        const normalizedFilters = {
+                            nome: filters.nome as string[] | undefined,
+                            subestacaoId: filters.subestacaoId as string[] | undefined, // ✅ Correção aqui
+                            grupoDefeitoCodigo: filters.grupoDefeitoCodigo as string[] | undefined,
+                        };
+
+                        equipamentos.setParams((prev) => ({
+                            ...prev,
+                            page: pagination.current ?? 1,
+                            pageSize: pagination.pageSize ?? prev.pageSize,
+                            orderBy: typeof sort?.field === 'string' ? sort.field : prev.orderBy,
+                            orderDir: sort?.order === 'ascend' ? 'asc' : sort?.order === 'descend' ? 'desc' : prev.orderDir,
+                            filters: normalizedFilters,
+                        }));
+                    }}
                 />
             </Card>
 
