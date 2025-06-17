@@ -3,7 +3,7 @@ import {
   ChecklistModelo,
   ChecklistModeloTipoAtividadeRelation,
   ChecklistPergunta,
-  ChecklisrPerguntaRelation,
+  ChecklistPerguntaRelation,
   TipoAtividade,
 } from "@sympla/prisma";
 
@@ -64,13 +64,13 @@ export const checklistPerguntaRelationFormSchema = z.object({
 });
 
 type ChecklistPerguntaRelationBaseFields = Required<
-  Pick<ChecklisrPerguntaRelation, "perguntaId" | "modeloId" | "ordem">
+  Pick<ChecklistPerguntaRelation, "perguntaId" | "modeloId" | "ordem">
 >;
 export type ChecklistPerguntaRelationFormData = Partial<
-  Pick<ChecklisrPerguntaRelation, "id">
+  Pick<ChecklistPerguntaRelation, "id">
 > & ChecklistPerguntaRelationBaseFields;
 
-export type ChecklistPerguntaRelationWithIncludes = ChecklisrPerguntaRelation & {
+export type ChecklistPerguntaRelationWithIncludes = ChecklistPerguntaRelation & {
   pergunta: ChecklistPergunta;
   modelo: ChecklistModelo;
 };

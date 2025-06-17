@@ -53,7 +53,7 @@ export const getAllChecklistPerguntas = createPrismaGetAllAction(
 // Relations Perguntas
 
 export const getAllChecklistPerguntaRelations = createPrismaGetAllAction(
-  prisma.checklisrPerguntaRelation,
+  prisma.checklistPerguntaRelation,
   "CHECKLIST_PERGUNTA_RELATION"
 );
 
@@ -61,7 +61,7 @@ export const getAllChecklistPerguntaRelations = createPrismaGetAllAction(
 
 export const getAllChecklistPerguntaRelationsWithIncludes = createPrismaGetAllWithIncludesAction(
   async () =>
-    prisma.checklisrPerguntaRelation.findMany({
+    prisma.checklistPerguntaRelation.findMany({
       where: { deletedAt: null },
       orderBy: { ordem: "asc" },
       include: {

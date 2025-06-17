@@ -3,38 +3,37 @@
 import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import TipoAtividadeForm from './form';
-import { createTipoAtividade, getAllTipoAtividadeEnums, getAllTipoAtividadesWithIncludes } from '@/lib/actions/atividade/actionsTipoAtividade';
-import { deleteTipoAtividade, updateTipoAtividade } from '@/lib/actions/atividade/actionsTipoAtividade';
-import { setTipoAtividadeKpi } from '@/lib/actions/atividade/actionsTipoAtividadeKpi';
+import { createTipoAtividade, deleteTipoAtividade, updateTipoAtividade, getAllTipoAtividadesWithIncludes, getAllTipoAtividadeEnums, setTipoAtividadeKpi } from '@/lib/actions/atividade/actionsTipoAtividade';
 import { TipoAtividadeFormData, TipoAtividadeWithKpi } from '@/lib/actions/atividade/schema';
 import { getAllKpis } from '@/lib/actions/kpi/actionsKpi';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function TipoAtividadePage() {
     const controller = useCrudController<TipoAtividadeWithKpi>('tipoAtividade');
 
-    const { data: tipoAtividades, isLoading } = useServerData(
-        'tipoAtividades',
-        getAllTipoAtividadesWithIncludes
-    );
+    const tipoAtividades = useEntityData<TipoAtividadeWithKpi>({
+        key: 'tipoAtividade',
+        fetcher: unwrapFetcher(() => getAllTipoAtividadesWithIncludes()),
+        paginationEnabled: true,
+    });
 
-    const { data: kpis } = useServerData('kpis', getAllKpis);
+    const { data: kpis } = useServerData('kpis', unwrapFetcher(getAllKpis));
     const { data: tipoMobileOptions } = useServerData('tipoAtividadeMobileEnum', getAllTipoAtividadeEnums);
 
     const columns = useTableColumnsWithActions<TipoAtividadeWithKpi>(
         [
-            { title: 'Nome', dataIndex: 'nome', key: 'nome' },
-            {
-                title: 'Tipo Mobile',
-                dataIndex: 'tipoAtividadeMobile',
-                key: 'tipoAtividadeMobile',
-            },
+            { title: 'Nome', dataIndex: 'nome', key: 'nome', sorter: true },
+            { title: 'Tipo Mobile', dataIndex: 'tipoAtividadeMobile', key: 'tipoAtividadeMobile' },
         ],
-        controller.open,
-        item => controller.exec(() => deleteTipoAtividade(item.id), 'Tipo de Atividade excluído com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) => controller.exec(() => deleteTipoAtividade(item.id), 'Tipo de Atividade excluído com sucesso!').finally(() => tipoAtividades.mutate()),
+        }
     );
 
     const handleSubmit = async (values: TipoAtividadeFormData & { kpiIds: string[] }) => {
@@ -42,28 +41,28 @@ export default function TipoAtividadePage() {
 
         const action = async () => {
             const tipoAtividade = controller.editingItem?.id
-                ? await updateTipoAtividade({ ...rest, id: controller.editingItem!.id })
+                ? await updateTipoAtividade({ ...rest, id: controller.editingItem.id })
                 : await createTipoAtividade(rest);
 
             await setTipoAtividadeKpi({ tipoAtividadeId: tipoAtividade.data!.id, kpiIds });
             return { success: true, data: tipoAtividade.data };
         };
 
-        controller.exec(action, 'Tipo de Atividade salvo com sucesso!');
+        controller.exec(action, 'Tipo de Atividade salvo com sucesso!').finally(() => tipoAtividades.mutate());
     };
+
+    if (tipoAtividades.error) return <p style={{ color: 'red' }}>Erro ao carregar dados.</p>;
 
     return (
         <>
-            <Card
-                title="Tipos de Atividade"
-                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
-            >
-                <Table
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    columns={columns as any}
-                    dataSource={tipoAtividades?.data ?? []}
-                    loading={isLoading}
+            <Card title="Tipos de Atividade" extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}>
+                <Table<TipoAtividadeWithKpi>
+                    columns={columns}
+                    dataSource={tipoAtividades.data}
+                    loading={tipoAtividades.isLoading}
                     rowKey="id"
+                    pagination={tipoAtividades.pagination}
+                    onChange={tipoAtividades.handleTableChange}
                 />
             </Card>
 
@@ -78,12 +77,12 @@ export default function TipoAtividadePage() {
                     <TipoAtividadeForm
                         initialValues={{
                             ...controller.editingItem,
-                            kpiIds: controller.editingItem?.kpis?.map(k => k.id) ?? [],
+                            kpiIds: controller.editingItem?.tipoAtividadeKpi?.map(k => k.kpiId) ?? [],
                         }}
                         onSubmit={handleSubmit}
                         loading={controller.loading}
-                        kpiOptions={kpis.data ?? []}
-                        tipoMobileOptions={tipoMobileOptions}
+                        kpiOptions={kpis ?? []}
+                        tipoMobileOptions={tipoMobileOptions ?? []}
                     />
                 )}
             </Modal>

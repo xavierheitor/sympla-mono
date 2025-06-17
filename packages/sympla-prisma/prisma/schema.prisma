@@ -10,7 +10,6 @@ datasource db {
 
 //*  ENUMNS SUBESTACAO*/
 
-
 enum PropriedadeSubestacao {
   PROPRIA
   COMPARTILHADA
@@ -118,7 +117,7 @@ model Account {
   session_state     String?
 
   userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -131,7 +130,7 @@ model Session {
   expires      DateTime
 
   userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("sessoes")
@@ -162,10 +161,10 @@ model UsuarioMobile {
   createdBy             String
   updatedBy             String?
   deletedBy             String?
-  TokenMobile           TokenMobile[]
+  tokenMobile           TokenMobile[]
   sessoes               SessaoMobile[]
-  UsuarioMobileRegional UsuarioMobileRegional[]
-  AtividadeAtribuicao   AtividadeAtribuicao[]
+  usuarioMobileRegional UsuarioMobileRegional[]
+  atividadeAtribuicao   AtividadeAtribuicao[]
 
   @@index([matricula])
   @@map("usuarios_mobile")
@@ -201,7 +200,7 @@ model TokenMobile {
 }
 
 model UsuarioMobileRegional {
-  id              String    @id @default(uuid())
+  id              String @id @default(uuid())
   usuarioMobileId String
   regionalId      String
 
@@ -257,19 +256,19 @@ model Regional {
   updatedBy String?
   deletedBy String?
 
-  NotasSAP NotasSAP[]
+  notasSAP NotasSAP[]
 
-  UsuarioMobileRegional UsuarioMobileRegional[]
+  usuarioMobileRegional UsuarioMobileRegional[]
 
-  CentroTrabalho CentroTrabalho[]
+  centroTrabalho CentroTrabalho[]
 }
 
 model Subestacao {
-  id              String @id @default(uuid())
+  id              String  @id @default(uuid())
   nome            String
   sigla           String
   localInstalacao String?
-  codigoSap       String @unique
+  codigoSap       String  @unique
 
   propriedade PropriedadeSubestacao
   categoria   CategoriaSubestacao
@@ -290,12 +289,12 @@ model Subestacao {
 }
 
 model GrupoDefeitoEquipamento {
-  id   String @id @default(uuid())
-  nome String @unique
+  id     String @id @default(uuid())
+  nome   String @unique
   codigo String @unique
 
-  subgrupos    SubgrupoDefeitoEquipamento[]
-  defeitos     Defeito[]
+  subgrupos SubgrupoDefeitoEquipamento[]
+  defeitos  Defeito[]
 
   // Auditoria
   createdAt DateTime  @default(now())
@@ -313,7 +312,7 @@ model SubgrupoDefeitoEquipamento {
   grupoId String
   grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
 
-  defeitos     Defeito[]
+  defeitos Defeito[]
 
   // Auditoria
   createdAt DateTime  @default(now())
@@ -367,7 +366,7 @@ model Equipamento {
   updatedBy String?
   deletedBy String?
 
-  NotasSAP NotasSAP[]
+  notasSAP NotasSAP[]
 }
 
 model TipoManutencao {
@@ -382,7 +381,7 @@ model TipoManutencao {
   updatedBy String?
   deletedBy String?
 
-  Kpi Kpi[]
+  kpi Kpi[]
 }
 
 model Kpi {
@@ -401,8 +400,8 @@ model Kpi {
   updatedBy String?
   deletedBy String?
 
-  NotasSAP      NotasSAP[]
-  TipoAtividadeKpi TipoAtividadeKpi[]
+  notasSAP         NotasSAP[]
+  tipoAtividadeKpi TipoAtividadeKpi[]
 }
 
 model NotasSAP {
@@ -468,7 +467,7 @@ model CentroTrabalho {
   updatedBy String?
   deletedBy String?
 
-  NotasSAP NotasSAP[]
+  notasSAP NotasSAP[]
 }
 
 model Tecnico {
@@ -501,13 +500,13 @@ model TipoAtividade {
   updatedBy String?
   deletedBy String?
 
-  Atividade Atividade[]
+  atividade Atividade[]
 
-  TipoAtividadeKpi TipoAtividadeKpi[]
+  tipoAtividadeKpi TipoAtividadeKpi[]
 
-  AprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
+  aprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
 
-  ChecklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
+  checklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
 }
 
 model TipoAtividadeKpi {
@@ -517,9 +516,9 @@ model TipoAtividadeKpi {
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 
   kpiId String
-  kpi   Kpi @relation(fields: [kpiId], references: [id])
+  kpi   Kpi    @relation(fields: [kpiId], references: [id])
 
-    createdAt DateTime  @default(now())
+  createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
@@ -528,7 +527,7 @@ model TipoAtividadeKpi {
 }
 
 model Atividade {
-  id String @id @default(uuid())
+  id        String  @id @default(uuid())
   descricao String?
 
   notaId String
@@ -553,7 +552,7 @@ model Atividade {
   updatedBy String?
   deletedBy String?
 
-  HistoricoAlteracaoAtividade HistoricoAlteracaoAtividade[]
+  historicoAlteracaoAtividade HistoricoAlteracaoAtividade[]
 }
 
 model AtividadeAtribuicao {
@@ -613,7 +612,7 @@ model AprPerguntas {
   updatedBy String?
   deletedBy String?
 
-  AprPerguntasRelation AprPerguntasRelation[]
+  aprPerguntasRelation AprPerguntasRelation[]
 }
 
 model AprModelo {
@@ -628,9 +627,9 @@ model AprModelo {
   updatedBy String?
   deletedBy String?
 
-  AprPerguntasRelation AprPerguntasRelation[]
+  aprPerguntasRelation AprPerguntasRelation[]
 
-  AprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
+  aprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
 }
 
 model AprModeloTipoAtividadeRelation {
@@ -642,7 +641,7 @@ model AprModeloTipoAtividadeRelation {
   tipoAtividadeId String
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 
-    createdAt DateTime  @default(now())
+  createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
@@ -680,7 +679,7 @@ model ChecklistPergunta {
   updatedBy String?
   deletedBy String?
 
-  ChecklisrPerguntaRelation ChecklisrPerguntaRelation[]
+  checklistPerguntaRelation ChecklistPerguntaRelation[]
 }
 
 model ChecklistModelo {
@@ -695,9 +694,9 @@ model ChecklistModelo {
   updatedBy String?
   deletedBy String?
 
-  ChecklisrPerguntaRelation ChecklisrPerguntaRelation[]
+  checklistPerguntaRelation ChecklistPerguntaRelation[]
 
-  ChecklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
+  checklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
 }
 
 model ChecklistModeloTipoAtividadeRelation {
@@ -709,7 +708,7 @@ model ChecklistModeloTipoAtividadeRelation {
   tipoAtividadeId String
   tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
 
-    createdAt DateTime  @default(now())
+  createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   createdBy String
@@ -717,7 +716,7 @@ model ChecklistModeloTipoAtividadeRelation {
   deletedBy String?
 }
 
-model ChecklisrPerguntaRelation {
+model ChecklistPerguntaRelation {
   id         String            @id @default(uuid())
   perguntaId String
   pergunta   ChecklistPergunta @relation(fields: [perguntaId], references: [id])

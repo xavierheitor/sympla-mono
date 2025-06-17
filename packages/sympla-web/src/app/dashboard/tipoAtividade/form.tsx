@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Form, Input, Button, Select, Transfer, Spin } from 'antd';
-import { Kpi } from '@sympla/prisma';
-import { getKpisByTipoAtividade } from '@/lib/actions/atividade/actionsTipoAtividadeKpi';
 import { TipoAtividadeFormData } from '@/lib/actions/atividade/schema';
+import { Kpi } from '@sympla/prisma';
+import { Key, useState } from 'react';
 
 interface EnumOption {
     label: string;
@@ -27,38 +26,20 @@ export default function TipoAtividadeForm({
     kpiOptions,
 }: TipoAtividadeFormProps) {
     const [form] = Form.useForm();
+    const [selectedKpiIds, setSelectedKpiIds] = useState<Key[]>(initialValues?.kpiIds ?? []);
 
-    const [selectedKpiIds, setSelectedKpiIds] = useState<string[]>([]);
-    const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-    const [loadingKpis, setLoadingKpis] = useState(false); // novo estado
-
-    useEffect(() => {
-        const carregarKpis = async () => {
-            setLoadingKpis(true);
-            try {
-                if (initialValues?.id) {
-                    const associados = await getKpisByTipoAtividade(initialValues.id);
-                    setSelectedKpiIds(associados);
-                } else {
-                    setSelectedKpiIds([]);
-                }
-            } finally {
-                setLoadingKpis(false);
-            }
-        };
-
-        form.setFieldsValue(initialValues ?? {});
-        carregarKpis();
-    }, [initialValues, form]);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleFinish = (values: any) => {
-        onSubmit({ ...values, kpiIds: selectedKpiIds });
+    const handleFinish = (values: TipoAtividadeFormData) => {
+        onSubmit({ ...values, kpiIds: selectedKpiIds.map(String) });
     };
 
     return (
-        <Spin spinning={loadingKpis}>
-            <Form form={form} layout="vertical" onFinish={handleFinish}>
+        <Spin spinning={loading}>
+            <Form
+                form={form}
+                layout="vertical"
+                initialValues={initialValues}
+                onFinish={handleFinish}
+            >
                 <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
                     <Input />
                 </Form.Item>
@@ -70,16 +51,12 @@ export default function TipoAtividadeForm({
                 <Form.Item label="KPIs">
                     <Transfer
                         dataSource={kpiOptions.map((kpi) => ({
-                            key: String(kpi.id), // 🔧 converte para string
+                            key: String(kpi.id),
                             title: kpi.nome,
                         }))}
                         titles={['Disponíveis', 'Selecionados']}
-                        targetKeys={selectedKpiIds.map(String)} // 🔧 garante que são strings
-                        selectedKeys={selectedKeys.map(String)} // 🔧 garante que são strings
-                        onChange={(nextTargetKeys) => setSelectedKpiIds(nextTargetKeys.map(String))}
-                        onSelectChange={(sourceSelected, targetSelected) =>
-                            setSelectedKeys([...sourceSelected, ...targetSelected].map(String))
-                        }
+                        targetKeys={selectedKpiIds}
+                        onChange={(nextTargetKeys) => setSelectedKpiIds(nextTargetKeys)}
                         render={(item) => item.title!}
                         showSearch
                         pagination

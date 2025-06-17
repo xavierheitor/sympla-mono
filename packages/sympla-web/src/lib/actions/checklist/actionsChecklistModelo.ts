@@ -59,7 +59,7 @@ export const getAllChecklistModeloTipoAtividadeRelation = createPrismaGetAllActi
 );
 
 export const getAllChecklistModeloPerguntaRelation = createPrismaGetAllAction(
-  prisma.checklisrPerguntaRelation,
+  prisma.checklistPerguntaRelation,
   "CHECKLIST_MODELO_PERGUNTAS_RELATION"
 );
 
@@ -96,13 +96,13 @@ export const setPerguntasDoModelo = createPrismaSetManyRelationAction(
   {
     entityName: "CHECKLIST_MODELO_PERGUNTAS_RELATION",
     deleteFn: async (modeloId, userId, now) => {
-      await prisma.checklisrPerguntaRelation.updateMany({
+      await prisma.checklistPerguntaRelation.updateMany({
         where: { modeloId },
         data: { deletedAt: now, deletedBy: userId },
       });
     },
     createFn: async (modeloId, perguntaIds, userId) => {
-      await prisma.checklisrPerguntaRelation.createMany({
+      await prisma.checklistPerguntaRelation.createMany({
         data: perguntaIds.map((perguntaId) => ({
           modeloId,
           perguntaId,
