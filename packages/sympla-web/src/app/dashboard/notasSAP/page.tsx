@@ -3,91 +3,122 @@
 import React, { useState } from 'react';
 import { Button, Card, Modal, Space, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
-
 import NotasSapForm from './form';
-
-import { NotasSAPFormData } from '@/lib/actions/notasSap/schema';
+import NotasPmaLoteForm from './formLote';
+import { NotasSAPFormData, NotasSAPWithRelations } from '@/lib/actions/notasSap/schema';
+import { createNotasSap, deleteNotasSap, getAllNotasSapPMA, updateNotasSap } from '@/lib/actions/notasSap/actionsNotasSap';
+import { getAllCentroTrabalhos } from '@/lib/actions/centroTrabalho/actionsCentroTrabalho';
+import { getAllEquipamentos } from '@/lib/actions/equipamento/actionsEquipamento';
+import { getAllKpis } from '@/lib/actions/kpi/actionsKpi';
+import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import 'dayjs/locale/pt-br';
-// Aplica o plugin
 dayjs.extend(utc);
-dayjs.locale('pt-br'); // 🔥 Importante! Isso ativa o locale como padrão.
-import NotasPmaLoteForm from './formLote';
-import { getAllCentroTrabalhos } from '@/lib/actions/centroTrabalho/actionsCentroTrabalho';
-import { getAllEquipamentos } from '@/lib/actions/equipamento/actionsEquipamento';
-import { createNotasSap, deleteNotasSap, getAllNotasSapPMA, updateNotasSap } from '@/lib/actions/notasSap/actionsNotasSap';
-import { getAllKpis } from '@/lib/actions/kpi/actionsKpi';
-import { getAllRegionais } from '@/lib/actions/regional/actionsRegional';
+dayjs.locale('pt-br');
 
 export default function NotasSapPage() {
-    const controller = useCrudController<NotasSAPFormData>('notasSap');
+    const controller = useCrudController<NotasSAPWithRelations>('notasSap');
     const [isLoteOpen, setIsLoteOpen] = useState(false);
 
-    const { data: notas, isLoading, error } = useServerData('notasSap', getAllNotasSapPMA);
-    const { data: centros } = useServerData('centroTrabalho', getAllCentroTrabalhos);
-    const { data: equipamentos } = useServerData('equipamento', getAllEquipamentos);
-    const { data: kpis } = useServerData('kpi', getAllKpis);
-    const { data: regionais } = useServerData('regional', getAllRegionais);
+    const notas = useEntityData<NotasSAPWithRelations>({
+        key: 'notasSap',
+        fetcher: unwrapFetcher(getAllNotasSapPMA),
+        paginationEnabled: true,
+    });
 
-    const columns = useTableColumnsWithActions<NotasSAPFormData>(
+    const { data: centros } = useServerData('centroTrabalho', unwrapFetcher(getAllCentroTrabalhos));
+    const { data: equipamentos } = useServerData('equipamento', unwrapFetcher(getAllEquipamentos));
+    const { data: kpis } = useServerData('kpi', unwrapFetcher(getAllKpis));
+    const { data: regionais } = useServerData('regional', unwrapFetcher(getAllRegionais));
+
+    const columns = useTableColumnsWithActions<NotasSAPWithRelations>(
         [
-            { title: 'Nota', dataIndex: 'numeroNota', key: 'numeroNota' },
-            { title: 'Status', dataIndex: 'status', key: 'status' },
-            { title: 'KPI', dataIndex: ['kpi', 'nome'], key: 'kpi.nome' },
-            { title: 'Tipo', dataIndex: ['kpi', 'tipoManutencao', 'nome'], key: 'kpi.tipoManutencao.nome' },
-            { title: 'Equipamento', dataIndex: ['equipamento', 'nome'], key: 'equipamento.nome' },
             {
-                title: 'Mês', dataIndex: 'dataInicioPlan', key: 'dataInicioPlan', render: (text: string) =>
-                    dayjs(text).utc().locale('pt-br').format('MMMM').toUpperCase(),
+                title: 'Nota',
+                dataIndex: 'numeroNota',
+                key: 'numeroNota',
+                filteredValue: notas.params.filters?.numeroNota ?? null,
+                onFilter: (value, record) => record.numeroNota?.includes(value as string) ?? false,
+                sorter: true,
             },
-            { title: 'Regional', dataIndex: ['regional', 'nome'], key: 'regional.nome' },
-            { title: 'Centro de Trabalho', dataIndex: ['centroTrabalho', 'nome'], key: 'centroTrabalho.nome' },
+            {
+                title: 'Status',
+                dataIndex: 'status',
+                key: 'status',
+                sorter: true,
+            },
+            {
+                title: 'KPI',
+                dataIndex: ['kpi', 'nome'],
+                key: 'kpi.nome',
+            },
+            {
+                title: 'Tipo',
+                dataIndex: ['kpi', 'tipoManutencao', 'nome'],
+                key: 'kpi.tipoManutencao.nome',
+            },
+            {
+                title: 'Equipamento',
+                dataIndex: ['equipamento', 'nome'],
+                key: 'equipamento.nome',
+            },
+            {
+                title: 'Mês',
+                dataIndex: 'dataInicioPlan',
+                key: 'dataInicioPlan',
+                render: (text: string) => dayjs(text).utc().locale('pt-br').format('MMMM').toUpperCase(),
+            },
+            {
+                title: 'Regional',
+                dataIndex: ['regional', 'nome'],
+                key: 'regional.nome',
+            },
+            {
+                title: 'Centro de Trabalho',
+                dataIndex: ['centroTrabalho', 'nome'],
+                key: 'centroTrabalho.nome',
+            },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteNotasSap(item.id ?? ''), 'Nota excluída com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) =>
+                controller.exec(() => deleteNotasSap(item.id ?? ''), 'Nota excluída com sucesso!')
+                    .finally(() => notas.mutate()),
+        }
     );
-
     const handleSubmit = (values: NotasSAPFormData) => {
-        const valuesSanitized = {
-            ...values,
-            descricao: values.descricao ?? null,
-            notificador: values.notificador ?? null,
-            numeroNota: values.numeroNota ?? null,
-            dataNota: values.dataNota ? dayjs(values.dataNota).toISOString() : new Date().toISOString(),
-            dataInicioPlan: values.dataInicioPlan ? dayjs(values.dataInicioPlan).toISOString() : null,
-            dataFiPlan: values.dataFiPlan ? dayjs(values.dataFiPlan).toISOString() : null,
-            dataInicioReal: values.dataInicioReal ? dayjs(values.dataInicioReal).toISOString() : null,
-            dataFiReal: values.dataFiReal ? dayjs(values.dataFiReal).toISOString() : null,
-            equipamentoId: values.equipamentoId ?? null,
-            kpiId: values.kpiId ?? null,
-            prioridade: values.prioridade ?? null,
-            ordemServicoExecucao: values.ordemServicoExecucao ?? null,
-        };
-
         const action = controller.editingItem?.id
-            ? () => updateNotasSap({ ...valuesSanitized, id: controller.editingItem!.id })
-            : () => createNotasSap(valuesSanitized);
+            ? () => updateNotasSap({ ...values, id: controller.editingItem!.id })
+            : () => createNotasSap(values);
 
-        controller.exec(action, 'Nota salva com sucesso!');
+        controller.exec(action, 'Nota salva com sucesso!').finally(() => notas.mutate());
     };
-
-    if (error) return <p style={{ color: 'red' }}>Erro ao carregar as notas.</p>;
+    if (notas.error) return <p style={{ color: 'red' }}>Erro ao carregar as notas.</p>;
 
     return (
         <>
             <Card
-                title="Notas SAP - PLANO DE MANUTENCAO"
-                extra={<Space><Button onClick={() => setIsLoteOpen(true)}>Adicionar em lote</Button><Button type="primary" onClick={() => controller.open()}>Adicionar</Button></Space>}
+                title="Notas SAP - PLANO DE MANUTENÇÃO"
+                extra={
+                    <Space>
+                        <Button onClick={() => setIsLoteOpen(true)}>Adicionar em lote</Button>
+                        <Button type="primary" onClick={() => controller.open()}>Adicionar</Button>
+                    </Space>
+                }
             >
-                <Table<NotasSAPFormData>
+                <Table<NotasSAPWithRelations>
                     columns={columns}
-                    dataSource={notas?.data ?? []}
-                    loading={isLoading}
+                    dataSource={notas.data}
+                    loading={notas.isLoading}
                     rowKey="id"
+                    pagination={notas.pagination}
+                    onChange={notas.handleTableChange}
                 />
             </Card>
 
@@ -102,10 +133,10 @@ export default function NotasSapPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
-                    centroTrabalhoOptions={centros?.data ?? []}
-                    equipamentoOptions={equipamentos?.data ?? []}
-                    kpiOptions={kpis?.data ?? []}
-                    regionalOptions={regionais?.data ?? []}
+                    centroTrabalhoOptions={centros ?? []}
+                    equipamentoOptions={equipamentos ?? []}
+                    kpiOptions={kpis ?? []}
+                    regionalOptions={regionais ?? []}
                 />
             </Modal>
 
