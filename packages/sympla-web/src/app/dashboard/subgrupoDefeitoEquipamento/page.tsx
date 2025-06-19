@@ -51,14 +51,14 @@ export default function SubgrupoDefeitoEquipamentoPage() {
                 title: 'Grupo',
                 dataIndex: ['grupo', 'nome'],
                 key: 'grupo.nome',
-                filters: grupos?.map((g) => ({ text: g.nome, value: g.id })) ?? [],
-                filteredValue: subgrupos.params.filters?.grupoId ?? null,
-                onFilter: (value, record) => record.grupo.id === value,
+                filters: grupos?.map((g) => ({ text: g.nome, value: g.nome })) ?? [],
+                filteredValue: subgrupos.params.filters?.['grupo.nome'] ?? null,
+                onFilter: (value, record) => record.grupo.nome === value,
                 render: (_, record) =>
                     record.grupo.codigo
                         ? `${record.grupo.codigo} - ${record.grupo.nome}`
                         : record.grupo.nome,
-            },
+            }
         ],
         {
             onEdit: controller.open,
