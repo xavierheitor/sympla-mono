@@ -69,7 +69,26 @@ export default function DefeitoPage() {
                 })) ?? [],
                 filteredValue: defeitos.params.filters?.grupoId ?? null,
                 onFilter: (value, record) => record.grupo.id === value,
+                render: (_, record) =>
+                    record.grupo.codigo
+                        ? `${record.grupo.codigo} - ${record.grupo.nome}`
+                        : record.grupo.nome,
             },
+            {
+                title: 'Subgrupo',
+                dataIndex: ['subgrupo', 'nome'],
+                key: 'subgrupo.nome',
+                filters: subgrupos?.map((s) => ({
+                    text: `${s.grupo.codigo ? s.grupo.codigo + ' - ' : ''}${s.nome}`,
+                    value: s.id,
+                })) ?? [],
+                filteredValue: defeitos.params.filters?.['subgrupo.nome'] ?? null,
+                onFilter: (value, record) => record.subgrupo.nome === value,
+                render: (_, record) =>
+                    record.subgrupo.grupo.codigo
+                        ? `${record.subgrupo.grupo.codigo} - ${record.subgrupo.nome}`
+                        : record.subgrupo.nome,
+            }
         ],
         {
             onEdit: controller.open,
