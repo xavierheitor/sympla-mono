@@ -61,8 +61,19 @@ export type GrupoDefeitoEquipamentoFormData = Partial<
 export type GrupoDefeitoEquipamentoWithRelations = GrupoDefeitoEquipamento & {
   subgrupos: SubgrupoDefeitoEquipamento[];
 };
+// export const createManyGrupoDefeitosSchema = z.array(
+//   z.object({
+//     nome: z.string().min(1),
+//     codigo: z.string().min(1),
+//   })
+// ).describe('GrupoDefeitoEquipamento');
 
-// ========== SUBGRUPO DEFEITO ==========
+export const createManyGrupoDefeitosSchema = z.array(
+  z.object({
+    nome: z.string().min(1),
+    codigo: z.string().min(1),
+  })
+);
 
 export const subgrupoDefeitoEquipamentoFormSchema = z.object({
   id: z.string().optional(),
@@ -77,6 +88,16 @@ export type SubgrupoDefeitoEquipamentoFormData = Partial<
   Pick<SubgrupoDefeitoEquipamento, "id">
 > & SubgrupoBaseFields;
 
-export type SubgrupoDefeitoEquipamentoWithRelations = SubgrupoDefeitoEquipamento & {
-  grupo: GrupoDefeitoEquipamento;
-};
+export type SubgrupoDefeitoEquipamentoWithRelations =
+  SubgrupoDefeitoEquipamento & {
+    grupo: GrupoDefeitoEquipamento;
+  };
+
+export const createManySubgrupoDefeitosSchema = z
+  .array(
+    z.object({
+      grupoCodigo: z.string().min(1),
+      nome: z.string().min(1),
+    })
+  )
+  .describe("SubgrupoDefeitoEquipamento");

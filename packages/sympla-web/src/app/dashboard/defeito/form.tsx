@@ -1,73 +1,74 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Form, Input, Button, Select } from 'antd';
-import { DefeitoFormData, SubgrupoDefeitoEquipamentoWithRelations, } from '@/lib/actions/defeito/schema';
-import {
-    GrupoDefeitoEquipamento,
-} from '@sympla/prisma';
+import { Button, Form, Input, Select } from 'antd';
+import { DefeitoFormData, SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/defeito/schema';
 
 interface DefeitoFormProps {
     onSubmit: (values: DefeitoFormData) => void;
     initialValues?: Partial<DefeitoFormData>;
-    loading?: boolean;
-    grupoOptions: GrupoDefeitoEquipamento[];
     subgrupoOptions: SubgrupoDefeitoEquipamentoWithRelations[];
+    loading?: boolean;
 }
 
 export default function DefeitoForm({
     onSubmit,
     initialValues,
-    loading = false,
-    grupoOptions,
     subgrupoOptions,
+    loading = false,
 }: DefeitoFormProps) {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        if (initialValues) {
-            form.setFieldsValue(initialValues);
-        } else {
-            form.resetFields();
-        }
+        form.setFieldsValue(initialValues ?? {});
     }, [initialValues, form]);
 
     return (
-        <Form form={form} layout="vertical" onFinish={onSubmit}>
-            <Form.Item name="codigoSap" label="Código SAP" rules={[{ required: true }]}>
+        <Form
+            form={form}
+            layout="vertical"
+            onFinish={onSubmit}
+        >
+            <Form.Item
+                label="Nome do Defeito"
+                name="nome"
+                rules={[{ required: true, message: 'Informe o nome do defeito' }]}
+            >
                 <Input />
             </Form.Item>
 
-            <Form.Item name="descricao" label="Descrição" rules={[{ required: true }]}>
+            <Form.Item
+                label="Código SAP"
+                name="codigoSAP"
+                rules={[{ required: true, message: 'Informe o código SAP' }]}
+            >
                 <Input />
             </Form.Item>
 
-            <Form.Item name="grupoId" label="Grupo" rules={[{ required: true }]}>
-                <Select options={grupoOptions.map(g => ({ label: g.nome, value: g.id }))} />
-            </Form.Item>
-
-            <Form.Item name="subgrupoId" label="Subgrupo" rules={[{ required: true }]}>
-                <Select options={subgrupoOptions.map(s => ({ label: `${s.grupo.nome ?? 'Grupo desconhecido'} - ${s.nome}`, value: s.id }))} />
-            </Form.Item>
-
-            <Form.Item name="acaoRecomendada" label="Ação Recomendada">
-                <Input />
-            </Form.Item>
-
-            <Form.Item name="custeioOuInvestimento" label="Custeio / Investimento">
-                <Input />
-            </Form.Item>
-
-            <Form.Item name="equipe" label="Equipe">
-                <Input />
-            </Form.Item>
-
-            <Form.Item name="prioridade" label="Prioridade">
-                <Input />
+            <Form.Item
+                label="Subgrupo do Defeito"
+                name="subGrupoDefeitosId"
+                rules={[{ required: true, message: 'Selecione o subgrupo' }]}
+            >
+                <Select
+                    showSearch
+                    optionFilterProp="label"
+                    placeholder="Selecione um subgrupo"
+                >
+                    {subgrupoOptions.map((subgrupo) => (
+                        <Select.Option
+                            key={subgrupo.id}
+                            value={subgrupo.id}
+                            label={`[${subgrupo.grupo.codigo}] ${subgrupo.nome}`}
+                        >
+                            [{subgrupo.grupo.codigo}] {subgrupo.nome}
+                        </Select.Option>
+                    ))}
+                </Select>
             </Form.Item>
 
             <Form.Item>
-                <Button type="primary" htmlType="submit" block loading={loading}>
+                <Button type="primary" htmlType="submit" loading={loading}>
                     Salvar
                 </Button>
             </Form.Item>

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
 import { useEntityData } from '@/lib/hooks/useEntityData';
@@ -8,13 +8,23 @@ import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import SubgrupoDefeitoEquipamentoForm from './form';
-import { SubgrupoDefeitoEquipamentoFormData, SubgrupoDefeitoEquipamentoWithRelations } from '@/lib/actions/defeito/schema';
-import { createSubgrupoDefeitoEquipamento, deleteSubgrupoDefeitoEquipamento, getAllSubgrupoDefeitoEquipamentosWithIncludes, updateSubgrupoDefeitoEquipamento } from '@/lib/actions/defeito/actionsSubgrupoDefeito';
+import SubgrupoDefeitoEquipamentoLoteForm from './formLote';
+import {
+    SubgrupoDefeitoEquipamentoFormData,
+    SubgrupoDefeitoEquipamentoWithRelations,
+} from '@/lib/actions/defeito/schema';
+import {
+    createSubgrupoDefeitoEquipamento,
+    deleteSubgrupoDefeitoEquipamento,
+    getAllSubgrupoDefeitoEquipamentosWithIncludes,
+    updateSubgrupoDefeitoEquipamento,
+} from '@/lib/actions/defeito/actionsSubgrupoDefeito';
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/defeito/actionsGrupoDefeito';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function SubgrupoDefeitoEquipamentoPage() {
     const controller = useCrudController<SubgrupoDefeitoEquipamentoWithRelations>('subgrupoDefeitoEquipamento');
+    const [loteModalOpen, setLoteModalOpen] = useState(false);
 
     const subgrupos = useEntityData<SubgrupoDefeitoEquipamentoWithRelations>({
         key: 'subgrupoDefeitoEquipamento',
@@ -44,12 +54,17 @@ export default function SubgrupoDefeitoEquipamentoPage() {
                 filters: grupos?.map((g) => ({ text: g.nome, value: g.id })) ?? [],
                 filteredValue: subgrupos.params.filters?.grupoId ?? null,
                 onFilter: (value, record) => record.grupo.id === value,
+                render: (_, record) =>
+                    record.grupo.codigo
+                        ? `${record.grupo.codigo} - ${record.grupo.nome}`
+                        : record.grupo.nome,
             },
         ],
         {
             onEdit: controller.open,
             onDelete: (item) =>
-                controller.exec(() => deleteSubgrupoDefeitoEquipamento(item.id), 'Subgrupo excluído com sucesso!')
+                controller
+                    .exec(() => deleteSubgrupoDefeitoEquipamento(item.id), 'Subgrupo excluído com sucesso!')
                     .finally(() => subgrupos.mutate()),
         }
     );
@@ -68,7 +83,14 @@ export default function SubgrupoDefeitoEquipamentoPage() {
         <>
             <Card
                 title="Subgrupos de Defeito"
-                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
+                extra={
+                    <>
+                        <Button type="primary" onClick={() => controller.open()}>
+                            Adicionar
+                        </Button>
+                        <Button onClick={() => setLoteModalOpen(true)}>Adicionar em Lote</Button>
+                    </>
+                }
             >
                 <Table<SubgrupoDefeitoEquipamentoWithRelations>
                     columns={columns}
@@ -92,6 +114,22 @@ export default function SubgrupoDefeitoEquipamentoPage() {
                     onSubmit={handleSubmit}
                     loading={controller.loading}
                     grupoOptions={grupos ?? []}
+                />
+            </Modal>
+
+            <Modal
+                title="Cadastro de Subgrupos em Lote"
+                open={loteModalOpen}
+                onCancel={() => setLoteModalOpen(false)}
+                footer={null}
+                destroyOnClose
+                width={900}
+            >
+                <SubgrupoDefeitoEquipamentoLoteForm
+                    onSuccess={() => {
+                        setLoteModalOpen(false);
+                        subgrupos.mutate();
+                    }}
                 />
             </Modal>
         </>

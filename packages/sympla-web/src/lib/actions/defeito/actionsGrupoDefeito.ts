@@ -1,3 +1,5 @@
+// === Correções aplicadas para createManyGrupoDefeitos ===
+
 "use server";
 
 import { prisma } from "@/lib/db/prisma";
@@ -7,8 +9,11 @@ import {
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
-import { grupoDefeitoEquipamentoFormSchema, } from "./schema";
-import { GrupoDefeitoEquipamento } from "@sympla/prisma";
+import {
+  createManyGrupoDefeitosSchema,
+  grupoDefeitoEquipamentoFormSchema,
+  GrupoDefeitoEquipamentoWithRelations,
+} from "./schema";
 
 // ===== CREATE =====
 
@@ -52,20 +57,24 @@ export const deleteGrupoDefeitoEquipamento = createPrismaDeleteAction(
 
 // ===== GET ALL com paginação e filtros =====
 
-export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesAction<GrupoDefeitoEquipamento>(
+export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesAction<GrupoDefeitoEquipamentoWithRelations>(
   async (params) => {
     const {
       where = {},
-      orderBy = 'nome',
-      orderDir = 'asc',
+      orderBy = "nome",
+      orderDir = "asc",
       filters = {},
     } = params;
 
     const finalWhere = {
       ...where,
       deletedAt: null,
-      ...(filters.nome && { nome: { contains: filters.nome[0], mode: "insensitive" } }),
-      ...(filters.codigo && { codigo: { contains: filters.codigo[0], mode: "insensitive" } }),
+      ...(filters.nome && {
+        nome: { contains: filters.nome[0], mode: "insensitive" },
+      }),
+      ...(filters.codigo && {
+        codigo: { contains: filters.codigo[0], mode: "insensitive" },
+      }),
     };
 
     const prismaOrderBy = { [orderBy]: orderDir };
@@ -73,7 +82,42 @@ export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesActi
     return prisma.grupoDefeitoEquipamento.findMany({
       where: finalWhere,
       orderBy: prismaOrderBy,
+      include: {
+        subgrupos: true,
+      },
     });
   },
   "GRUPO_DEFEITO_EQUIPAMENTO"
 );
+
+// ===== CREATE MANY corrigido =====
+
+export const createManyGrupoDefeitos = async (rawInput: unknown) => {
+  const parsed = createManyGrupoDefeitosSchema.parse(rawInput);
+
+  const nome = parsed.map((item) => item.nome);
+  const codigo = parsed.map((item) => item.codigo);
+
+  const existentes = await prisma.grupoDefeitoEquipamento.findMany({
+    where: { nome: { in: nome }, codigo: { in: codigo } },
+  });
+
+  const existentesSet = new Set(existentes.map((e) => `${e.nome}-${e.codigo}`));
+
+  const novos = parsed.filter((item) => !existentesSet.has(`${item.nome}-${item.codigo}`));
+
+  if (novos.length === 0) {
+    console.log("🚫 Nenhum grupo de defeito novo para cadastrar.");
+    return;
+  }
+
+  await prisma.grupoDefeitoEquipamento.createMany({
+    data: novos.map((item) => ({
+      nome: item.nome,
+      codigo: item.codigo,
+      createdBy: "system",
+    })),
+    skipDuplicates: true,
+  });
+
+};

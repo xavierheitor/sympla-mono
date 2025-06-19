@@ -2,14 +2,13 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import { GrupoDefeitoEquipamento } from '@sympla/prisma';
-import { SubgrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
+import { GrupoDefeitoEquipamentoWithRelations, SubgrupoDefeitoEquipamentoFormData } from '@/lib/actions/defeito/schema';
 
 interface SubgrupoDefeitoEquipamentoFormProps {
     onSubmit: (values: SubgrupoDefeitoEquipamentoFormData) => void;
     initialValues?: Partial<SubgrupoDefeitoEquipamentoFormData>;
     loading?: boolean;
-    grupoOptions: GrupoDefeitoEquipamento[];
+    grupoOptions: GrupoDefeitoEquipamentoWithRelations[];
 }
 
 export default function SubgrupoDefeitoEquipamentoForm({

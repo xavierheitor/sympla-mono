@@ -12,8 +12,8 @@ import DefeitoLoteForm from './formLote';
 import { DefeitoFormData, DefeitoWithRelations } from '@/lib/actions/defeito/schema';
 import { createDefeito, deleteDefeito, getAllDefeitosWithIncludes, updateDefeito } from '@/lib/actions/defeito/actionsDefeito';
 import { getAllGrupoDefeitoEquipamentos } from '@/lib/actions/defeito/actionsGrupoDefeito';
-import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/defeito/actionsSubgrupoDefeito';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { getAllSubgrupoDefeitoEquipamentosWithIncludes } from '@/lib/actions/defeito/actionsSubgrupoDefeito';
 
 export default function DefeitoPage() {
     const controller = useCrudController<DefeitoWithRelations>('defeitos');
@@ -70,17 +70,6 @@ export default function DefeitoPage() {
                 filteredValue: defeitos.params.filters?.grupoId ?? null,
                 onFilter: (value, record) => record.grupo.id === value,
             },
-            {
-                title: 'Subgrupo',
-                dataIndex: ['subgrupo', 'nome'],
-                key: 'subgrupo.nome',
-                filters: subgrupos?.map((s) => ({
-                    text: `${s.grupo.codigo ? s.grupo.codigo + ' - ' : ''}${s.nome}`,
-                    value: s.id,
-                })) ?? [],
-                filteredValue: defeitos.params.filters?.subgrupoId ?? null,
-                onFilter: (value, record) => record.subgrupo.id === value,
-            },
         ],
         {
             onEdit: controller.open,
@@ -132,9 +121,7 @@ export default function DefeitoPage() {
                     initialValues={controller.editingItem ?? undefined}
                     onSubmit={handleSubmit}
                     loading={controller.loading}
-                    grupoOptions={grupos ?? []}
-                    subgrupoOptions={subgrupos ?? []}
-                />
+                    subgrupoOptions={subgrupos ?? []} />
             </Modal>
 
             <Modal
@@ -150,9 +137,8 @@ export default function DefeitoPage() {
                         setLoteModalOpen(false);
                         defeitos.mutate();
                     }}
-                    grupoOptions={grupos ?? []}
-                    subgrupoOptions={subgrupos ?? []}
-                />
+                    grupoOptions={grupos ?? []} 
+                    subgrupoOptions={subgrupos ?? []} />
             </Modal>
         </>
     );
