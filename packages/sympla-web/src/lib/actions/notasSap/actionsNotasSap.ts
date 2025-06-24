@@ -80,3 +80,35 @@ export const getAllNotasSapPMA = createPrismaGetAllWithIncludesAction<NotasSAPWi
   },
   "NOTAS_SAP_PMA"
 );
+
+// ===== CREATE MANY (Lote) =====
+import { createManyNotasSapSchema } from './schema';
+
+export const createManyNotasSap = async (rawInput: unknown) => {
+  const parsed = createManyNotasSapSchema.parse(rawInput);
+
+  const existentes = await prisma.notasSAP.findMany({
+    where: {
+      numeroNota: { in: parsed.map((n) => n.numeroNota) },
+    },
+  });
+
+  const existentesSet = new Set(existentes.map((n) => n.numeroNota));
+
+  const novos = parsed.filter((n) => !existentesSet.has(n.numeroNota));
+
+  if (novos.length === 0) {
+    console.log('🚫 Nenhuma nota nova para cadastrar.');
+    return;
+  }
+
+  await prisma.notasSAP.createMany({
+    data: novos.map((n) => ({
+      ...n,
+      createdBy: 'system',
+    })),
+    skipDuplicates: true,
+  });
+
+  console.log(`✅ ${novos.length} notas SAP cadastradas com sucesso.`);
+};

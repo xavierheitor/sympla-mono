@@ -8,7 +8,7 @@ import {
     message,
     Typography,
 } from 'antd';
-import { createManyNotasPMA } from '@/lib/actions/notasSap/actionsNotasSap';
+import { createManyNotasSap } from '@/lib/actions/notasSap/actionsNotasSap';
 
 const { Text } = Typography;
 
@@ -85,7 +85,7 @@ export default function NotasPmaLoteForm() {
 
         try {
             setLoading(true);
-            await createManyNotasPMA(dataSource);
+            await createManyNotasSap(dataSource);
             message.success('Notas cadastradas com sucesso!');
             setDataSource([]);
         } catch (error) {

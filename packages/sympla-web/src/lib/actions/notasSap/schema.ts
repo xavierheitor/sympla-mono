@@ -61,3 +61,24 @@ export type NotasSAPWithRelations = NotasSAP & {
   kpi: (Kpi & { tipoManutencao: TipoManutencao }) | null;
   regional: Regional;
 };
+
+export const createManyNotasSapSchema = z.array(
+  notasSapFormSchema.omit({
+    id: true, // não vamos importar id no lote
+    notificador: true, // campos irrelevantes no lote
+    localInstalacao: true,
+    dataInicioReal: true,
+    dataFiReal: true,
+    ordemServicoExecucao: true,
+  }).extend({
+    numeroNota: z.string().min(1),
+    descricao: z.string().min(1),
+    equipamentoId: z.string().min(1),
+    centroTrabalhoId: z.string().min(1),
+    kpiId: z.string().min(1),
+    regionalId: z.string().min(1),
+    dataNota: z.coerce.date(),
+    dataInicioPlan: z.coerce.date().optional(),
+    dataFiPlan: z.coerce.date().optional(),
+  })
+);
