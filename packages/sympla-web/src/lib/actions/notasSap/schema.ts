@@ -62,7 +62,7 @@ export type NotasSAPWithRelations = NotasSAP & {
   regional: Regional;
 };
 
-export const createManyNotasSapSchema = z.array(
+export const createManyNotasSapPMASchema = z.array(
   notasSapFormSchema.omit({
     id: true, // não vamos importar id no lote
     notificador: true, // campos irrelevantes no lote

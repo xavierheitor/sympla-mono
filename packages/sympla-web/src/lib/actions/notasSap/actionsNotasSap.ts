@@ -82,10 +82,10 @@ export const getAllNotasSapPMA = createPrismaGetAllWithIncludesAction<NotasSAPWi
 );
 
 // ===== CREATE MANY (Lote) =====
-import { createManyNotasSapSchema } from './schema';
+import { createManyNotasSapPMASchema } from './schema';
 
-export const createManyNotasSap = async (rawInput: unknown) => {
-  const parsed = createManyNotasSapSchema.parse(rawInput);
+export const createManyNotasPMASap = async (rawInput: unknown) => {
+  const parsed = createManyNotasSapPMASchema.parse(rawInput);
 
   const existentes = await prisma.notasSAP.findMany({
     where: {

@@ -8,7 +8,7 @@ import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import NotasSapForm from './form';
-import NotasPmaLoteForm from './formLote';
+import NotasPmaLoteForm from './formLotePMA';
 import { NotasSAPFormData, NotasSAPWithRelations } from '@/lib/actions/notasSap/schema';
 import { createNotasSap, deleteNotasSap, getAllNotasSapPMA, updateNotasSap } from '@/lib/actions/notasSap/actionsNotasSap';
 import { getAllCentroTrabalhos } from '@/lib/actions/centroTrabalho/actionsCentroTrabalho';
