@@ -1,38 +1,49 @@
 'use client';
 
-import React from 'react';
 import { Button, Card, Modal, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
 
 import AtividadeAtribuicaoForm from './form';
-import { createAtividadeAtribuicao, deleteAtividadeAtribuicao, getAllAtividadeAtribuicaosWithIncludes, updateAtividadeAtribuicao } from '@/lib/actions/atividade/actionsAtribuicaoAtividade';
-import { AtividadeAtribuicaoFormData, AtividadeAtribuicaoWithIncludes } from '@/lib/actions/atividade/schema';
+import {
+    AtividadeAtribuicaoFormData,
+    AtividadeAtribuicaoWithIncludes,
+} from '@/lib/actions/atividade/schema';
+
+import {
+    createAtividadeAtribuicao,
+    deleteAtividadeAtribuicao,
+    getAllAtividadeAtribuicaosWithIncludes,
+    updateAtividadeAtribuicao,
+} from '@/lib/actions/atividade/actionsAtribuicaoAtividade';
+
 import { getAllAtividades } from '@/lib/actions/atividade/actionsAtividade';
 import { getAllUsuarioMobiles } from '@/lib/actions/usuarioMobile/actionsUsuarioMobile';
-
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function AtividadeAtribuicaoPage() {
     const controller = useCrudController<AtividadeAtribuicaoWithIncludes>('atividadeAtribuicao');
 
-    const { data: atribuicoes, isLoading, error } = useServerData(
-        'atividadeAtribuicoes',
-        getAllAtividadeAtribuicaosWithIncludes
-    );
+    const atribuicoes = useEntityData<AtividadeAtribuicaoWithIncludes>({
+        key: 'atividadeAtribuicoes',
+        fetcher: unwrapFetcher(getAllAtividadeAtribuicaosWithIncludes),
+        paginationEnabled: true,
+    });
 
-    const { data: atividades } = useServerData('atividades', getAllAtividades);
-    const { data: usuarios } = useServerData('usuariosMobile', getAllUsuarioMobiles);
+    const { data: atividades } = useServerData('atividades', unwrapFetcher(getAllAtividades));
+    const { data: usuarios } = useServerData('usuariosMobile', unwrapFetcher(getAllUsuarioMobiles));
 
     const columns = useTableColumnsWithActions<AtividadeAtribuicaoWithIncludes>(
         [
             {
                 title: 'Atividade',
-                dataIndex: ['atividade', 'id'],
-                key: 'atividade.id',
+                dataIndex: ['atividade', 'ordemServico'],
+                key: 'atividade.ordemServico',
             },
             {
-                title: 'Usuário',
+                title: 'Técnico',
                 dataIndex: ['usuarioMobile', 'nome'],
                 key: 'usuarioMobile.nome',
             },
@@ -52,33 +63,40 @@ export default function AtividadeAtribuicaoPage() {
                 key: 'dataFim',
             },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteAtividadeAtribuicao(item.id), 'Atribuição excluída com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) =>
+                controller
+                    .exec(() => deleteAtividadeAtribuicao(item.id), 'Atribuição excluída com sucesso!')
+                    .finally(() => atribuicoes.mutate()),
+        }
     );
 
     const handleSubmit = (values: AtividadeAtribuicaoFormData) => {
         const action = controller.editingItem?.id
-            ? () => updateAtividadeAtribuicao({ ...values, id: controller.editingItem!.id })
+            ? () => updateAtividadeAtribuicao({ ...values, id: controller.editingItem?.id ?? '' })
             : () => createAtividadeAtribuicao(values);
 
-        controller.exec(action, 'Atribuição salva com sucesso!');
+        controller.exec(action, 'Atribuição salva com sucesso!').finally(() => atribuicoes.mutate());
     };
 
-    if (error) {
-        return <p style={{ color: 'red' }}>Erro ao carregar atribuições de atividade.</p>;
+    if (atribuicoes.error) {
+        return <p style={{ color: 'red' }}>Erro ao carregar atribuições.</p>;
     }
 
     return (
         <>
             <Card
                 title="Atribuições de Atividade"
-                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
+                extra={<Button type="primary" onClick={() => controller.open()}>Nova</Button>}
             >
                 <Table<AtividadeAtribuicaoWithIncludes>
-                    columns={columns}
-                    dataSource={atribuicoes?.data ?? []}
-                    loading={isLoading}
                     rowKey="id"
+                    columns={columns}
+                    dataSource={atribuicoes.data ?? []}
+                    loading={atribuicoes.isLoading}
+                    pagination={atribuicoes.pagination}
+                    onChange={atribuicoes.handleTableChange}
                 />
             </Card>
 
@@ -86,16 +104,16 @@ export default function AtividadeAtribuicaoPage() {
                 title={controller.editingItem ? 'Editar Atribuição' : 'Nova Atribuição'}
                 open={controller.isOpen}
                 onCancel={controller.close}
-                footer={null}
                 destroyOnClose
+                footer={null}
             >
                 {atividades && usuarios && (
                     <AtividadeAtribuicaoForm
-                        initialValues={controller.editingItem ?? undefined}
                         onSubmit={handleSubmit}
+                        initialValues={controller.editingItem ?? undefined}
                         loading={controller.loading}
-                        atividades={atividades.data ?? []}
-                        usuarios={usuarios.data ?? []}
+                        atividades={atividades ?? []}
+                        usuarios={usuarios ?? []}
                     />
                 )}
             </Modal>

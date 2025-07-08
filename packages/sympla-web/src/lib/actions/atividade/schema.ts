@@ -7,6 +7,9 @@ import {
   StatusAtividade,
   Atividade,
   NotasSAP,
+  StatusAtribuicao,
+  AtividadeAtribuicao,
+  UsuarioMobile,
 } from "@sympla/prisma";
 
 // SCHEMA FORM PRINCIPAL
@@ -60,4 +63,24 @@ export type AtividadeFormData = z.infer<typeof atividadeFormSchema>;
 export type AtividadeWithIncludes = Atividade & {
   tipoAtividade: TipoAtividade;
   nota: NotasSAP;
+};
+
+// 📌 Schema para formulário
+export const atividadeAtribuicaoFormSchema = z.object({
+  id: z.string().optional(),
+  atividadeId: z.string().min(1, "Atividade é obrigatória"),
+  usuarioMobileId: z.string().min(1, "Técnico é obrigatório"),
+  status: z.nativeEnum(StatusAtribuicao, {
+    required_error: "Status é obrigatório",
+  }),
+  dataInicio: z.date().nullable(),
+  dataFim: z.date().nullable(),
+});
+
+export type AtividadeAtribuicaoFormData = z.infer<typeof atividadeAtribuicaoFormSchema>;
+
+// 📌 Tipo com includes (para useServerData, page.tsx, etc.)
+export type AtividadeAtribuicaoWithIncludes = AtividadeAtribuicao & {
+  atividade: Atividade;
+  usuarioMobile: UsuarioMobile;
 };

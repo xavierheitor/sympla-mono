@@ -1,16 +1,15 @@
+// === actionsAtribuicaoAtividade.ts ===
 "use server";
 
 import { prisma } from "@/lib/db/prisma";
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
-  createPrismaGetAllAction,
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
 import { atividadeAtribuicaoFormSchema } from "./schema";
 
-// ========== CRIAÇÃO ==========
 export const createAtividadeAtribuicao = createPrismaCreateAction(
   atividadeAtribuicaoFormSchema,
   async (data) => {
@@ -24,7 +23,6 @@ export const createAtividadeAtribuicao = createPrismaCreateAction(
   "ATIVIDADE_ATRIBUICAO"
 );
 
-// ========== ATUALIZAÇÃO ==========
 export const updateAtividadeAtribuicao = createPrismaUpdateAction(
   atividadeAtribuicaoFormSchema,
   async (data) => {
@@ -39,7 +37,6 @@ export const updateAtividadeAtribuicao = createPrismaUpdateAction(
   "ATIVIDADE_ATRIBUICAO"
 );
 
-// ========== REMOÇÃO LÓGICA ==========
 export const deleteAtividadeAtribuicao = createPrismaDeleteAction(
   async (id, session) => {
     return await prisma.atividadeAtribuicao.update({
@@ -59,23 +56,29 @@ export const deleteAtividadeAtribuicao = createPrismaDeleteAction(
   }
 );
 
-// ========== LISTAGEM SIMPLES ==========
-export const getAllAtividadeAtribuicaos = createPrismaGetAllAction(
-  prisma.atividadeAtribuicao,
-  "ATIVIDADE_ATRIBUICAO"
-);
-
-// ========== LISTAGEM COM RELACIONAMENTOS ==========
 export const getAllAtividadeAtribuicaosWithIncludes = createPrismaGetAllWithIncludesAction(
-  async () => {
-    return await prisma.atividadeAtribuicao.findMany({
-      where: { deletedAt: null },
-      orderBy: { dataInicio: "desc" },
-      include: {
-        atividade: true,
-        usuarioMobile: true,
-      },
-    });
+  async ({ where = {}, orderBy = "dataInicio", orderDir = "desc", skip, take }) => {
+    const [data, total] = await prisma.$transaction([
+      prisma.atividadeAtribuicao.findMany({
+        where: { ...where, deletedAt: null },
+        orderBy: { [orderBy]: orderDir },
+        skip,
+        take,
+        include: {
+          atividade: true,
+          usuarioMobile: true,
+        },
+      }),
+      prisma.atividadeAtribuicao.count({
+        where: { ...where, deletedAt: null },
+      }),
+    ]);
+
+    return {
+      data,
+      total,
+      totalPages: take ? Math.ceil(total / take) : 1,
+    };
   },
   "ATIVIDADE_ATRIBUICAO"
 );

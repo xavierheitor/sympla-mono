@@ -91,7 +91,7 @@ export default function AtividadePage() {
             >
                 <Table<AtividadeWithIncludes>
                     columns={columns}
-                    dataSource={atividades.data}
+                    dataSource={atividades.data ?? []}
                     loading={atividades.isLoading}
                     rowKey="id"
                     pagination={atividades.pagination}
