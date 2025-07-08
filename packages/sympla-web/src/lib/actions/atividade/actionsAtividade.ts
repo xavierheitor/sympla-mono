@@ -1,36 +1,34 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
-  createPrismaDeleteAction,
   createPrismaUpdateAction,
+  createPrismaDeleteAction,
+  createPrismaGetAllAction,
   createPrismaGetAllWithIncludesAction,
-} from "@/lib/server-action/actionFactory";
-import { atividadeFormSchema, AtividadeWithIncludes } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { atividadeFormSchema } from './schema';
 
-// CREATE
 export const createAtividade = createPrismaCreateAction(
   atividadeFormSchema,
   async (data) =>
     prisma.atividade.create({
-      data: { ...data, createdBy: data.createdBy?.toString() || "" },
+      data: { ...data, createdBy: data.createdBy?.toString?.() ?? '' },
     }),
-  "ATIVIDADE"
+  'ATIVIDADE'
 );
 
-// UPDATE
 export const updateAtividade = createPrismaUpdateAction(
   atividadeFormSchema,
   async (data) =>
     prisma.atividade.update({
       where: { id: data.id },
-      data: { ...data, updatedBy: data.updatedBy?.toString() || "" },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() ?? '' },
     }),
-  "ATIVIDADE"
+  'ATIVIDADE'
 );
 
-// DELETE
 export const deleteAtividade = createPrismaDeleteAction(
   async (id, session) =>
     prisma.atividade.update({
@@ -38,38 +36,55 @@ export const deleteAtividade = createPrismaDeleteAction(
       data: { deletedAt: new Date(), deletedBy: session.user.id.toString() },
     }),
   {
-    defaultCheck: {
-      prismaModel: prisma.atividade,
-      modelName: "Atividade",
-    },
-    entityName: "ATIVIDADE",
+    defaultCheck: { prismaModel: prisma.atividade, modelName: 'Atividade' },
+    entityName: 'ATIVIDADE',
   }
 );
 
-// GET ALL WITH INCLUDES
-export const getAllAtividadesWithIncludes = createPrismaGetAllWithIncludesAction<AtividadeWithIncludes>(
+export const getAllAtividades = createPrismaGetAllAction(
+  prisma.atividade,
+  'ATIVIDADE'
+);
+export const getAllAtividadesWithIncludes = createPrismaGetAllWithIncludesAction(
   async (params) => {
-    const { where = {}, orderBy = "prazoLimite", orderDir = "asc", filters = {} } = params;
+    const {
+      where = {},
+      orderBy = 'nome',
+      orderDir = 'asc',
+      skip = 0,
+      take = 10,
+    } = params;
 
-    const finalWhere = {
-      ...where,
-      deletedAt: null,
-      ...(filters.descricao && {
-        descricao: { contains: filters.descricao[0], mode: "insensitive" },
+    const [data, total] = await Promise.all([
+      prisma.atividade.findMany({
+        where: { ...where, deletedAt: null },
+        orderBy: { [orderBy]: orderDir },
+        skip,
+        take,
+        include: {
+          nota: true,
+          tipoAtividade: {
+            include: {
+              tipoAtividadeKpi: {
+                where: { deletedAt: null },
+                include: { kpi: true },
+              },
+            },
+          },
+        },
       }),
-      ...(filters.status && { status: { in: filters.status } }),
+      prisma.atividade.count({
+        where: { ...where, deletedAt: null },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / take);
+
+    return {
+      data,
+      total,
+      totalPages, // ✅ Adicionado aqui
     };
-
-    const prismaOrderBy = { [orderBy]: orderDir };
-
-    return prisma.atividade.findMany({
-      where: finalWhere,
-      orderBy: prismaOrderBy,
-      include: {
-        tipoAtividade: true,
-        nota: true,
-      },
-    });
   },
-  "ATIVIDADE"
+  'ATIVIDADE'
 );

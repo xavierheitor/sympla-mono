@@ -1,26 +1,41 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React from 'react';
-import { Button, Card, Modal, Table } from 'antd';
+import { Button, Card, Modal, Space, Table } from 'antd';
 import { useCrudController } from '@/lib/hooks/useCrudController';
+import { useEntityData } from '@/lib/hooks/useEntityData';
 import { useServerData } from '@/lib/hooks/useServerData';
 import { useTableColumnsWithActions } from '@/lib/hooks/useTableColumnsWithActions';
+
 import AtividadeForm from './form';
-import { createAtividade, deleteAtividade, getAllAtividadesWithIncludes, updateAtividade } from '@/lib/actions/atividade/actionsAtividade';
+import {
+    AtividadeFormData,
+    AtividadeWithIncludes,
+} from '@/lib/actions/atividade/schema';
+
+import {
+    createAtividade,
+    deleteAtividade,
+    getAllAtividadesWithIncludes,
+    updateAtividade,
+} from '@/lib/actions/atividade/actionsAtividade';
+
 import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
-import { AtividadeFormData, AtividadeWithIncludes } from '@/lib/actions/atividade/schema';
-import { getAllNotasSaps } from '@/lib/actions/notasSap/actionsNotasSap';
+import { getAllNotasSapPMA } from '@/lib/actions/notasSap/actionsNotasSap';
+import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function AtividadePage() {
     const controller = useCrudController<AtividadeWithIncludes>('atividade');
 
-    const { data: atividades, isLoading, error } = useServerData(
-        'atividades',
-        getAllAtividadesWithIncludes
-    );
+    const atividades = useEntityData<AtividadeWithIncludes>({
+        key: 'atividades',
+        fetcher: unwrapFetcher(getAllAtividadesWithIncludes),
+        paginationEnabled: true,
+    });
 
-    const { data: tipoAtividades } = useServerData('tipoAtividades', getAllTipoAtividades);
-    const { data: notas } = useServerData('notasSAP', getAllNotasSaps);
+    const { data: tipoAtividades } = useServerData('tipoAtividades', unwrapFetcher(getAllTipoAtividades));
+    const { data: notas } = useServerData('notasSAP', unwrapFetcher(getAllNotasSapPMA));
 
     const columns = useTableColumnsWithActions<AtividadeWithIncludes>(
         [
@@ -30,13 +45,18 @@ export default function AtividadePage() {
             { title: 'Status', dataIndex: 'status', key: 'status' },
             { title: 'Prazo Limite', dataIndex: 'prazoLimite', key: 'prazoLimite' },
         ],
-        controller.open,
-        (item) => controller.exec(() => deleteAtividade(item.id), 'Atividade excluída com sucesso!')
+        {
+            onEdit: controller.open,
+            onDelete: (item) =>
+                controller
+                    .exec(() => deleteAtividade(item.id), 'Atividade excluída com sucesso!')
+                    .finally(() => atividades.mutate()),
+        }
     );
 
     const handleSubmit = (values: AtividadeFormData) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const normalizeDate = (date?: any) => date?.toISOString?.() ?? null;
+        const normalizeDate = (date?: unknown) =>
+            date instanceof Date ? date.toISOString() : (date as any)?.toISOString?.() ?? null;
 
         const parsedValues = {
             ...values,
@@ -47,27 +67,35 @@ export default function AtividadePage() {
         };
 
         const action = controller.editingItem?.id
-            ? () => updateAtividade({ ...parsedValues, id: controller.editingItem!.id })
+            ? () => updateAtividade({ ...parsedValues, id: controller.editingItem?.id ?? '' })
             : () => createAtividade(parsedValues);
 
-        controller.exec(action, 'Atividade salva com sucesso!');
+        controller.exec(action, 'Atividade salva com sucesso!').finally(() => atividades.mutate());
     };
 
-    if (error) {
-        return <p style={{ color: 'red' }}>Erro ao carregar atividades.</p>;
+    if (atividades.error) {
+        return <p style={{ color: 'red' }}>Erro ao carregar as atividades.</p>;
     }
 
     return (
         <>
             <Card
                 title="Atividades"
-                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
+                extra={
+                    <Space>
+                        <Button type="primary" onClick={() => controller.open()}>
+                            Adicionar
+                        </Button>
+                    </Space>
+                }
             >
                 <Table<AtividadeWithIncludes>
                     columns={columns}
-                    dataSource={atividades?.data ?? []}
-                    loading={isLoading}
+                    dataSource={atividades.data}
+                    loading={atividades.isLoading}
                     rowKey="id"
+                    pagination={atividades.pagination}
+                    onChange={atividades.handleTableChange}
                 />
             </Card>
 
@@ -83,8 +111,8 @@ export default function AtividadePage() {
                         initialValues={controller.editingItem ?? undefined}
                         onSubmit={handleSubmit}
                         loading={controller.loading}
-                        tipoAtividadeOptions={tipoAtividades.data ?? []}
-                        notaOptions={notas.data ?? []}
+                        tipoAtividadeOptions={tipoAtividades ?? []}
+                        notaOptions={notas ?? []}
                     />
                 )}
             </Modal>

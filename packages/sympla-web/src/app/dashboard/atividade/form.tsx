@@ -45,14 +45,14 @@ export default function AtividadeForm({
 
             <Form.Item name="notaId" label="Nota SAP" rules={[{ required: true }]}>
                 <Select
-                    options={notaOptions.map(n => ({ label: n.numeroNota || n.id, value: n.id }))}
+                    options={notaOptions.map((n) => ({ label: n.numeroNota || n.id, value: n.id }))}
                     placeholder="Selecione uma nota"
                 />
             </Form.Item>
 
             <Form.Item name="tipoAtividadeId" label="Tipo de Atividade" rules={[{ required: true }]}>
                 <Select
-                    options={tipoAtividadeOptions.map(t => ({ label: t.nome, value: t.id }))}
+                    options={tipoAtividadeOptions.map((t) => ({ label: t.nome, value: t.id }))}
                     placeholder="Selecione o tipo"
                 />
             </Form.Item>
