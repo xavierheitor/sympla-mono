@@ -125,7 +125,24 @@ export default function DefeitoPage() {
                     loading={defeitos.isLoading}
                     rowKey="id"
                     pagination={defeitos.pagination}
-                    onChange={defeitos.handleTableChange}
+                    onChange={(pagination, filters, sorter) => {
+                        const sort = Array.isArray(sorter) ? sorter[0] : sorter;
+                        // Normaliza os filtros para garantir que grupoId e subgrupoId sejam enviados corretamente
+                        const normalizedFilters = {
+                            codigoSap: filters.codigoSap as string[] | undefined,
+                            descricao: filters.descricao as string[] | undefined,
+                            grupoId: filters["grupo.nome"] as string[] | undefined,
+                            subgrupoId: filters["subgrupo.nome"] as string[] | undefined,
+                        };
+                        defeitos.setParams((prev) => ({
+                            ...prev,
+                            page: pagination.current ?? 1,
+                            pageSize: pagination.pageSize ?? prev.pageSize,
+                            orderBy: typeof sort?.field === 'string' ? sort.field : prev.orderBy,
+                            orderDir: sort?.order === 'ascend' ? 'asc' : sort?.order === 'descend' ? 'desc' : prev.orderDir,
+                            filters: normalizedFilters,
+                        }));
+                    }}
                 />
             </Card>
 
