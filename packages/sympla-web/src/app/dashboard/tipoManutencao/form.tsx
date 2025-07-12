@@ -35,8 +35,8 @@ export default function TipoManutencaoForm({
 
     return (
         <Form form={form} layout="vertical" onFinish={handleFinish}>
-            <Form.Item name="nome" label="Nome" rules={[{ required: true, message: 'Nome é obrigatório' }]}>
-                <Input />
+            <Form.Item name="nome" label="Nome" rules={[{ required: true, message: 'Nome é obrigatório' }]} >
+                <Input autoFocus />
             </Form.Item>
 
             <Form.Item>

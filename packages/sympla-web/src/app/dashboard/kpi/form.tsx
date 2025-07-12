@@ -37,7 +37,7 @@ export default function KpiForm({
     return (
         <Form form={form} layout="vertical" onFinish={handleFinish}>
             <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
-                <Input />
+                <Input autoFocus />
             </Form.Item>
 
             <Form.Item name="descricao" label="Descrição" rules={[{ required: true }]}>
