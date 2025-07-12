@@ -1,0 +1,60 @@
+model Distribuidora {
+    id        String  @id @default(uuid())
+    nome      String
+    descricao String?
+    codigoSap String? @unique
+
+    regionais Regional[]
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}
+
+model Regional {
+    id        String  @id @default(uuid())
+    nome      String
+    descricao String?
+    codigoSap String? @unique
+
+    distribuidoraId String
+    distribuidora   Distribuidora @relation(fields: [distribuidoraId], references: [id])
+
+    subestacoes Subestacao[]
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    usuarioMobileRegional UsuarioMobileRegional[]
+
+    centroTrabalho CentroTrabalho[]
+}
+
+model CentroTrabalho {
+    id   String @id @default(uuid())
+    nome String
+
+    regionalId String
+    regional   Regional @relation(fields: [regionalId], references: [id])
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    NotaPMA NotaPMA[]
+
+    Anomalia Anomalia[]
+}

@@ -1,0 +1,71 @@
+model TipoManutencao {
+    id   String @id @default(uuid())
+    nome String
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    kpi Kpi[]
+}
+
+model Kpi {
+    id        String @id @default(uuid())
+    nome      String
+    descricao String
+
+    tipoManutencaoId String
+    tipoManutencao   TipoManutencao @relation(fields: [tipoManutencaoId], references: [id])
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+
+    tipoAtividadeKpi TipoAtividadeKpi[]
+
+    NotaPMA NotaPMA[]
+}
+
+model NotaPMA {
+    id String @id @default(uuid())
+
+    numeroNota      String?
+    localInstalacao String?
+
+    dataInicioPlan DateTime
+    dataFiPlan     DateTime
+    dataInicioReal DateTime?
+    dataFiReal     DateTime?
+
+    centroTrabalhoId String?
+    centroTrabalho   CentroTrabalho? @relation(fields: [centroTrabalhoId], references: [id])
+
+    equipamentoId String?
+    equipamento   Equipamento? @relation(fields: [equipamentoId], references: [id])
+
+    kpiId String?
+    kpi   Kpi?    @relation(fields: [kpiId], references: [id])
+
+    status StatusNota @default(PENDENTE)
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    HistoricoAlteracaoNota HistoricoAlteracaoNota[]
+
+    Atividade Atividade[]
+}

@@ -1,0 +1,33 @@
+model HistoricoAlteracaoNota {
+    id            String   @id @default(uuid())
+    notaId        String
+    nota          NotaPMA @relation(fields: [notaId], references: [id])
+    campo         String
+    valorAnterior String?
+    valorNovo     String?
+    alteradoPor   String
+    alteradoEm    DateTime @default(now())
+}
+
+model HistoricoAlteracaoAtividade {
+    id            String    @id @default(uuid())
+    atividadeId   String
+    atividade     Atividade @relation(fields: [atividadeId], references: [id])
+    campo         String
+    valorAnterior String?
+    valorNovo     String?
+    alteradoPor   String
+    alteradoEm    DateTime  @default(now())
+}
+
+
+model HistoricoAlteracaoAnomalia {
+    id            String    @id @default(uuid())
+    anomaliaId   String
+    anomalia     Anomalia @relation(fields: [anomaliaId], references: [id])
+    campo         String
+    valorAnterior String?
+    valorNovo     String?
+    alteradoPor   String
+    alteradoEm    DateTime  @default(now())
+}

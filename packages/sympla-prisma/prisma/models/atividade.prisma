@@ -1,0 +1,94 @@
+model TipoAtividade {
+    id   String @id @default(uuid())
+    nome String
+
+    tipoAtividadeMobile TipoAtividadeMobile @default(ivItIu)
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    atividade Atividade[]
+
+    tipoAtividadeKpi TipoAtividadeKpi[]
+
+    aprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
+
+    checklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
+}
+
+model TipoAtividadeKpi {
+    id String @id @default(uuid())
+
+    tipoAtividadeId String
+    tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+    kpiId String
+    kpi   Kpi    @relation(fields: [kpiId], references: [id])
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}
+
+model Atividade {
+    id        String  @id @default(uuid())
+    descricao String?
+
+    notaPmaId String?
+    notaPma   NotaPMA? @relation(fields: [notaPmaId], references: [id])
+
+    tipoAtividadeId String
+    tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+    ordemServico String?
+    status       StatusAtividade @default(PENDENTE)
+
+    dataInicioPlan DateTime?
+    dataFimPlan     DateTime?
+
+    dataExecucaoInicio DateTime?
+    dataExecucaoFim    DateTime?
+
+    atribuicoes AtividadeAtribuicao[]
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    historicoAlteracaoAtividade HistoricoAlteracaoAtividade[]
+
+    anomaliasGeradas    Anomalia[] @relation(name: "atividadeGeracao")
+    anomaliasConcluidas Anomalia[] @relation(name: "atividadeConclusao")
+}
+
+model AtividadeAtribuicao {
+    id String @id @default(uuid())
+
+    atividadeId String
+    atividade   Atividade @relation(fields: [atividadeId], references: [id])
+
+    usuarioMobileId String
+    usuarioMobile   UsuarioMobile @relation(fields: [usuarioMobileId], references: [id])
+
+    status StatusAtribuicao @default(ATRIBUIDA)
+
+    dataInicio DateTime?
+    dataFim    DateTime?
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}

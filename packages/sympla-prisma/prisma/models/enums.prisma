@@ -1,0 +1,72 @@
+
+enum PropriedadeSubestacao {
+  PROPRIA
+  COMPARTILHADA
+}
+
+enum CategoriaSubestacao {
+  DISTRIBUICAO
+  SUBTRANSMISSAO
+  TRANSMISSAO
+}
+
+enum TensaoSubestacao {
+  KV_34
+  KV_69
+  KV_138
+  KV_230
+}
+
+enum PrioridadeDefeito {
+  A
+  P1
+  P2
+  P3
+}
+
+enum TipoNota {
+  AA
+  TS
+  RSF
+}
+
+enum StatusAnomalia {
+  PENDENTE
+  EM_EXECUCAO
+  CONCLUIDA
+  CANCELADA
+}
+
+enum StatusNota {
+  PENDENTE
+  PROGRAMADO
+  EXECUTADO
+  BAIXADO_NO_SAP
+  CANCELADO
+}
+
+enum StatusAtribuicao {
+  ATRIBUIDA
+  EM_EXECUCAO
+  FINALIZADA
+  RECUSADA
+  CANCELADA
+}
+
+enum TipoAtividadeMobile {
+  ivItIu
+  mpdj
+  mpbb
+}
+
+enum StatusAtividade {
+  PENDENTE
+  EM_EXECUCAO
+  CONCLUIDA
+  CANCELADA
+}
+
+enum OrigemNota {
+  SISTEMA
+  SAP
+}

@@ -1,0 +1,70 @@
+model UsuarioMobile {
+    id                    String                  @id @default(uuid())
+    matricula             String                  @unique @db.VarChar(50)
+    nome                  String                  @db.VarChar(255)
+    email                 String?                 @unique @db.VarChar(255)
+    senha                 String                  @db.VarChar(255)
+    funcao                String                  @db.VarChar(100)
+    ativo                 Boolean                 @default(true)
+    createdAt             DateTime                @default(now())
+    updatedAt             DateTime                @updatedAt
+    deletedAt             DateTime?
+    createdBy             String
+    updatedBy             String?
+    deletedBy             String?
+    tokenMobile           TokenMobile[]
+    sessoes               SessaoMobile[]
+    usuarioMobileRegional UsuarioMobileRegional[]
+    atividadeAtribuicao   AtividadeAtribuicao[]
+
+    @@index([matricula])
+    @@map("usuarios_mobile")
+}
+
+model SessaoMobile {
+    id              String        @id @default(uuid())
+    usuarioMobileId String
+    deviceInfo      String?       @db.Text
+    lastActive      DateTime      @default(now())
+    createdAt       DateTime      @default(now())
+    expiresAt       DateTime
+    ativa           Boolean       @default(true)
+    usuario         UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
+
+    @@index([usuarioMobileId])
+    @@map("sessoes_mobile")
+}
+
+model TokenMobile {
+    id                    String        @id @default(uuid())
+    token                 String        @unique @db.VarChar(255)
+    refreshToken          String?       @unique @db.VarChar(255)
+    refreshTokenExpiresAt DateTime?
+    usuarioMobileId       String
+    expiresAt             DateTime
+    createdAt             DateTime      @default(now())
+    updatedAt             DateTime      @updatedAt
+    revoked               Boolean       @default(false)
+    usuarios_mobile       UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
+
+    @@index([usuarioMobileId], map: "TokenMobile_usuarioMobileId_fkey")
+}
+
+model UsuarioMobileRegional {
+    id              String @id @default(uuid())
+    usuarioMobileId String
+    regionalId      String
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    usuarioMobile UsuarioMobile @relation(fields: [usuarioMobileId], references: [id], onDelete: Cascade)
+    regional      Regional      @relation(fields: [regionalId], references: [id], onDelete: Cascade)
+
+    @@index([regionalId])
+    @@map("usuarios_mobile_regionais")
+}

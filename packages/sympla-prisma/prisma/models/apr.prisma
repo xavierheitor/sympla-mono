@@ -1,0 +1,64 @@
+model AprPerguntas {
+    id       String @id @default(uuid())
+    pergunta String
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    aprPerguntasRelation AprPerguntasRelation[]
+}
+
+model AprModelo {
+    id        String  @id @default(uuid())
+    nome      String
+    descricao String?
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    aprPerguntasRelation AprPerguntasRelation[]
+
+    aprModeloTipoAtividadeRelation AprModeloTipoAtividadeRelation[]
+}
+
+model AprModeloTipoAtividadeRelation {
+    id String @id @default(uuid())
+
+    modeloId String
+    modelo   AprModelo @relation(fields: [modeloId], references: [id])
+
+    tipoAtividadeId String
+    tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}
+
+model AprPerguntasRelation {
+    id         String       @id @default(uuid())
+    perguntaId String
+    pergunta   AprPerguntas @relation(fields: [perguntaId], references: [id])
+    ordem      Int          @default(0)
+
+    modeloId String
+    modelo   AprModelo @relation(fields: [modeloId], references: [id])
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}

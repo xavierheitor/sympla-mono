@@ -1,0 +1,66 @@
+//* CHECKLIST
+
+model ChecklistPergunta {
+    id       String @id @default(uuid())
+    pergunta String
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    checklistPerguntaRelation ChecklistPerguntaRelation[]
+}
+
+model ChecklistModelo {
+    id        String  @id @default(uuid())
+    nome      String
+    descricao String?
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    checklistPerguntaRelation ChecklistPerguntaRelation[]
+
+    checklistModeloTipoAtividadeRelation ChecklistModeloTipoAtividadeRelation[]
+}
+
+model ChecklistModeloTipoAtividadeRelation {
+    id String @id @default(uuid())
+
+    modeloId String
+    modelo   ChecklistModelo @relation(fields: [modeloId], references: [id])
+
+    tipoAtividadeId String
+    tipoAtividade   TipoAtividade @relation(fields: [tipoAtividadeId], references: [id])
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}
+
+model ChecklistPerguntaRelation {
+    id         String            @id @default(uuid())
+    perguntaId String
+    pergunta   ChecklistPergunta @relation(fields: [perguntaId], references: [id])
+    ordem      Int               @default(0)
+
+    modeloId String
+    modelo   ChecklistModelo @relation(fields: [modeloId], references: [id])
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}

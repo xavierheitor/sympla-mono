@@ -1,0 +1,43 @@
+model Anomalia {
+    id String @id @default(uuid())
+
+    descricao       String
+    numeroNota      String?
+    localInstalacao String?
+
+    prioridade PrioridadeDefeito @default(A)
+
+    TSGeracao String?
+
+    //centro de trabalho responsavel pela anomalia
+    centroTrabalhoId String?
+    centroTrabalho   CentroTrabalho? @relation(fields: [centroTrabalhoId], references: [id])
+
+    //defeito da anomalia
+    defeitoId String?
+    defeito   Defeito? @relation(fields: [defeitoId], references: [id])
+
+    equipamentoId String?
+    equipamento   Equipamento? @relation(fields: [equipamentoId], references: [id])
+
+    //atividade de geracao dessa anomalia
+    atividadeGeracaoId String
+    atividadeGeracao   Atividade @relation(fields: [atividadeGeracaoId], references: [id], name: "atividadeGeracao")
+
+    //atividade de conclusao dessa anomalia
+    atividadeConclusaoId String?
+    atividadeConclusao   Atividade? @relation(fields: [atividadeConclusaoId], references: [id], name: "atividadeConclusao")
+
+    status StatusAnomalia @default(PENDENTE)
+    dataConclusao DateTime?
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    HistoricoAlteracaoAnomalia HistoricoAlteracaoAnomalia[]
+}

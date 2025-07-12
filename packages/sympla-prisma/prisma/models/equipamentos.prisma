@@ -1,0 +1,109 @@
+model Subestacao {
+    id              String  @id @default(uuid())
+    nome            String
+    sigla           String
+    localInstalacao String?
+    codigoSap       String  @unique
+
+    propriedade PropriedadeSubestacao
+    categoria   CategoriaSubestacao
+    tensao      TensaoSubestacao
+
+    regionalId String
+    regional   Regional @relation(fields: [regionalId], references: [id])
+
+    equipamentos Equipamento[]
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}
+
+model GrupoDefeitoEquipamento {
+    id     String @id @default(uuid())
+    nome   String @unique
+    codigo String @unique
+
+    subgrupos SubgrupoDefeitoEquipamento[]
+    defeitos  Defeito[]
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}
+
+model SubgrupoDefeitoEquipamento {
+    id   String @id @default(uuid())
+    nome String
+
+    grupoId String
+    grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
+
+    defeitos Defeito[]
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+}
+
+model Equipamento {
+    id        String  @id @default(uuid())
+    nome      String
+    descricao String?
+
+    subestacaoId String
+    subestacao   Subestacao @relation(fields: [subestacaoId], references: [id])
+
+    grupoDefeitoCodigo String
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    NotaPMA NotaPMA[]
+
+    Anomalia Anomalia[]
+}
+
+model Defeito {
+    id        String @id @default(uuid())
+    codigoSap String @unique
+    descricao String
+
+    grupoId String
+    grupo   GrupoDefeitoEquipamento @relation(fields: [grupoId], references: [id])
+
+    subgrupoId String
+    subgrupo   SubgrupoDefeitoEquipamento @relation(fields: [subgrupoId], references: [id])
+
+    acaoRecomendada       String?
+    custeioOuInvestimento String?
+    equipe                String?
+    prioridade            String?
+
+    // Auditoria
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    createdBy String
+    updatedBy String?
+    deletedBy String?
+
+    Anomalia Anomalia[]
+}
