@@ -52,10 +52,12 @@ export const atividadeFormSchema = z.object({
   tipoAtividadeId: z.string().min(1, 'Tipo de Atividade é obrigatório'),
   ordemServico: z.string().nullable(),
   status: z.nativeEnum(StatusAtividade),
-  prazoLimite: z.date().nullable(),
-  dataProgramacao: z.date().nullable(),
-  dataExecucaoInicio: z.date().nullable(),
-  dataExecucaoFim: z.date().nullable(),
+  // ✅ Use esse padrão para todos os campos de data
+  prazoLimite: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
+  dataProgramacao: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
+  // dataInicioPlan: z.preprocess((val) => new Date(val as string), z.date()), // esse é obrigatório
+  dataExecucaoInicio: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
+  dataExecucaoFim: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
 });
 
 export type AtividadeFormData = z.infer<typeof atividadeFormSchema>;

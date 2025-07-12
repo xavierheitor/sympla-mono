@@ -6,6 +6,7 @@ import { Session } from "next-auth";
 const logPathFromEnv = process.env.LOG_PATH || "./logs";
 const LOG_DIR = path.resolve(logPathFromEnv);
 const LOG_FILE = path.join(LOG_DIR, "app.log");
+const ERROR_LOG_FILE = path.join(LOG_DIR, "error.log");
 
 // Garante que o diretório e arquivo existem
 if (!fs.existsSync(LOG_DIR)) {
@@ -13,6 +14,9 @@ if (!fs.existsSync(LOG_DIR)) {
 }
 if (!fs.existsSync(LOG_FILE)) {
   fs.writeFileSync(LOG_FILE, "", "utf8");
+}
+if (!fs.existsSync(ERROR_LOG_FILE)) {
+  fs.writeFileSync(ERROR_LOG_FILE, "", "utf8");
 }
 
 export type LogLevel = "info" | "warn" | "error" | "action" | "access";
@@ -29,16 +33,22 @@ function formatLog({ level = "info", message, context }: LogPayload): string {
   return `[${timestamp}] [${level.toUpperCase()}] ${message}${ctx}`;
 }
 
-function writeLog(line: string) {
+function writeLog(line: string, level: LogLevel = "info") {
   fs.appendFile(LOG_FILE, line + "\n", (err) => {
     if (err) console.error("Erro ao escrever log:", err);
   });
+
+  if (level === "error") {
+    fs.appendFile(ERROR_LOG_FILE, line + "\n", (err) => {
+      if (err) console.error("Erro ao escrever error.log:", err);
+    });
+  }
 }
 
 export const logger = {
   log(payload: LogPayload) {
     const line = formatLog(payload);
-    writeLog(line);
+    writeLog(line, payload.level);
 
     if (payload.level === "error") {
       console.error(line); // 🔥 Mostra erro também no console

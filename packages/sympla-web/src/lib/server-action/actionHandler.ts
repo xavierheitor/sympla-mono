@@ -37,6 +37,12 @@ export async function handleServerAction<TInput, TOutput>(
     const parseResult = schema.safeParse(rawInput);
     //se não for válido, retorna um erro
     if (!parseResult.success) {
+      const entityName = options?.entityName || schema.description || "UNKNOWN_ENTITY";
+      logger.error(`[ValidationError] Falha na validação do schema para ${entityName}`, {
+        input: rawInput,
+        issues: parseResult.error.flatten(),
+      });
+
       return {
         success: false,
         error: parseResult.error.message,
