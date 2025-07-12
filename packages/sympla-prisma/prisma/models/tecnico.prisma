@@ -1,0 +1,16 @@
+model Tecnico {
+  id       String @id @default(uuid())
+  nome     String
+  email    String @unique
+  telefone String
+  cpf      String @unique
+  rg       String @unique
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy String
+  updatedBy String?
+  deletedBy String?
+}

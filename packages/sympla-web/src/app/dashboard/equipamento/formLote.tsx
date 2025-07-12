@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Upload, Button, message, Card, Progress, Typography } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
+import { createManyEquipamentosFromExcel } from '@/lib/actions/equipamento/actionsEquipamento';
 
 const { Text } = Typography;
 

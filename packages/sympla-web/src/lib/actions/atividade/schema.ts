@@ -1,16 +1,5 @@
+import { TipoAtividadeMobile, TipoAtividade, TipoAtividadeKpi, Kpi, StatusAtividade, Atividade, StatusAtribuicao, AtividadeAtribuicao, UsuarioMobile } from "@sympla/prisma";
 import { z } from "zod";
-import {
-  TipoAtividade,
-  TipoAtividadeKpi,
-  TipoAtividadeMobile,
-  Kpi,
-  StatusAtividade,
-  Atividade,
-  NotasSAP,
-  StatusAtribuicao,
-  AtividadeAtribuicao,
-  UsuarioMobile,
-} from "@sympla/prisma";
 
 // SCHEMA FORM PRINCIPAL
 
@@ -64,7 +53,6 @@ export type AtividadeFormData = z.infer<typeof atividadeFormSchema>;
 
 export type AtividadeWithIncludes = Atividade & {
   tipoAtividade: TipoAtividade;
-  nota: NotasSAP;
 };
 
 // 📌 Schema para formulário

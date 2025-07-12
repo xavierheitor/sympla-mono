@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from "@/lib/db/prisma";
+import { z } from "zod";
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
@@ -8,7 +9,7 @@ import {
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
 } from "@/lib/server-action/actionFactory";
-import { equipamentoFormSchema, EquipamentoWithRelations } from "./schema";
+import { equipamentoFormSchema, EquipamentoWithRelations, linhaSchema } from "./schema";
 
 // CREATE
 export const createEquipamento = createPrismaCreateAction(
@@ -124,3 +125,100 @@ export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesActi
   },
   "EQUIPAMENTO"
 );
+
+// lib/actions/equipamento/createManyEquipamentosFromExcel.ts
+
+export async function createManyEquipamentosFromExcel(rawData: unknown) {
+  const linhas = z.array(linhaSchema).parse(rawData);
+
+  const siglasUnicas = [...new Set(linhas.map((l) => l.SE.trim()))];
+
+  const subestacoes = await prisma.subestacao.findMany({
+    where: {
+      sigla: { in: siglasUnicas },
+    },
+    select: {
+      id: true,
+      sigla: true,
+    },
+  });
+
+  const siglaToId = Object.fromEntries(
+    subestacoes.map((s) => [s.sigla.trim(), s.id])
+  );
+
+  const registrosValidos = linhas
+    .map((linha, index) => {
+      const sigla = linha.SE.trim();
+      const subestacaoId = siglaToId[sigla];
+
+      if (!subestacaoId) {
+        console.warn(`⚠️ Linha ${index + 1}: Subestação "${sigla}" não encontrada`);
+        return null;
+      }
+
+      const nome = linha.EQUIPAMENTOS.trim();
+      const descricao = nome;
+      const grupoDefeitoCodigo = linha['GRUPO DEFEITO CODE']?.trim() || null;
+
+      return {
+        nome,
+        descricao,
+        subestacaoId,
+        grupoDefeitoCodigo,
+        createdBy: 'system',
+      };
+    })
+    .filter(Boolean) as {
+      nome: string;
+      descricao: string;
+      subestacaoId: string;
+      grupoDefeitoCodigo: string | null;
+      createdBy: string;
+    }[];
+
+  if (registrosValidos.length === 0) {
+    return {
+      success: false,
+      message: '❌ Nenhum equipamento válido encontrado no arquivo.',
+    };
+  }
+
+  const existentes = await prisma.equipamento.findMany({
+    where: {
+      OR: registrosValidos.map((r) => ({
+        nome: r.nome,
+        subestacaoId: r.subestacaoId,
+      })),
+    },
+    select: {
+      nome: true,
+      subestacaoId: true,
+    },
+  });
+
+  const existentesSet = new Set(
+    existentes.map((e) => `${e.nome}::${e.subestacaoId}`)
+  );
+
+  const novos = registrosValidos.filter(
+    (r) => !existentesSet.has(`${r.nome}::${r.subestacaoId}`)
+  );
+
+  if (novos.length === 0) {
+    return {
+      success: false,
+      message: '🚫 Todos os equipamentos já existem. Nenhum cadastrado.',
+    };
+  }
+
+  await prisma.equipamento.createMany({
+    data: novos,
+    skipDuplicates: true,
+  });
+
+  return {
+    success: true,
+    message: `✅ ${novos.length} equipamentos cadastrados com sucesso.`,
+  };
+}
