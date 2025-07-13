@@ -12,16 +12,10 @@ import {
     AtividadeAtribuicaoWithIncludes,
 } from '@/lib/actions/atividade/schema';
 
-import {
-    createAtividadeAtribuicao,
-    deleteAtividadeAtribuicao,
-    getAllAtividadeAtribuicaosWithIncludes,
-    updateAtividadeAtribuicao,
-} from '@/lib/actions/atividade/actionsAtribuicaoAtividade';
-
 import { getAllAtividades } from '@/lib/actions/atividade/actionsAtividade';
 import { getAllUsuarioMobiles } from '@/lib/actions/usuarioMobile/actionsUsuarioMobile';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
+import { createAtividadeAtribuicao, deleteAtividadeAtribuicao, getAllAtividadeAtribuicaosWithIncludes, updateAtividadeAtribuicao } from '@/lib/actions/atividade/actionsAtividadeAtribuicao';
 
 export default function AtividadeAtribuicaoPage() {
     const controller = useCrudController<AtividadeAtribuicaoWithIncludes>('atividadeAtribuicao');
