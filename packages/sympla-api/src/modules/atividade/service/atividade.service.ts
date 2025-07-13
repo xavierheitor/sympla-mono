@@ -19,7 +19,7 @@ export class AtividadeService {
         atividade: {
           include: {
             tipoAtividade: true,
-            nota: {
+            notaPma: {
               include: {
                 equipamento: {
                   include: {
@@ -35,8 +35,8 @@ export class AtividadeService {
 
     return atribuicoes.map((atribuicao) => {
       const { atividade } = atribuicao;
-      const { nota, tipoAtividade } = atividade;
-      const equipamento = nota?.equipamento;
+      const { notaPma, tipoAtividade } = atividade;
+      const equipamento = notaPma?.equipamento;
 
       return {
         id: atividade.id,
@@ -45,7 +45,7 @@ export class AtividadeService {
         ordemServico: atividade.ordemServico ?? '',
         subestacao: equipamento?.subestacao?.sigla ?? '',
         status: atividade.status,
-        dataLimite: atividade.prazoLimite,
+        dataLimite: atividade.dataFimPlan,
         dataInicio: atividade.dataExecucaoInicio,
         dataFim: atividade.dataExecucaoFim,
         equipamentoId: equipamento?.id ?? '',

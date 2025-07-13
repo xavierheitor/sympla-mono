@@ -17,7 +17,7 @@ export class EquipamentoService {
     const grupoMap = new Map(grupos.map((g) => [g.codigo, g.id]));
 
     return equipamentos.map((equipamento) => {
-      const grupoId = grupoMap.get(equipamento.grupoDefeitoCodigo);
+      const grupoId = grupoMap.get(equipamento.grupoDefeitoCodigo ?? '');
 
       if (!grupoId) {
         console.error(

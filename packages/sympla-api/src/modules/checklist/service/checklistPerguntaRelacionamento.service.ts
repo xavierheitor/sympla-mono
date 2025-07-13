@@ -6,6 +6,6 @@ export class ChecklistPerguntaRelacionamentoService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    return await this.prisma.checklisrPerguntaRelation.findMany();
+    return await this.prisma.checklistPerguntaRelation.findMany();
   }
 }
