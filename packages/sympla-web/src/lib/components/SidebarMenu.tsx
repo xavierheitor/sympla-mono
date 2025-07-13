@@ -74,35 +74,46 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
                             label: <Link href="/dashboard/defeito">Defeito</Link>,
                         },
                     ],
+                }, {
+                    key: 'PMA',
+                    label: 'Plano de Manutenção',
+                    icon: <BugOutlined />,
+                    children: [
+                        {
+                            key: '/dashboard/tipoManutencao',
+                            label: <Link href="/dashboard/tipoManutencao">Tipo de Manutenção</Link>,
+                        },
+                        {
+                            key: '/dashboard/kpi',
+                            label: <Link href="/dashboard/kpi">KPI</Link>,
+                        },
+                        {
+                            key: '/dashboard/notasPMA',
+                            label: <Link href="/dashboard/notasPMA">Notas PMA</Link>,
+                        },
+                    ]
                 },
                 {
-                    key: '/dashboard/tipoManutencao',
-                    label: <Link href="/dashboard/tipoManutencao">Tipo de Manutenção</Link>,
+                    key: 'atividades',
+                    label: 'Atividades',
+                    icon: <BugOutlined />,
+                    children: [
+                        {
+                            key: '/dashboard/tipoAtividade',
+                            label: <Link href="/dashboard/tipoAtividade">Tipo de Atividade</Link>,
+                        },
+                        {
+                            key: '/dashboard/atividade',
+                            label: <Link href="/dashboard/atividade">Atividade</Link>,
+                        },
+                        {
+                            key: '/dashboard/atividadeAtribuicao',
+                            label: <Link href="/dashboard/atividadeAtribuicao">Atribuição de Atividade</Link>,
+                        },
+                    ]
                 },
-                {
-                    key: '/dashboard/kpi',
-                    label: <Link href="/dashboard/kpi">KPI</Link>,
-                },
-                {
-                    key: '/dashboard/notasSAP',
-                    label: <Link href="/dashboard/notasSAP">Notas SAP</Link>,
-                },
-                {
-                    key: '/dashboard/tipoAtividade',
-                    label: <Link href="/dashboard/tipoAtividade">Tipo de Atividade</Link>,
-                },
-                {
-                    key: '/dashboard/atividade',
-                    label: <Link href="/dashboard/atividade">Atividade</Link>,
-                },
-                {
-                    key: '/dashboard/atividadeAtribuicao',
-                    label: <Link href="/dashboard/atividadeAtribuicao">Atribuição de Atividade</Link>,
-                },
-                {
-                    key: '/dashboard/tecnico',
-                    label: <Link href="/dashboard/tecnico">Técnico</Link>,
-                },
+
+
                 {
                     key: 'apr',
                     icon: <FileProtectOutlined />,
@@ -132,6 +143,10 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapseChange }
                             label: <Link href="/dashboard/checklistPergunta">Perguntas</Link>,
                         },
                     ],
+                },
+                {
+                    key: '/dashboard/tecnico',
+                    label: <Link href="/dashboard/tecnico">Técnico</Link>,
                 },
                 {
                     key: '/dashboard/usuarioMobile',
