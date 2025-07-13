@@ -46,16 +46,7 @@ export default function AtividadeAtribuicaoPage() {
                 dataIndex: 'status',
                 key: 'status',
             },
-            {
-                title: 'Início',
-                dataIndex: 'dataInicio',
-                key: 'dataInicio',
-            },
-            {
-                title: 'Fim',
-                dataIndex: 'dataFim',
-                key: 'dataFim',
-            },
+
         ],
         {
             onEdit: controller.open,

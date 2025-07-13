@@ -63,10 +63,15 @@ export const atividadeAtribuicaoFormSchema = z.object({
   status: z.nativeEnum(StatusAtribuicao, {
     required_error: "Status é obrigatório",
   }),
-  dataInicio: z.date().nullable(),
-  dataFim: z.date().nullable(),
+  dataInicio: z.preprocess(
+    (val) => (val ? new Date(val as string) : null),
+    z.date().nullable()
+  ) as z.ZodType<Date | null>,
+  dataFim: z.preprocess(
+    (val) => (val ? new Date(val as string) : null),
+    z.date().nullable()
+  ) as z.ZodType<Date | null>,
 });
-
 export type AtividadeAtribuicaoFormData = z.infer<typeof atividadeAtribuicaoFormSchema>;
 
 // 📌 Tipo com includes (para useServerData, page.tsx, etc.)
