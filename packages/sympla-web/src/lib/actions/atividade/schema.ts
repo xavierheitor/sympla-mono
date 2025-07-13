@@ -1,4 +1,4 @@
-import { TipoAtividadeMobile, TipoAtividade, TipoAtividadeKpi, Kpi, StatusAtividade, Atividade, StatusAtribuicao, AtividadeAtribuicao, UsuarioMobile } from "@sympla/prisma";
+import { TipoAtividadeMobile, TipoAtividade, TipoAtividadeKpi, Kpi, StatusAtividade, Atividade, StatusAtribuicao, AtividadeAtribuicao, UsuarioMobile, NotaPMA } from "@sympla/prisma";
 import { z } from "zod";
 
 // SCHEMA FORM PRINCIPAL
@@ -33,27 +33,27 @@ export type TipoAtividadeKpiWithIncludes = TipoAtividadeKpi & {
 
 
 // SCHEMA PARA VINCULAR ATIVIDADE
-
 export const atividadeFormSchema = z.object({
   id: z.string().optional(),
-  descricao: z.string().nullable(),
-  notaId: z.string().min(1, 'Nota é obrigatória'),
+  descricao: z.string().optional().nullable(),
+  notaPmaId: z.string().optional().nullable(), // notaPmaId, conforme novo schema
   tipoAtividadeId: z.string().min(1, 'Tipo de Atividade é obrigatório'),
-  ordemServico: z.string().nullable(),
+  ordemServico: z.string().optional().nullable(),
   status: z.nativeEnum(StatusAtividade),
-  // ✅ Use esse padrão para todos os campos de data
-  prazoLimite: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
-  dataProgramacao: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
-  // dataInicioPlan: z.preprocess((val) => new Date(val as string), z.date()), // esse é obrigatório
-  dataExecucaoInicio: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
-  dataExecucaoFim: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()),
+  dataInicioPlan: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()) as z.ZodType<Date | null>,
+  dataFimPlan: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()) as z.ZodType<Date | null>,
+  dataExecucaoInicio: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()) as z.ZodType<Date | null>,
+  dataExecucaoFim: z.preprocess((val) => val ? new Date(val as string) : null, z.date().nullable()) as z.ZodType<Date | null>,
 });
-
 export type AtividadeFormData = z.infer<typeof atividadeFormSchema>;
 
 export type AtividadeWithIncludes = Atividade & {
-  tipoAtividade: TipoAtividade;
+  tipoAtividade: TipoAtividade | null;
+  notaPma: NotaPMA | null;
 };
+
+
+//* ATIVIDADE ATRIBUICAO
 
 // 📌 Schema para formulário
 export const atividadeAtribuicaoFormSchema = z.object({

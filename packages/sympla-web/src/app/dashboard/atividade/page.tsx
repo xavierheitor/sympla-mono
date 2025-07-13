@@ -22,7 +22,7 @@ import {
 } from '@/lib/actions/atividade/actionsAtividade';
 
 import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
-import { getAllNotasSapPMA } from '@/lib/actions/notasSap/actionsNotasSap';
+import { getAllNotasPMA } from '@/lib/actions/pma/pmaActions';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function AtividadePage() {
@@ -35,7 +35,7 @@ export default function AtividadePage() {
     });
 
     const { data: tipoAtividades } = useServerData('tipoAtividades', unwrapFetcher(getAllTipoAtividades));
-    const { data: notas } = useServerData('notasSAP', unwrapFetcher(getAllNotasSapPMA));
+    const { data: notas } = useServerData('notasSAP', unwrapFetcher(getAllNotasPMA));
 
     const columns = useTableColumnsWithActions<AtividadeWithIncludes>(
         [
@@ -43,7 +43,6 @@ export default function AtividadePage() {
             { title: 'Nota', dataIndex: ['nota', 'numeroNota'], key: 'nota.numeroNota' },
             { title: 'Tipo de Atividade', dataIndex: ['tipoAtividade', 'nome'], key: 'tipoAtividade.nome' },
             { title: 'Status', dataIndex: 'status', key: 'status' },
-            { title: 'Prazo Limite', dataIndex: 'prazoLimite', key: 'prazoLimite' },
         ],
         {
             onEdit: controller.open,
@@ -60,8 +59,8 @@ export default function AtividadePage() {
 
         const parsedValues = {
             ...values,
-            prazoLimite: normalizeDate(values.prazoLimite),
-            dataProgramacao: normalizeDate(values.dataProgramacao),
+            dataInicioPlan: normalizeDate(values.dataInicioPlan),
+            dataFimPlan: normalizeDate(values.dataFimPlan),
             dataExecucaoInicio: normalizeDate(values.dataExecucaoInicio),
             dataExecucaoFim: normalizeDate(values.dataExecucaoFim),
         };

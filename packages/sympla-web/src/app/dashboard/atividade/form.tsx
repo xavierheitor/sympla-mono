@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select, DatePicker } from 'antd';
-import { TipoAtividade, NotasSAP, StatusAtividade } from '@sympla/prisma';
+import { TipoAtividade, StatusAtividade, NotaPMA } from '@sympla/prisma';
 import dayjs from 'dayjs';
 import { AtividadeFormData } from '@/lib/actions/atividade/schema';
 
@@ -11,7 +11,7 @@ interface AtividadeFormProps {
     initialValues?: Partial<AtividadeFormData>;
     loading?: boolean;
     tipoAtividadeOptions: TipoAtividade[];
-    notaOptions: NotasSAP[];
+    notaOptions: NotaPMA[];
 }
 
 export default function AtividadeForm({
@@ -27,8 +27,8 @@ export default function AtividadeForm({
         if (initialValues) {
             form.setFieldsValue({
                 ...initialValues,
-                prazoLimite: initialValues.prazoLimite ? dayjs(initialValues.prazoLimite) : null,
-                dataProgramacao: initialValues.dataProgramacao ? dayjs(initialValues.dataProgramacao) : null,
+                dataInicioPlan: initialValues.dataInicioPlan ? dayjs(initialValues.dataInicioPlan) : null,
+                dataFimPlan: initialValues.dataFimPlan ? dayjs(initialValues.dataFimPlan) : null,
                 dataExecucaoInicio: initialValues.dataExecucaoInicio ? dayjs(initialValues.dataExecucaoInicio) : null,
                 dataExecucaoFim: initialValues.dataExecucaoFim ? dayjs(initialValues.dataExecucaoFim) : null,
             });
@@ -45,7 +45,7 @@ export default function AtividadeForm({
 
             <Form.Item name="notaId" label="Nota SAP" rules={[{ required: true }]}>
                 <Select
-                    options={notaOptions.map((n) => ({ label: n.numeroNota + ' - ' + n.descricao || n.id, value: n.id }))}
+                    options={notaOptions.map((n) => ({ label: n.numeroNota + ' - ' + n.kpiId || n.id, value: n.id }))}
                     placeholder="Selecione uma nota"
                 />
             </Form.Item>
@@ -71,11 +71,11 @@ export default function AtividadeForm({
                 />
             </Form.Item>
 
-            <Form.Item name="prazoLimite" label="Prazo Limite">
+            <Form.Item name="dataInicioPlan" label="Data Início Planejado">
                 <DatePicker style={{ width: '100%' }} />
             </Form.Item>
 
-            <Form.Item name="dataProgramacao" label="Data Programação">
+            <Form.Item name="dataFimPlan" label="Data Fim Planejado">
                 <DatePicker style={{ width: '100%' }} />
             </Form.Item>
 

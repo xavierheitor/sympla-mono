@@ -62,7 +62,7 @@ export const getAllAtividadesWithIncludes = createPrismaGetAllWithIncludesAction
         skip,
         take,
         include: {
-          nota: true,
+          notaPma: true,
           tipoAtividade: {
             include: {
               tipoAtividadeKpi: {
