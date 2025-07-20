@@ -47,6 +47,7 @@ export default function EquipamentoForm({
                 <Select
                     options={subestacaoOptions.map((s) => ({ label: s.nome, value: s.id }))}
                     placeholder="Selecione a subestação"
+                    showSearch
                 />
             </Form.Item>
 

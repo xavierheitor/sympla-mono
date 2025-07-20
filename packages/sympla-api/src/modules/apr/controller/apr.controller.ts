@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { AprService } from '../service/apr.service';
 import { AprPerguntasService } from '../service/aprPerguntas.service';
 import { AprPerguntasRelacionamentoService } from '../service/aprPerguntasRelacionamento.service';
+import { AprModeloTipoAtividadeService } from '../service/aprModeloTipoAtividade.service';
 
 @Controller('apr')
 export class AprController {
@@ -9,6 +10,7 @@ export class AprController {
     private readonly aprService: AprService,
     private readonly aprPerguntasService: AprPerguntasService,
     private readonly aprPerguntasRelacionamentoService: AprPerguntasRelacionamentoService,
+    private readonly aprModeloTipoAtividadeService: AprModeloTipoAtividadeService,
   ) {}
 
   @Get('modelos')
@@ -24,5 +26,10 @@ export class AprController {
   @Get('perguntas-relacionamento')
   async findAllAprPerguntasRelacionamento() {
     return await this.aprPerguntasRelacionamentoService.findAll();
+  }
+
+  @Get('modelo-tipo-atividade')
+  async findAllAprModeloTipoAtividade() {
+    return await this.aprModeloTipoAtividadeService.findAll();
   }
 }

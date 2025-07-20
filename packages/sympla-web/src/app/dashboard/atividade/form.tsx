@@ -43,7 +43,7 @@ export default function AtividadeForm({
                 <Input />
             </Form.Item>
 
-            <Form.Item name="notaId" label="Nota SAP" rules={[{ required: true }]}>
+            <Form.Item name="notaPmaId" label="Nota SAP" rules={[{ required: true }]}>
                 <Select
                     options={notaOptions.map((n) => ({ label: n.numeroNota + ' - ' + n.kpiId || n.id, value: n.id }))}
                     placeholder="Selecione uma nota"

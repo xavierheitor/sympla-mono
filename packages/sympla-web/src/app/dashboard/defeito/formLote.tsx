@@ -193,7 +193,7 @@ export default function DefeitoLoteForm({ grupoOptions, subgrupoOptions, onSucce
                         rules={[{ required: true, message: 'Selecione um grupo' }]}
                     >
                         <Select
-                            autoFocus={true}
+                            autoFocus
                             showSearch
                             allowClear
                             optionFilterProp="label"

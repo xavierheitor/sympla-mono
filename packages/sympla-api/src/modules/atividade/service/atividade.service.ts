@@ -14,6 +14,12 @@ export class AtividadeService {
       where: {
         usuarioMobileId: usuarioId,
         deletedAt: null,
+        // ✅ Opcional: ativar esse filtro para trazer só atividades com equipamento vinculado
+        // atividade: {
+        //   notaPma: {
+        //     equipamentoId: { not: null },
+        //   },
+        // },
       },
       include: {
         atividade: {
@@ -23,7 +29,7 @@ export class AtividadeService {
               include: {
                 equipamento: {
                   include: {
-                    subestacao: true, // para buscar nome da subestação
+                    subestacao: true,
                   },
                 },
               },
@@ -38,6 +44,10 @@ export class AtividadeService {
       const { notaPma, tipoAtividade } = atividade;
       const equipamento = notaPma?.equipamento;
 
+      console.log(
+        `[AtividadeService] Atividade ${atividade.id} → Equipamento: ${equipamento?.id ?? 'null'}, Subestação: ${equipamento?.subestacao?.sigla ?? 'null'}`,
+      );
+
       return {
         id: atividade.id,
         titulo: `${tipoAtividade?.nome ?? 'Atividade'} - ${equipamento?.nome ?? ''}`,
@@ -50,7 +60,7 @@ export class AtividadeService {
         dataFim: atividade.dataExecucaoFim,
         equipamentoId: equipamento?.id ?? '',
         tipoAtividadeId: tipoAtividade?.id ?? '',
-        equipamento: equipamento
+        equipamento: equipamento?.id
           ? {
               id: equipamento.id,
               nome: equipamento.nome,
@@ -60,7 +70,6 @@ export class AtividadeService {
               grupoDefeitoCodigo: equipamento.grupoDefeitoCodigo,
             }
           : null,
-        // 🔴 tipoAtividade removido daqui, conforme solicitado
       };
     });
   }

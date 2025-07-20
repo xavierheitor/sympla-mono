@@ -40,7 +40,7 @@ export default function AtividadePage() {
     const columns = useTableColumnsWithActions<AtividadeWithIncludes>(
         [
             { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
-            { title: 'Nota', dataIndex: ['nota', 'numeroNota'], key: 'nota.numeroNota' },
+            { title: 'Nota', dataIndex: ['notaPma', 'numeroNota'], key: 'notaPma.numeroNota' },
             { title: 'Tipo de Atividade', dataIndex: ['tipoAtividade', 'nome'], key: 'tipoAtividade.nome' },
             { title: 'Status', dataIndex: 'status', key: 'status' },
         ],

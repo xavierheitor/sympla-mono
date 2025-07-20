@@ -30,7 +30,7 @@ export default function ChecklistPerguntaForm({
     return (
         <Form form={form} layout="vertical" onFinish={onSubmit}>
             <Form.Item name="pergunta" label="Pergunta" rules={[{ required: true }]}>
-                <Input />
+                <Input autoFocus />
             </Form.Item>
 
             <Form.Item>

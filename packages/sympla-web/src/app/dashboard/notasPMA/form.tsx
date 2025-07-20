@@ -74,7 +74,8 @@ export default function NotaPMAForm({
             </Form.Item>
 
             <Form.Item name="equipamentoId" label="Equipamento">
-                <Select options={equipamentoOptions.map(e => ({ label: e.nome, value: e.id }))} />
+                <Select options={equipamentoOptions.map(e => ({ label: e.nome, value: e.id }))}
+                    showSearch />
             </Form.Item>
 
             <Form.Item name="kpiId" label="KPI">

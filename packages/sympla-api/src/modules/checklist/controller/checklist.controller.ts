@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ChecklistService } from '../service/checklist.service';
 import { ChecklistPerguntaService } from '../service/checklistPergunta.service';
 import { ChecklistPerguntaRelacionamentoService } from '../service/checklistPerguntaRelacionamento.service';
+import { ChecklistModeloTipoAtividadeService } from '../service/checklistModeloTipoAtividade.service';
 
 @Controller('checklist')
 export class ChecklistController {
@@ -9,6 +10,7 @@ export class ChecklistController {
     private readonly checklistService: ChecklistService,
     private readonly checklistPerguntaService: ChecklistPerguntaService,
     private readonly checklistPerguntaRelacionamentoService: ChecklistPerguntaRelacionamentoService,
+    private readonly checklistModeloTipoAtividadeService: ChecklistModeloTipoAtividadeService,
   ) {}
 
   @Get('modelos')
@@ -24,5 +26,10 @@ export class ChecklistController {
   @Get('perguntas-relacionamento')
   async findAllChecklistPerguntasRelacionamento() {
     return await this.checklistPerguntaRelacionamentoService.findAll();
+  }
+
+  @Get('modelo-tipo-atividade')
+  async findAllChecklistModeloTipoAtividade() {
+    return await this.checklistModeloTipoAtividadeService.findAll();
   }
 }
