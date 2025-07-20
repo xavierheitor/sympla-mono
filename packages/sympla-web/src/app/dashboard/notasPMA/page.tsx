@@ -43,32 +43,50 @@ export default function NotasPMAPage() {
     const { data: centroTrabalhoOptions } = useServerData('centroTrabalhoOptions', unwrapFetcher(getAllCentroTrabalhos));
     const { data: equipamentoOptions } = useServerData('equipamentoOptions', unwrapFetcher(getAllEquipamentos));
     const { data: kpiOptions } = useServerData('kpiOptions', unwrapFetcher(getAllKpis));
-
     const columns = useTableColumnsWithActions<NotaPMAWithRelations>(
         [
             { title: 'Número da Nota', dataIndex: 'numeroNota', key: 'numeroNota' },
-            { title: 'Centro de Trabalho', dataIndex: ["centroTrabalho", "nome"], key: 'centroTrabalho.nome' },
-            { title: 'Equipamento', dataIndex: ["equipamento", "nome"], key: 'equipamento.nome' },
-            { title: 'KPI', dataIndex: ["kpi", "nome"], key: 'kpi.nome' },
-            { title: 'Status', dataIndex: 'status', key: 'status' },
-            // {
-            //     title: 'Data Início Planejado',
-            //     dataIndex: 'dataInicioPlan',
-            //     key: 'dataInicioPlan',
-            //     render: (value) =>
-            //         value ? dayjs.utc(value).format('DD/MM/YYYY') : '-',
-            // },
-            // {
-            //     title: 'Data Fim Planejado',
-            //     dataIndex: 'dataFiPlan',
-            //     key: 'dataFiPlan',
-            //     render: (value) =>
-            //         value ? dayjs.utc(value).format('DD/MM/YYYY') : '-',
-            // },
+
             {
-                title: "Mes planejado",
-                dataIndex: "dataInicioPlan",
-                key: "dataInicioPlan",
+                title: 'Centro de Trabalho',
+                dataIndex: ['centroTrabalho', 'nome'],
+                key: 'centroTrabalho.nome',
+                filters: centroTrabalhoOptions?.map((ct) => ({ text: ct.nome, value: ct.id })) ?? [],
+                onFilter: (value, record) => record.centroTrabalho?.id === value,
+            },
+            {
+                title: 'Equipamento',
+                dataIndex: ['equipamento', 'nome'],
+                key: 'equipamento.nome',
+                filters: equipamentoOptions?.map((eq) => ({ text: eq.nome, value: eq.id })) ?? [],
+                onFilter: (value, record) => record.equipamento?.id === value,
+            },
+            {
+                title: 'KPI',
+                dataIndex: ['kpi', 'nome'],
+                key: 'kpi.nome',
+                filters: kpiOptions?.map((kpi) => ({ text: kpi.nome, value: kpi.id })) ?? [],
+                onFilter: (value, record) => record.kpi?.id === value,
+            },
+            {
+                title: 'Status',
+                dataIndex: 'status',
+                key: 'status',
+                onFilter: (value, record) => record.status === value,
+            },
+            {
+                title: 'Mês planejado',
+                dataIndex: 'dataInicioPlan',
+                key: 'mesPlanejado',
+                filters: Array.from({ length: 12 }, (_, i) => {
+                    const month = dayjs().month(i).format('MMMM').toUpperCase();
+                    return { text: month, value: month };
+                }),
+                onFilter: (value, record) => {
+                    if (!record.dataInicioPlan) return false;
+                    const mes = dayjs.utc(record.dataInicioPlan).format('MMMM').toUpperCase();
+                    return mes === value;
+                },
                 render: (value) => {
                     if (!value) return '-';
                     const date = dayjs.utc(value);
@@ -83,7 +101,6 @@ export default function NotasPMAPage() {
                     .finally(() => notasPMA.mutate()),
         }
     );
-
     const handleSubmit = (values: NotaPMAFormData) => {
         const action = controller.editingItem?.id
             ? () => updateNotaPMA({ ...values, id: controller.editingItem!.id })
@@ -111,7 +128,26 @@ export default function NotasPMAPage() {
                     loading={notasPMA.isLoading}
                     rowKey="id"
                     pagination={notasPMA.pagination}
-                    onChange={notasPMA.handleTableChange}
+                    onChange={(pagination, filters, sorter) => {
+                        const sort = Array.isArray(sorter) ? sorter[0] : sorter;
+
+                        const normalizedFilters = {
+                            centroTrabalhoId: filters['centroTrabalho.nome'] as string[] | undefined,
+                            equipamentoId: filters['equipamento.nome'] as string[] | undefined,
+                            kpiId: filters['kpi.nome'] as string[] | undefined,
+                            status: filters['status'] as string[] | undefined,
+                            mesPlanejado: filters['mesPlanejado'] as string[] | undefined,
+                        };
+
+                        notasPMA.setParams((prev) => ({
+                            ...prev,
+                            page: pagination.current ?? 1,
+                            pageSize: pagination.pageSize ?? prev.pageSize,
+                            orderBy: typeof sort?.field === 'string' ? sort.field : prev.orderBy,
+                            orderDir: sort?.order === 'ascend' ? 'asc' : sort?.order === 'descend' ? 'desc' : prev.orderDir,
+                            filters: normalizedFilters,
+                        }));
+                    }}
                 />
             </Card>
 

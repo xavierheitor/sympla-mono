@@ -2,16 +2,17 @@
 
 import { useEffect } from 'react';
 import { Form, Input, Button, Select, DatePicker } from 'antd';
-import { TipoAtividade, StatusAtividade, NotaPMA } from '@sympla/prisma';
+import { TipoAtividade, StatusAtividade } from '@sympla/prisma';
 import dayjs from 'dayjs';
 import { AtividadeFormData } from '@/lib/actions/atividade/schema';
+import { NotaPMAWithRelations } from '@/lib/actions/pma/schema';
 
 interface AtividadeFormProps {
     onSubmit: (values: AtividadeFormData) => void;
     initialValues?: Partial<AtividadeFormData>;
     loading?: boolean;
     tipoAtividadeOptions: TipoAtividade[];
-    notaOptions: NotaPMA[];
+    notaOptions: NotaPMAWithRelations[];
 }
 
 export default function AtividadeForm({
@@ -45,7 +46,7 @@ export default function AtividadeForm({
 
             <Form.Item name="notaPmaId" label="Nota SAP" rules={[{ required: true }]}>
                 <Select
-                    options={notaOptions.map((n) => ({ label: n.numeroNota + ' - ' + n.kpiId || n.id, value: n.id }))}
+                    options={notaOptions.map((n) => ({ label: n.numeroNota + ' - ' + n.kpi?.nome + ' - ' + n.equipamento?.nome, value: n.id }))}
                     placeholder="Selecione uma nota"
                 />
             </Form.Item>

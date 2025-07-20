@@ -22,7 +22,7 @@ import {
 } from '@/lib/actions/atividade/actionsAtividade';
 
 import { getAllTipoAtividades } from '@/lib/actions/atividade/actionsTipoAtividade';
-import { getAllNotasPMA } from '@/lib/actions/pma/pmaActions';
+import { getAllNotasPMAWithIncludes } from '@/lib/actions/pma/pmaActions';
 import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 
 export default function AtividadePage() {
@@ -35,13 +35,14 @@ export default function AtividadePage() {
     });
 
     const { data: tipoAtividades } = useServerData('tipoAtividades', unwrapFetcher(getAllTipoAtividades));
-    const { data: notas } = useServerData('notasSAP', unwrapFetcher(getAllNotasPMA));
+    const { data: notas } = useServerData('notasSAP', unwrapFetcher(getAllNotasPMAWithIncludes));
 
     const columns = useTableColumnsWithActions<AtividadeWithIncludes>(
         [
             { title: 'Descrição', dataIndex: 'descricao', key: 'descricao' },
             { title: 'Nota', dataIndex: ['notaPma', 'numeroNota'], key: 'notaPma.numeroNota' },
             { title: 'Tipo de Atividade', dataIndex: ['tipoAtividade', 'nome'], key: 'tipoAtividade.nome' },
+            { title: 'Ordem de Serviço', dataIndex: 'ordemServico', key: 'ordemServico' },
             { title: 'Status', dataIndex: 'status', key: 'status' },
         ],
         {
