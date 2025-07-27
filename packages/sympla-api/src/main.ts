@@ -1,9 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './utils/all-exceptions.filter';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Configurar limites do body parser
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+  app.use((req, res, next) => {
+    req.setTimeout(300000); // 5 minutos
+    res.setTimeout(300000); // 5 minutos
+    next();
+  });
 
   app.useGlobalFilters(new AllExceptionsFilter());
 

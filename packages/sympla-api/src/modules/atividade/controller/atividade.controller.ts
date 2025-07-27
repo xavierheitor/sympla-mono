@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { TipoAtividadeService } from '../service/tipoAtividade.service';
 import { GetUsuarioMobileId } from '../../auth/decorator/get-user-id-decorator';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
@@ -21,5 +21,15 @@ export class AtividadeController {
   findAllAtividades(@GetUsuarioMobileId() usuarioId: string) {
     console.log('[ATIVIDADE] Usuario ID:', usuarioId);
     return this.atividadeService.findAllByUsuarioId(usuarioId);
+  }
+
+  @Post('upload/:id')
+  uploadAtividade(@Param('id') id: string, @Body() data: any) {
+    console.log('[ATIVIDADE UPLOAD] ID:', id);
+    console.log(
+      '[ATIVIDADE UPLOAD] JSON recebido:',
+      JSON.stringify(data, null, 2),
+    );
+    return { message: 'ok' };
   }
 }
