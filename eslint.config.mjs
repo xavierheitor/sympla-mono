@@ -81,6 +81,9 @@ const typescriptConfig = tseslint.config(
       'no-mixed-spaces-and-tabs': 'off',
       'no-trailing-spaces': 'off',
       'eol-last': 'off',
+
+      // Regras específicas do Prettier - desabilita para evitar conflitos
+      'prettier/prettier': 'off', // Desabilita regras do Prettier no ESLint
     },
   },
 );

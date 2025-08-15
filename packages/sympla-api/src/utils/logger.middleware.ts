@@ -32,7 +32,6 @@ export class LoggerMiddleware implements NestMiddleware {
 
   private tryParseJson(data: any): any {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return JSON.parse(data);
     } catch {
       return data;

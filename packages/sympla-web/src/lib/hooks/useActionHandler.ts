@@ -35,7 +35,7 @@ export function useActionHandler() {
         if (mutateKey) mutate(mutateKey);
         if (onSuccess) onSuccess();
       } else {
-        message.error(result.error || onErrorMessage);
+        message.error(result.error ?? onErrorMessage);
       }
     } catch (error) {
       console.error(error);

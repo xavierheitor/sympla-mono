@@ -11,6 +11,8 @@
   "prettier.configPath": ".prettierrc",
   "eslint.format.enable": false,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.run": "onType",
+  "eslint.autoFixOnSave": false,
   "eslint.workingDirectories": ["packages/sympla-api", "packages/sympla-web"],
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,

@@ -149,7 +149,7 @@ export async function createManyEquipamentosFromExcel(rawData: unknown) {
 
       const nome = linha.EQUIPAMENTOS.trim();
       const descricao = nome;
-      const grupoDefeitoCodigo = linha['GRUPO DEFEITO CODE']?.trim() || null;
+      const grupoDefeitoCodigo = linha['GRUPO DEFEITO CODE']?.trim() ?? null;
 
       return {
         nome,

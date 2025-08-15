@@ -14,4 +14,10 @@ export default [
       },
     },
   },
+  {
+    rules: {
+      // Desabilita explicitamente regras do Prettier
+      'prettier/prettier': 'off',
+    },
+  },
 ];
