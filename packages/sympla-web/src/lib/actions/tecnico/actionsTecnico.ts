@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { tecnicoFormSchema } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { tecnicoFormSchema } from './schema';
 
 // ========== CREATE ==========
 export const createTecnico = createPrismaCreateAction(
@@ -16,11 +16,11 @@ export const createTecnico = createPrismaCreateAction(
     return prisma.tecnico.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     });
   },
-  "TECNICO"
+  'TECNICO',
 );
 
 // ========== UPDATE ==========
@@ -31,11 +31,11 @@ export const updateTecnico = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString?.() || '',
       },
     });
   },
-  "TECNICO"
+  'TECNICO',
 );
 
 // ========== DELETE (soft delete) ==========
@@ -52,22 +52,20 @@ export const deleteTecnico = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.tecnico,
-      modelName: "Tecnico",
+      modelName: 'Tecnico',
     },
-    entityName: "TECNICO",
-  }
+    entityName: 'TECNICO',
+  },
 );
 
 // ========== GET ALL ==========
 export const getAllTecnicos = createPrismaGetAllAction(
   prisma.tecnico,
-  "TECNICO",
-  ["nome"] // campos pesquisáveis no search
+  'TECNICO',
+  ['nome'], // campos pesquisáveis no search
 );
 
 // ========== GET ALL WITH INCLUDES ==========
-export const getAllTecnicosWithIncludes = createPrismaGetAllAction(
-  prisma.tecnico,
-  "TECNICO",
-  ["nome"]
-);
+export const getAllTecnicosWithIncludes = createPrismaGetAllAction(prisma.tecnico, 'TECNICO', [
+  'nome',
+]);

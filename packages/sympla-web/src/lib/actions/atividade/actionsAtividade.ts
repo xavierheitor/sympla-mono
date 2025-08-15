@@ -16,7 +16,7 @@ export const createAtividade = createPrismaCreateAction(
     prisma.atividade.create({
       data: { ...data, createdBy: data.createdBy?.toString?.() ?? '' },
     }),
-  'ATIVIDADE'
+  'ATIVIDADE',
 );
 
 export const updateAtividade = createPrismaUpdateAction(
@@ -26,7 +26,7 @@ export const updateAtividade = createPrismaUpdateAction(
       where: { id: data.id },
       data: { ...data, updatedBy: data.updatedBy?.toString?.() ?? '' },
     }),
-  'ATIVIDADE'
+  'ATIVIDADE',
 );
 
 export const deleteAtividade = createPrismaDeleteAction(
@@ -38,53 +38,41 @@ export const deleteAtividade = createPrismaDeleteAction(
   {
     defaultCheck: { prismaModel: prisma.atividade, modelName: 'Atividade' },
     entityName: 'ATIVIDADE',
-  }
+  },
 );
 
-export const getAllAtividades = createPrismaGetAllAction(
-  prisma.atividade,
-  'ATIVIDADE'
-);
-export const getAllAtividadesWithIncludes = createPrismaGetAllWithIncludesAction(
-  async (params) => {
-    const {
-      where = {},
-      orderBy = 'nome',
-      orderDir = 'asc',
-      skip = 0,
-      take = 10,
-    } = params;
+export const getAllAtividades = createPrismaGetAllAction(prisma.atividade, 'ATIVIDADE');
+export const getAllAtividadesWithIncludes = createPrismaGetAllWithIncludesAction(async (params) => {
+  const { where = {}, orderBy = 'nome', orderDir = 'asc', skip = 0, take = 10 } = params;
 
-    const [data, total] = await Promise.all([
-      prisma.atividade.findMany({
-        where: { ...where, deletedAt: null },
-        orderBy: { [orderBy]: orderDir },
-        skip,
-        take,
-        include: {
-          notaPma: true,
-          tipoAtividade: {
-            include: {
-              tipoAtividadeKpi: {
-                where: { deletedAt: null },
-                include: { kpi: true },
-              },
+  const [data, total] = await Promise.all([
+    prisma.atividade.findMany({
+      where: { ...where, deletedAt: null },
+      orderBy: { [orderBy]: orderDir },
+      skip,
+      take,
+      include: {
+        notaPma: true,
+        tipoAtividade: {
+          include: {
+            tipoAtividadeKpi: {
+              where: { deletedAt: null },
+              include: { kpi: true },
             },
           },
         },
-      }),
-      prisma.atividade.count({
-        where: { ...where, deletedAt: null },
-      }),
-    ]);
+      },
+    }),
+    prisma.atividade.count({
+      where: { ...where, deletedAt: null },
+    }),
+  ]);
 
-    const totalPages = Math.ceil(total / take);
+  const totalPages = Math.ceil(total / take);
 
-    return {
-      data,
-      total,
-      totalPages, // ✅ Adicionado aqui
-    };
-  },
-  'ATIVIDADE'
-);
+  return {
+    data,
+    total,
+    totalPages, // ✅ Adicionado aqui
+  };
+}, 'ATIVIDADE');

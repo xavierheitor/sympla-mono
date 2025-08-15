@@ -16,12 +16,7 @@ export default function SubgrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () 
   const [isFocused, setIsFocused] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
-  const handleInputChange = (
-    value: string,
-    index: number,
-    field: keyof LinhaSubgrupo
-  ) => {
+  const handleInputChange = (value: string, index: number, field: keyof LinhaSubgrupo) => {
     const newData = [...dataSource];
     newData[index][field] = value;
     setDataSource(newData);
@@ -41,10 +36,7 @@ export default function SubgrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () 
       title: 'Nome do Subgrupo',
       dataIndex: 'nome',
       render: (text: string, record: LinhaSubgrupo, index: number) => (
-        <Input
-          value={text}
-          onChange={(e) => handleInputChange(e.target.value, index, 'nome')}
-        />
+        <Input value={text} onChange={(e) => handleInputChange(e.target.value, index, 'nome')} />
       ),
     },
   ];
@@ -65,11 +57,11 @@ export default function SubgrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () 
 
   const handleSubmit = async () => {
     const preenchidos = dataSource.filter((d) => d.grupoCodigo && d.nome);
-    if (!preenchidos.length) return message.error('Preencha ao menos um subgrupo com grupo, código e nome');
+    if (!preenchidos.length)
+      return message.error('Preencha ao menos um subgrupo com grupo, código e nome');
 
     try {
       setLoading(true);
-
 
       const finalData = preenchidos.map((item) => ({
         nome: item.nome,
@@ -94,14 +86,16 @@ export default function SubgrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () 
 
   return (
     <Card
-      title="Cadastro de Subgrupos em Lote"
+      title='Cadastro de Subgrupos em Lote'
       extra={
-        <Button onClick={() =>
-          setDataSource((prev) => [
-            ...prev,
-            { key: Date.now().toString(), grupoCodigo: '', nome: '' }
-          ])
-        }>
+        <Button
+          onClick={() =>
+            setDataSource((prev) => [
+              ...prev,
+              { key: Date.now().toString(), grupoCodigo: '', nome: '' },
+            ])
+          }
+        >
           Adicionar Linha
         </Button>
       }
@@ -125,10 +119,10 @@ export default function SubgrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () 
           </span>
         </div>
 
-        <Table dataSource={dataSource} columns={columns} pagination={false} rowKey="key" />
+        <Table dataSource={dataSource} columns={columns} pagination={false} rowKey='key' />
 
         <Form.Item style={{ marginTop: 20 }}>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button type='primary' htmlType='submit' loading={loading}>
             Salvar Tudo
           </Button>
         </Form.Item>

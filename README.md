@@ -14,12 +14,13 @@ Este é o monorepo oficial do projeto **Sympla**, estruturado com três workspac
 
 sympla-mono/
 ├── packages/
-│   ├── sympla-api/       → Backend NestJS
-│   ├── sympla-web/       → Frontend Next.js (em breve)
-│   └── sympla-prisma/    → Prisma schema + client
-├── package.json          → Scripts centralizados
+│ ├── sympla-api/ → Backend NestJS
+│ ├── sympla-web/ → Frontend Next.js (em breve)
+│ └── sympla-prisma/ → Prisma schema + client
+├── package.json → Scripts centralizados
 ├── .gitignore
-└── README.md             → Este arquivo
+└── README.md → Este arquivo
+
 ---
 
 ---
@@ -44,26 +45,26 @@ DATABASE_URL="mysql://usuario:senha@host:porta/banco"
 
 ### 🔁 Prisma
 
-| Comando                    | Descrição                                 |
-|---------------------------|-------------------------------------------|
-| `npm run prisma:generate` | Gera o client Prisma                      |
-| `npm run prisma:migrate`  | Executa `migrate dev` no banco local      |
-| `npm run prisma:deploy`   | Aplica as migrations em produção          |
-| `npm run prisma:studio`   | Abre o Prisma Studio                      |
+| Comando                   | Descrição                            |
+| ------------------------- | ------------------------------------ |
+| `npm run prisma:generate` | Gera o client Prisma                 |
+| `npm run prisma:migrate`  | Executa `migrate dev` no banco local |
+| `npm run prisma:deploy`   | Aplica as migrations em produção     |
+| `npm run prisma:studio`   | Abre o Prisma Studio                 |
 
 ### 🚧 API
 
-| Comando                | Descrição                          |
-|------------------------|------------------------------------|
-| `npm run start:api`    | Inicia a API em modo dev (NestJS)  |
-| `npm run build:api`    | (opcional) Compila a API           |
+| Comando             | Descrição                         |
+| ------------------- | --------------------------------- |
+| `npm run start:api` | Inicia a API em modo dev (NestJS) |
+| `npm run build:api` | (opcional) Compila a API          |
 
 ### 🧪 Web (em breve)
 
-| Comando               | Descrição                          |
-|-----------------------|------------------------------------|
-| `npm run start:web`   | Inicia o frontend em modo dev      |
-| `npm run build:web`   | Compila o frontend para produção   |
+| Comando             | Descrição                        |
+| ------------------- | -------------------------------- |
+| `npm run start:web` | Inicia o frontend em modo dev    |
+| `npm run build:web` | Compila o frontend para produção |
 
 ---
 

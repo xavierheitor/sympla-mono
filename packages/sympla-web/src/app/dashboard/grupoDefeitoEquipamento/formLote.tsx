@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, Form, Input, Table, message, } from 'antd';
+import { Button, Card, Form, Input, Table, message } from 'antd';
 import { useState } from 'react';
 import { createManyGrupoDefeitos } from '@/lib/actions/defeito/actionsGrupoDefeito';
 
@@ -27,20 +27,14 @@ export default function GrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () => 
       title: 'Código',
       dataIndex: 'codigo',
       render: (text: string, record: LinhaGrupo, index: number) => (
-        <Input
-          value={text}
-          onChange={(e) => handleInputChange(e.target.value, index, 'codigo')}
-        />
+        <Input value={text} onChange={(e) => handleInputChange(e.target.value, index, 'codigo')} />
       ),
     },
     {
       title: 'Nome',
       dataIndex: 'nome',
       render: (text: string, record: LinhaGrupo, index: number) => (
-        <Input
-          value={text}
-          onChange={(e) => handleInputChange(e.target.value, index, 'nome')}
-        />
+        <Input value={text} onChange={(e) => handleInputChange(e.target.value, index, 'nome')} />
       ),
     },
   ];
@@ -50,7 +44,11 @@ export default function GrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () => 
     const linhas = pastedData.trim().split(/\r?\n/);
     const novas = linhas.map((linha, i) => {
       const [codigo = '', nome = ''] = linha.split('\t');
-      return { key: Date.now().toString() + i, codigo: codigo.trim(), nome: nome.trim() };
+      return {
+        key: Date.now().toString() + i,
+        codigo: codigo.trim(),
+        nome: nome.trim(),
+      };
     });
     setDataSource((prev) => [...prev, ...novas]);
     message.success(`${novas.length} grupos adicionados via colagem`);
@@ -74,8 +72,16 @@ export default function GrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () => 
 
   return (
     <Card
-      title="Cadastro de Grupos em Lote"
-      extra={<Button onClick={() => setDataSource([...dataSource, { key: Date.now().toString(), nome: '', codigo: '' }])}>Adicionar Linha</Button>}
+      title='Cadastro de Grupos em Lote'
+      extra={
+        <Button
+          onClick={() =>
+            setDataSource([...dataSource, { key: Date.now().toString(), nome: '', codigo: '' }])
+          }
+        >
+          Adicionar Linha
+        </Button>
+      }
     >
       <Form form={form} onFinish={handleSubmit}>
         <div
@@ -95,9 +101,11 @@ export default function GrupoDefeitoLoteForm({ onSuccess }: { onSuccess?: () => 
             {isFocused ? 'Cole agora seus dados (CTRL+V)' : 'Clique aqui e cole dados do Excel'}
           </span>
         </div>
-        <Table dataSource={dataSource} columns={columns} pagination={false} rowKey="key" />
+        <Table dataSource={dataSource} columns={columns} pagination={false} rowKey='key' />
         <Form.Item style={{ marginTop: 20 }}>
-          <Button type="primary" htmlType="submit" loading={loading}>Salvar Tudo</Button>
+          <Button type='primary' htmlType='submit' loading={loading}>
+            Salvar Tudo
+          </Button>
         </Form.Item>
       </Form>
     </Card>

@@ -22,23 +22,19 @@ function TableActionButtons<T>({
   return (
     <Space>
       {onEdit && (
-        <Tooltip title="Editar">
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => onEdit(record)}
-          />
+        <Tooltip title='Editar'>
+          <Button icon={<EditOutlined />} size='small' onClick={() => onEdit(record)} />
         </Tooltip>
       )}
       {onDelete && (
         <Popconfirm
-          title="Tem certeza que deseja excluir este item?"
+          title='Tem certeza que deseja excluir este item?'
           onConfirm={() => onDelete(record)}
-          okText="Sim"
-          cancelText="Cancelar"
+          okText='Sim'
+          cancelText='Cancelar'
         >
-          <Tooltip title="Excluir">
-            <Button icon={<DeleteOutlined />} size="small" danger />
+          <Tooltip title='Excluir'>
+            <Button icon={<DeleteOutlined />} size='small' danger />
           </Tooltip>
         </Popconfirm>
       )}
@@ -53,7 +49,7 @@ export function useTableColumnsWithActions<T>(
     onEdit?: (record: T) => void;
     onDelete?: (record: T) => Promise<void> | void;
     customActions?: (record: T) => React.ReactNode;
-  }
+  },
 ): TableColumnsType<T> {
   return [
     ...baseColumns,

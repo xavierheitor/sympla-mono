@@ -1,11 +1,11 @@
 {
-    "compilerOptions": {
-      "module": "commonjs",
-      "declaration": true,
-      "esModuleInterop": true,
-      "outDir": "./generated/client",
-      "rootDir": "./prisma",
-      "strict": true
-    },
-    "exclude": ["node_modules"]
-  }
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "esModuleInterop": true,
+    "outDir": "./generated/prisma",
+    "rootDir": "./prisma",
+    "strict": true
+  },
+  "exclude": ["node_modules"]
+}

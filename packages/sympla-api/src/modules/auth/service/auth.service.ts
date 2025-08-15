@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { MobileUsersService } from 'src/modules/mobile-users/mobile-users.service';
@@ -32,9 +28,7 @@ export class AuthService {
     });
 
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
-    const refreshTokenExpiresAt = new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000,
-    ); // 7 dias
+    const refreshTokenExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 dias
 
     return {
       token: accessToken,
@@ -53,9 +47,7 @@ export class AuthService {
     try {
       const payload = this.jwtService.verify(refreshToken);
 
-      const user = await this.mobileUsersService.findById(
-        payload.sub as string,
-      );
+      const user = await this.mobileUsersService.findById(payload.sub as string);
       if (!user) throw new ForbiddenException('Usuário não encontrado');
 
       const newAccessToken = this.jwtService.sign(
@@ -69,9 +61,7 @@ export class AuthService {
       );
 
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1h
-      const refreshTokenExpiresAt = new Date(
-        Date.now() + 7 * 24 * 60 * 60 * 1000,
-      ); // 7d
+      const refreshTokenExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7d
 
       return {
         token: newAccessToken,

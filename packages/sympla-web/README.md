@@ -1,4 +1,3 @@
-
 # firts
 
 First, run the development server:

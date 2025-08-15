@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaGetByIdAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { distribuidoraFormSchema } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { distribuidoraFormSchema } from './schema';
 
 // ===== CREATE =====
 
@@ -18,10 +18,10 @@ export const createDistribuidora = createPrismaCreateAction(
     prisma.distribuidora.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     }),
-  "DISTRIBUIDORA"
+  'DISTRIBUIDORA',
 );
 
 // ===== UPDATE =====
@@ -33,10 +33,10 @@ export const updateDistribuidora = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString?.() || '',
       },
     }),
-  "DISTRIBUIDORA"
+  'DISTRIBUIDORA',
 );
 
 // ===== DELETE =====
@@ -53,18 +53,15 @@ export const deleteDistribuidora = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.distribuidora,
-      modelName: "Distribuidora",
+      modelName: 'Distribuidora',
     },
-    entityName: "DISTRIBUIDORA",
-  }
+    entityName: 'DISTRIBUIDORA',
+  },
 );
 
 // ===== GET ALL =====
 
-export const getAllDistribuidoras = createPrismaGetAllAction(
-  prisma.distribuidora,
-  "DISTRIBUIDORA"
-);
+export const getAllDistribuidoras = createPrismaGetAllAction(prisma.distribuidora, 'DISTRIBUIDORA');
 
 // ===== GET BY ID =====
 
@@ -76,5 +73,5 @@ export const getDistribuidoraById = createPrismaGetByIdAction(
         deletedAt: null,
       },
     }),
-  "DISTRIBUIDORA"
+  'DISTRIBUIDORA',
 );

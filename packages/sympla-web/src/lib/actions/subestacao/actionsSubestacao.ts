@@ -1,21 +1,17 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { subestacaoFormSchema, subestacaoLoteSchema, SubestacaoWithRegional } from "./schema";
-import {
-  CategoriaSubestacao,
-  PropriedadeSubestacao,
-  TensaoSubestacao,
-} from "@sympla/prisma";
-import { logger } from "@/lib/utils/logger";
-import { buildPrismaOrderBy } from "@/lib/server-action/prismaOrderHelper";
+} from '@/lib/server-action/actionFactory';
+import { subestacaoFormSchema, subestacaoLoteSchema, SubestacaoWithRegional } from './schema';
+import { CategoriaSubestacao, PropriedadeSubestacao, TensaoSubestacao } from '@sympla/prisma';
+import { logger } from '@/lib/utils/logger';
+import { buildPrismaOrderBy } from '@/lib/server-action/prismaOrderHelper';
 
 // ===== CRUD principal (factory padrão) =====
 
@@ -25,11 +21,11 @@ export const createSubestacao = createPrismaCreateAction(
     return prisma.subestacao.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     });
   },
-  "SUBESTACAO"
+  'SUBESTACAO',
 );
 
 export const updateSubestacao = createPrismaUpdateAction(
@@ -39,11 +35,11 @@ export const updateSubestacao = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString?.() || '',
       },
     });
   },
-  "SUBESTACAO"
+  'SUBESTACAO',
 );
 
 export const deleteSubestacao = createPrismaDeleteAction(
@@ -59,36 +55,41 @@ export const deleteSubestacao = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.subestacao,
-      modelName: "Subestacao",
+      modelName: 'Subestacao',
     },
-    entityName: "SUBESTACAO",
-  }
+    entityName: 'SUBESTACAO',
+  },
 );
 
 // ===== Get all (sem includes) =====
-export const getAllSubestacoes = createPrismaGetAllAction(
-  prisma.subestacao,
-  "SUBESTACAO"
-);
+export const getAllSubestacoes = createPrismaGetAllAction(prisma.subestacao, 'SUBESTACAO');
 
 // ===== Get all (com includes de regionais) =====
-export const getAllSubestacoesWithRegionais = createPrismaGetAllWithIncludesAction<SubestacaoWithRegional>(
-  async (params) => {
+export const getAllSubestacoesWithRegionais =
+  createPrismaGetAllWithIncludesAction<SubestacaoWithRegional>(async (params) => {
     const {
       where = {},
       orderBy = 'nome',
       orderDir = 'asc',
 
-      filters = {}
+      filters = {},
     } = params;
 
     const finalWhere = {
       ...where,
       deletedAt: null,
-      ...(filters.nome && { nome: { contains: filters.nome[0], mode: "insensitive" } }),
-      ...(filters.sigla && { sigla: { contains: filters.sigla[0], mode: "insensitive" } }),
-      ...(filters.codigoSap && { codigoSap: { contains: filters.codigoSap[0], mode: "insensitive" } }),
-      ...(filters.propriedade && { propriedade: { in: filters.propriedade } }),
+      ...(filters.nome && {
+        nome: { contains: filters.nome[0], mode: 'insensitive' },
+      }),
+      ...(filters.sigla && {
+        sigla: { contains: filters.sigla[0], mode: 'insensitive' },
+      }),
+      ...(filters.codigoSap && {
+        codigoSap: { contains: filters.codigoSap[0], mode: 'insensitive' },
+      }),
+      ...(filters.propriedade && {
+        propriedade: { in: filters.propriedade },
+      }),
       ...(filters.categoria && { categoria: { in: filters.categoria } }),
       ...(filters.tensao && { tensao: { in: filters.tensao } }),
       ...(filters.regionalId && { regionalId: { in: filters.regionalId } }),
@@ -101,9 +102,7 @@ export const getAllSubestacoesWithRegionais = createPrismaGetAllWithIncludesActi
       orderBy: prismaOrderBy,
       include: { regional: true },
     });
-  },
-  "SUBESTACAO"
-);
+  }, 'SUBESTACAO');
 
 // ===== Cadastro em lote (mantido manual) =====
 export const createManySubestacoes = async (data: unknown) => {
@@ -117,16 +116,12 @@ export const createManySubestacoes = async (data: unknown) => {
     select: { sigla: true, regionalId: true },
   });
 
-  const existentesSet = new Set(
-    existentes.map((e) => `${e.sigla}-${e.regionalId}`)
-  );
+  const existentesSet = new Set(existentes.map((e) => `${e.sigla}-${e.regionalId}`));
 
-  const novos = parsed.filter(
-    (item) => !existentesSet.has(`${item.sigla}-${item.regionalId}`)
-  );
+  const novos = parsed.filter((item) => !existentesSet.has(`${item.sigla}-${item.regionalId}`));
 
   if (novos.length === 0) {
-    console.log("🚫 Nenhuma subestação nova para cadastrar.");
+    console.log('🚫 Nenhuma subestação nova para cadastrar.');
     return;
   }
 
@@ -140,7 +135,7 @@ export const createManySubestacoes = async (data: unknown) => {
       categoria: item.categoria,
       tensao: item.tensao,
       regionalId: item.regionalId,
-      createdBy: "system",
+      createdBy: 'system',
     })),
   });
 
@@ -163,7 +158,7 @@ export async function getSubestacaoEnums() {
     tensaoOptions: enumToOptions(TensaoSubestacao),
   };
 
-  logger.action("[GET] SUBESTACAO_ENUMS", {
+  logger.action('[GET] SUBESTACAO_ENUMS', {
     success: true,
     input: {},
   });

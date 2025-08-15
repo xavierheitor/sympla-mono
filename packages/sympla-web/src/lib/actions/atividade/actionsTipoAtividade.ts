@@ -1,6 +1,6 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
@@ -8,10 +8,10 @@ import {
   createPrismaGetAllWithIncludesAction,
   createPrismaSetManyRelationAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { tipoAtividadeFormSchema, tipoAtividadeKpiRelationSchema } from "./schema";
-import { TipoAtividadeMobile } from "@sympla/prisma";
-import { logger } from "@/lib/utils/logger";
+} from '@/lib/server-action/actionFactory';
+import { tipoAtividadeFormSchema, tipoAtividadeKpiRelationSchema } from './schema';
+import { TipoAtividadeMobile } from '@sympla/prisma';
+import { logger } from '@/lib/utils/logger';
 
 // CREATE
 export const createTipoAtividade = createPrismaCreateAction(
@@ -20,11 +20,11 @@ export const createTipoAtividade = createPrismaCreateAction(
     return prisma.tipoAtividade.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString() || "",
+        createdBy: data.createdBy?.toString() || '',
       },
     });
   },
-  "TIPO_ATIVIDADE"
+  'TIPO_ATIVIDADE',
 );
 
 // UPDATE
@@ -35,11 +35,11 @@ export const updateTipoAtividade = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString() || "",
+        updatedBy: data.updatedBy?.toString() || '',
       },
     });
   },
-  "TIPO_ATIVIDADE"
+  'TIPO_ATIVIDADE',
 );
 
 // DELETE
@@ -61,22 +61,22 @@ export const deleteTipoAtividade = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.tipoAtividade,
-      modelName: "TipoAtividade",
+      modelName: 'TipoAtividade',
     },
-    entityName: "TIPO_ATIVIDADE",
-  }
+    entityName: 'TIPO_ATIVIDADE',
+  },
 );
 
 // GET ALL
 export const getAllTipoAtividades = createPrismaGetAllAction(
   prisma.tipoAtividade,
-  "TIPO_ATIVIDADE"
+  'TIPO_ATIVIDADE',
 );
 
 // GET ALL WITH INCLUDES
 export const getAllTipoAtividadesWithIncludes = createPrismaGetAllWithIncludesAction(
   async (params) => {
-    const { where = {}, orderBy = "nome", orderDir = "asc" } = params;
+    const { where = {}, orderBy = 'nome', orderDir = 'asc' } = params;
 
     return prisma.tipoAtividade.findMany({
       where: { ...where, deletedAt: null },
@@ -93,7 +93,7 @@ export const getAllTipoAtividadesWithIncludes = createPrismaGetAllWithIncludesAc
       },
     });
   },
-  "TIPO_ATIVIDADE"
+  'TIPO_ATIVIDADE',
 );
 
 // ENUMS
@@ -107,7 +107,7 @@ function enumToOptions<T extends object>(enumObj: T) {
 export async function getAllTipoAtividadeEnums() {
   const result = enumToOptions(TipoAtividadeMobile);
 
-  logger.action("[LIST] TIPO_ATIVIDADE_MOBILE_ENUM", {
+  logger.action('[LIST] TIPO_ATIVIDADE_MOBILE_ENUM', {
     input: {},
     success: true,
   });
@@ -118,7 +118,7 @@ export async function getAllTipoAtividadeEnums() {
 export const setTipoAtividadeKpi = createPrismaSetManyRelationAction(
   tipoAtividadeKpiRelationSchema,
   {
-    entityName: "TIPO_ATIVIDADE_KPI",
+    entityName: 'TIPO_ATIVIDADE_KPI',
     deleteFn: async (tipoAtividadeId, userId, now) => {
       await prisma.tipoAtividadeKpi.updateMany({
         where: { tipoAtividadeId },
@@ -139,5 +139,5 @@ export const setTipoAtividadeKpi = createPrismaSetManyRelationAction(
     },
     getParentId: (input) => input.tipoAtividadeId,
     getChildIds: (input) => input.kpiIds,
-  }
+  },
 );

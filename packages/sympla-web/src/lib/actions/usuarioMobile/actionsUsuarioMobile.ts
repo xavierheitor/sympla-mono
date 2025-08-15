@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { usuarioMobileFormSchema } from "./schema";
-import bcrypt from "bcrypt";
+} from '@/lib/server-action/actionFactory';
+import { usuarioMobileFormSchema } from './schema';
+import bcrypt from 'bcrypt';
 
 // ========== CREATE ==========
 export const createUsuarioMobile = createPrismaCreateAction(
@@ -20,11 +20,11 @@ export const createUsuarioMobile = createPrismaCreateAction(
       data: {
         ...data,
         senha: hashedPassword,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     });
   },
-  "USUARIO_MOBILE"
+  'USUARIO_MOBILE',
 );
 
 // ========== UPDATE ==========
@@ -34,7 +34,7 @@ export const updateUsuarioMobile = createPrismaUpdateAction(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {
       ...data,
-      updatedBy: data.updatedBy?.toString?.() || "",
+      updatedBy: data.updatedBy?.toString?.() || '',
     };
 
     if (data.senha) {
@@ -46,7 +46,7 @@ export const updateUsuarioMobile = createPrismaUpdateAction(
       data: updateData,
     });
   },
-  "USUARIO_MOBILE"
+  'USUARIO_MOBILE',
 );
 
 // ========== DELETE ==========
@@ -63,22 +63,22 @@ export const deleteUsuarioMobile = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.usuarioMobile,
-      modelName: "UsuarioMobile",
+      modelName: 'UsuarioMobile',
     },
-    entityName: "USUARIO_MOBILE",
-  }
+    entityName: 'USUARIO_MOBILE',
+  },
 );
 
 // ========== GET ALL ==========
 export const getAllUsuarioMobiles = createPrismaGetAllAction(
   prisma.usuarioMobile,
-  "USUARIO_MOBILE",
-  ["nome", "email"] // ✅ campos habilitados pro search
+  'USUARIO_MOBILE',
+  ['nome', 'email'], // ✅ campos habilitados pro search
 );
 
 // ========== GET ALL WITH INCLUDES ==========
 export const getAllUsuarioMobilesWithIncludes = createPrismaGetAllAction(
   prisma.usuarioMobile,
-  "USUARIO_MOBILE",
-  ["nome", "email"]
+  'USUARIO_MOBILE',
+  ['nome', 'email'],
 );

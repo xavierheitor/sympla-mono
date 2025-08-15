@@ -1,15 +1,15 @@
 'use server';
 
-import { prisma } from "@/lib/db/prisma";
-import { z } from "zod";
+import { prisma } from '@/lib/db/prisma';
+import { z } from 'zod';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { equipamentoFormSchema, EquipamentoWithRelations, linhaSchema } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { equipamentoFormSchema, EquipamentoWithRelations, linhaSchema } from './schema';
 
 // CREATE
 export const createEquipamento = createPrismaCreateAction(
@@ -18,11 +18,11 @@ export const createEquipamento = createPrismaCreateAction(
     return prisma.equipamento.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     });
   },
-  "EQUIPAMENTO"
+  'EQUIPAMENTO',
 );
 
 // UPDATE
@@ -33,11 +33,11 @@ export const updateEquipamento = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString?.() || '',
       },
     });
   },
-  "EQUIPAMENTO"
+  'EQUIPAMENTO',
 );
 
 // DELETE
@@ -54,30 +54,24 @@ export const deleteEquipamento = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.equipamento,
-      modelName: "Equipamento",
+      modelName: 'Equipamento',
     },
-    entityName: "EQUIPAMENTO",
-  }
+    entityName: 'EQUIPAMENTO',
+  },
 );
 
 // GET ALL paginado simples
-export const getAllEquipamentos = createPrismaGetAllAction(
-  prisma.equipamento,
-  "EQUIPAMENTO",
-  ["nome", "descricao"]
-);
+export const getAllEquipamentos = createPrismaGetAllAction(prisma.equipamento, 'EQUIPAMENTO', [
+  'nome',
+  'descricao',
+]);
 
 // GET ALL paginado com includes e filtros avançados
-export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesAction<EquipamentoWithRelations>(
-  async (params) => {
-    const {
-      where = {},
-      orderBy = "nome",
-      orderDir = "asc",
-      filters = {}
-    } = params;
+export const getAllEquipamentosWithIncludes =
+  createPrismaGetAllWithIncludesAction<EquipamentoWithRelations>(async (params) => {
+    const { where = {}, orderBy = 'nome', orderDir = 'asc', filters = {} } = params;
 
-    console.log("🧪 [Equipamento] Filtros recebidos:", filters);
+    console.log('🧪 [Equipamento] Filtros recebidos:', filters);
 
     const filtroNome = filters.nome?.[0];
     const filtroSubestacaoIds = Array.isArray(filters.subestacaoId)
@@ -87,9 +81,9 @@ export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesActi
       ? filters.grupoDefeitoCodigo.filter(Boolean)
       : [];
 
-    console.log("🧪 [Equipamento] Nome (filtro):", filtroNome);
-    console.log("🧪 [Equipamento] SubestacaoId (filtrado):", filtroSubestacaoIds);
-    console.log("🧪 [Equipamento] GrupoDefeitoCodigo (filtrado):", filtroGrupoIds);
+    console.log('🧪 [Equipamento] Nome (filtro):', filtroNome);
+    console.log('🧪 [Equipamento] SubestacaoId (filtrado):', filtroSubestacaoIds);
+    console.log('🧪 [Equipamento] GrupoDefeitoCodigo (filtrado):', filtroGrupoIds);
 
     const finalWhere = {
       ...where,
@@ -105,7 +99,7 @@ export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesActi
       }),
     };
 
-    console.log("🔍 [Equipamento] Filtro final aplicado ao Prisma:", finalWhere);
+    console.log('🔍 [Equipamento] Filtro final aplicado ao Prisma:', finalWhere);
 
     const prismaOrderBy = { [orderBy]: orderDir };
 
@@ -114,17 +108,15 @@ export const getAllEquipamentosWithIncludes = createPrismaGetAllWithIncludesActi
       orderBy: prismaOrderBy,
       include: {
         subestacao: {
-          include: { regional: true }
-        }
-      }
+          include: { regional: true },
+        },
+      },
     });
 
     console.log(`📦 [Equipamento] ${result.length} registros encontrados`);
 
     return result;
-  },
-  "EQUIPAMENTO"
-);
+  }, 'EQUIPAMENTO');
 
 // lib/actions/equipamento/createManyEquipamentosFromExcel.ts
 
@@ -143,9 +135,7 @@ export async function createManyEquipamentosFromExcel(rawData: unknown) {
     },
   });
 
-  const siglaToId = Object.fromEntries(
-    subestacoes.map((s) => [s.sigla.trim(), s.id])
-  );
+  const siglaToId = Object.fromEntries(subestacoes.map((s) => [s.sigla.trim(), s.id]));
 
   const registrosValidos = linhas
     .map((linha, index) => {
@@ -170,12 +160,12 @@ export async function createManyEquipamentosFromExcel(rawData: unknown) {
       };
     })
     .filter(Boolean) as {
-      nome: string;
-      descricao: string;
-      subestacaoId: string;
-      grupoDefeitoCodigo: string | null;
-      createdBy: string;
-    }[];
+    nome: string;
+    descricao: string;
+    subestacaoId: string;
+    grupoDefeitoCodigo: string | null;
+    createdBy: string;
+  }[];
 
   if (registrosValidos.length === 0) {
     return {
@@ -197,13 +187,9 @@ export async function createManyEquipamentosFromExcel(rawData: unknown) {
     },
   });
 
-  const existentesSet = new Set(
-    existentes.map((e) => `${e.nome}::${e.subestacaoId}`)
-  );
+  const existentesSet = new Set(existentes.map((e) => `${e.nome}::${e.subestacaoId}`));
 
-  const novos = registrosValidos.filter(
-    (r) => !existentesSet.has(`${r.nome}::${r.subestacaoId}`)
-  );
+  const novos = registrosValidos.filter((r) => !existentesSet.has(`${r.nome}::${r.subestacaoId}`));
 
   if (novos.length === 0) {
     return {

@@ -18,9 +18,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@sympla/prisma": [
-        "../sympla-prisma/generated/prisma"
-      ]
+      "@sympla/prisma": ["../sympla-prisma/generated/prisma"]
     }
   }
 }

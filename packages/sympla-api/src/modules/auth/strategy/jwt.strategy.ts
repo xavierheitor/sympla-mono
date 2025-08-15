@@ -11,10 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'secret', // mantenha igual ao jwt.service.ts
     });
-    console.log(
-      '[JWT STRATEGY] Inicializada com secret:',
-      process.env.JWT_SECRET || 'secret',
-    );
+    console.log('[JWT STRATEGY] Inicializada com secret:', process.env.JWT_SECRET || 'secret');
   }
 
   validate(payload: any) {

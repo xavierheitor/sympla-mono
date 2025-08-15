@@ -1,23 +1,24 @@
-import { z } from "zod";
+import { z } from 'zod';
 import {
   ChecklistModelo,
   ChecklistModeloTipoAtividadeRelation,
   ChecklistPergunta,
   ChecklistPerguntaRelation,
   TipoAtividade,
-} from "@sympla/prisma";
+} from '@sympla/prisma';
 
 // ===== Formulário principal do modelo =====
 
 export const checklistModeloFormSchema = z.object({
   id: z.string().optional(),
-  nome: z.string().min(1, "nome é obrigatório"),
+  nome: z.string().min(1, 'nome é obrigatório'),
   descricao: z.string().nullable(),
 });
 
-type ChecklistModeloBaseFields = Required<Pick<ChecklistModelo, "nome" | "descricao">>;
+type ChecklistModeloBaseFields = Required<Pick<ChecklistModelo, 'nome' | 'descricao'>>;
 
-export type ChecklistModeloFormData = Partial<Pick<ChecklistModelo, "id">> & ChecklistModeloBaseFields;
+export type ChecklistModeloFormData = Partial<Pick<ChecklistModelo, 'id'>> &
+  ChecklistModeloBaseFields;
 
 export type ChecklistModeloWithIncludes = ChecklistModelo & {
   tipoAtividades: TipoAtividade[];
@@ -32,43 +33,45 @@ export const checklistModeloTipoAtividadeRelationFormSchema = z.object({
 });
 
 type ChecklistModeloTipoAtividadeRelationBaseFields = Required<
-  Pick<ChecklistModeloTipoAtividadeRelation, "modeloId" | "tipoAtividadeId">
+  Pick<ChecklistModeloTipoAtividadeRelation, 'modeloId' | 'tipoAtividadeId'>
 >;
 
 export type ChecklistModeloTipoAtividadeRelationFormData = Partial<
-  Pick<ChecklistModeloTipoAtividadeRelation, "id">
-> & ChecklistModeloTipoAtividadeRelationBaseFields;
+  Pick<ChecklistModeloTipoAtividadeRelation, 'id'>
+> &
+  ChecklistModeloTipoAtividadeRelationBaseFields;
 
-export type ChecklistModeloTipoAtividadeRelationWithIncludes = ChecklistModeloTipoAtividadeRelation & {
-  modelo: ChecklistModelo;
-  tipoAtividade: TipoAtividade;
-};
+export type ChecklistModeloTipoAtividadeRelationWithIncludes =
+  ChecklistModeloTipoAtividadeRelation & {
+    modelo: ChecklistModelo;
+    tipoAtividade: TipoAtividade;
+  };
 
 // ===== Formulário de Perguntas =====
 
 export const checklistPerguntaFormSchema = z.object({
   id: z.string().optional(),
-  pergunta: z.string().min(1, "pergunta é obrigatório"),
+  pergunta: z.string().min(1, 'pergunta é obrigatório'),
 });
 
-type ChecklistPerguntaBaseFields = Required<Pick<ChecklistPergunta, "pergunta">>;
-export type ChecklistPerguntaFormData = Partial<Pick<ChecklistPergunta, "id">> & ChecklistPerguntaBaseFields;
+type ChecklistPerguntaBaseFields = Required<Pick<ChecklistPergunta, 'pergunta'>>;
+export type ChecklistPerguntaFormData = Partial<Pick<ChecklistPergunta, 'id'>> &
+  ChecklistPerguntaBaseFields;
 
 // ===== Relation Pergunta -> Modelo =====
 
 export const checklistPerguntaRelationFormSchema = z.object({
   id: z.string().optional(),
-  perguntaId: z.string().min(1, "perguntaId é obrigatório"),
-  modeloId: z.string().min(1, "modeloId é obrigatório"),
-  ordem: z.number().min(0, "ordem é obrigatório"),
+  perguntaId: z.string().min(1, 'perguntaId é obrigatório'),
+  modeloId: z.string().min(1, 'modeloId é obrigatório'),
+  ordem: z.number().min(0, 'ordem é obrigatório'),
 });
 
 type ChecklistPerguntaRelationBaseFields = Required<
-  Pick<ChecklistPerguntaRelation, "perguntaId" | "modeloId" | "ordem">
+  Pick<ChecklistPerguntaRelation, 'perguntaId' | 'modeloId' | 'ordem'>
 >;
-export type ChecklistPerguntaRelationFormData = Partial<
-  Pick<ChecklistPerguntaRelation, "id">
-> & ChecklistPerguntaRelationBaseFields;
+export type ChecklistPerguntaRelationFormData = Partial<Pick<ChecklistPerguntaRelation, 'id'>> &
+  ChecklistPerguntaRelationBaseFields;
 
 export type ChecklistPerguntaRelationWithIncludes = ChecklistPerguntaRelation & {
   pergunta: ChecklistPergunta;

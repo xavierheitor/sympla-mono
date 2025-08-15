@@ -1,8 +1,12 @@
 {
   "name": "@sympla/prisma",
   "version": "1.0.0",
-  "main": "index.js",
-  "types": "generated/client/index.d.ts",
+  "main": "generated/prisma/index.js",
+  "types": "generated/prisma/index.d.ts",
+  "exports": {
+    ".": "./generated/prisma/index.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "generate": "prisma generate --schema ./prisma",
     "migrate:dev": "prisma migrate dev --schema ./prisma",

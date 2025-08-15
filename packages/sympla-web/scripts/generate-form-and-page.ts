@@ -61,15 +61,27 @@ ${relationFields.map((r: any) => `  ${r.name}Options,`).join('\n')}
 
   return (
     <Form form={form} layout="vertical" initialValues={initialValues} onFinish={onSubmit}>
-${stringFields.map((f: any) => `      <Form.Item name="${f.name}" label="${f.label}" rules={[{ required: true }]}>
+${stringFields
+  .map(
+    (f: any) => `      <Form.Item name="${f.name}" label="${f.label}" rules={[{ required: true }]}>
         <Input />
-      </Form.Item>`).join('\n')}
-${enumFields.map((f: any) => `      <Form.Item name="${f.name}" label="${f.label}" rules={[{ required: true }]}>
+      </Form.Item>`,
+  )
+  .join('\n')}
+${enumFields
+  .map(
+    (f: any) => `      <Form.Item name="${f.name}" label="${f.label}" rules={[{ required: true }]}>
         <Select options={${f.name}Options} placeholder="Selecione..." />
-      </Form.Item>`).join('\n')}
-${relationFields.map((f: any) => `      <Form.Item name="${f.name}" label="${f.label}" rules={[{ required: true }]}>
+      </Form.Item>`,
+  )
+  .join('\n')}
+${relationFields
+  .map(
+    (f: any) => `      <Form.Item name="${f.name}" label="${f.label}" rules={[{ required: true }]}>
         <Select options={${f.name}Options.map(item => ({ label: item.nome, value: item.id }))} placeholder="Selecione..." />
-      </Form.Item>`).join('\n')}
+      </Form.Item>`,
+  )
+  .join('\n')}
 
       <Form.Item>
         <Button type="primary" htmlType="submit" block loading={loading}>Salvar</Button>
@@ -101,7 +113,10 @@ export default function ${className}Page() {
 
   const columns = useTableColumnsWithActions(
     [
-${fields.filter((f: any) => ['string', 'enum'].includes(f.type)).map((f: any) => `      { title: '${f.label}', dataIndex: '${f.name}', key: '${f.name}' },`).join('\n')}
+${fields
+  .filter((f: any) => ['string', 'enum'].includes(f.type))
+  .map((f: any) => `      { title: '${f.label}', dataIndex: '${f.name}', key: '${f.name}' },`)
+  .join('\n')}
     ],
     controller.open,
     (item) => controller.exec(() => delete${className}(item.id), '${className} excluída com sucesso!')

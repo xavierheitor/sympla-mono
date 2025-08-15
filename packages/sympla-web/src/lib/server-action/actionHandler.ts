@@ -1,11 +1,11 @@
-import { ZodSchema } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/utils/auth.config";
-import { Session } from "next-auth";
-import { logger, withLogging } from "../utils/logger";
-import { ActionResult } from "../types/ActionTypes";
+import { ZodSchema } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/utils/auth.config';
+import { Session } from 'next-auth';
+import { logger, withLogging } from '../utils/logger';
+import { ActionResult } from '../types/ActionTypes';
 
-type ActionType = "create" | "update" | "delete" | "get" | "list";
+type ActionType = 'create' | 'update' | 'delete' | 'get' | 'list';
 
 type ActionOptions = {
   actionType?: ActionType;
@@ -19,9 +19,8 @@ export async function handleServerAction<TInput, TOutput>(
   schema: ZodSchema<TInput>,
   logic: (input: TInput, session: Session) => Promise<TOutput>,
   rawInput: unknown = {},
-  options?: ActionOptions
+  options?: ActionOptions,
 ): Promise<ActionResult<TOutput>> {
-
   try {
     //obtem a sessão do usuário
     const session = await getServerSession(authOptions);
@@ -29,7 +28,7 @@ export async function handleServerAction<TInput, TOutput>(
     if (!session)
       return {
         success: false,
-        error: "Não autenticado",
+        error: 'Não autenticado',
         redirectToLogin: true,
       };
 
@@ -37,7 +36,7 @@ export async function handleServerAction<TInput, TOutput>(
     const parseResult = schema.safeParse(rawInput);
     //se não for válido, retorna um erro
     if (!parseResult.success) {
-      const entityName = options?.entityName || schema.description || "UNKNOWN_ENTITY";
+      const entityName = options?.entityName || schema.description || 'UNKNOWN_ENTITY';
       logger.error(`[ValidationError] Falha na validação do schema para ${entityName}`, {
         input: rawInput,
         issues: parseResult.error.flatten(),
@@ -53,8 +52,8 @@ export async function handleServerAction<TInput, TOutput>(
     const input = parseResult.data;
 
     //obtem o nome da entidade e o tipo de ação
-    const entityName = options?.entityName || schema.description || "UNKNOWN_ENTITY";
-    const actionType = options?.actionType || "unknown";
+    const entityName = options?.entityName || schema.description || 'UNKNOWN_ENTITY';
+    const actionType = options?.actionType || 'unknown';
 
     // 🎯 Adiciona os campos de auditoria automaticamente
     const userId = session.user.id;
@@ -62,11 +61,11 @@ export async function handleServerAction<TInput, TOutput>(
 
     // 🎯 Adiciona os campos de auditoria automaticamente
     const auditFields =
-      actionType === "create"
+      actionType === 'create'
         ? { createdBy: userId, createdAt: now }
-        : actionType === "update"
+        : actionType === 'update'
           ? { updatedBy: userId, updatedAt: now }
-          : actionType === "delete"
+          : actionType === 'delete'
             ? { deletedBy: userId, deletedAt: now }
             : {};
 
@@ -74,12 +73,8 @@ export async function handleServerAction<TInput, TOutput>(
     const finalInput = { ...input, ...auditFields };
 
     // 🎯 Adiciona os campos de auditoria automaticamente
-    const result = await withLogging(
-      session,
-      actionType as ActionType,
-      entityName,
-      input,
-      () => logic(finalInput, session)
+    const result = await withLogging(session, actionType as ActionType, entityName, input, () =>
+      logic(finalInput, session),
     );
 
     return { success: true, data: result };
@@ -87,7 +82,7 @@ export async function handleServerAction<TInput, TOutput>(
     logger.error(`[ServerActionError] ${err}`);
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Erro interno",
+      error: err instanceof Error ? err.message : 'Erro interno',
     };
   }
 }

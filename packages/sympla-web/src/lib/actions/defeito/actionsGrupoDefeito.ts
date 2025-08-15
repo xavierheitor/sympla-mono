@@ -1,19 +1,19 @@
 // === Correções aplicadas para createManyGrupoDefeitos ===
 
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
+} from '@/lib/server-action/actionFactory';
 import {
   createManyGrupoDefeitosSchema,
   grupoDefeitoEquipamentoFormSchema,
   GrupoDefeitoEquipamentoWithRelations,
-} from "./schema";
+} from './schema';
 
 // ===== CREATE =====
 
@@ -21,9 +21,9 @@ export const createGrupoDefeitoEquipamento = createPrismaCreateAction(
   grupoDefeitoEquipamentoFormSchema,
   async (data) =>
     prisma.grupoDefeitoEquipamento.create({
-      data: { ...data, createdBy: data.createdBy?.toString?.() || "" },
+      data: { ...data, createdBy: data.createdBy?.toString?.() || '' },
     }),
-  "GRUPO_DEFEITO_EQUIPAMENTO"
+  'GRUPO_DEFEITO_EQUIPAMENTO',
 );
 
 // ===== UPDATE =====
@@ -33,9 +33,9 @@ export const updateGrupoDefeitoEquipamento = createPrismaUpdateAction(
   async (data) =>
     prisma.grupoDefeitoEquipamento.update({
       where: { id: data.id },
-      data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() || '' },
     }),
-  "GRUPO_DEFEITO_EQUIPAMENTO"
+  'GRUPO_DEFEITO_EQUIPAMENTO',
 );
 
 // ===== DELETE =====
@@ -49,31 +49,26 @@ export const deleteGrupoDefeitoEquipamento = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.grupoDefeitoEquipamento,
-      modelName: "GrupoDefeitoEquipamento",
+      modelName: 'GrupoDefeitoEquipamento',
     },
-    entityName: "GRUPO_DEFEITO_EQUIPAMENTO",
-  }
+    entityName: 'GRUPO_DEFEITO_EQUIPAMENTO',
+  },
 );
 
 // ===== GET ALL com paginação e filtros =====
 
-export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesAction<GrupoDefeitoEquipamentoWithRelations>(
-  async (params) => {
-    const {
-      where = {},
-      orderBy = "nome",
-      orderDir = "asc",
-      filters = {},
-    } = params;
+export const getAllGrupoDefeitoEquipamentos =
+  createPrismaGetAllWithIncludesAction<GrupoDefeitoEquipamentoWithRelations>(async (params) => {
+    const { where = {}, orderBy = 'nome', orderDir = 'asc', filters = {} } = params;
 
     const finalWhere = {
       ...where,
       deletedAt: null,
       ...(filters.nome && {
-        nome: { contains: filters.nome[0], mode: "insensitive" },
+        nome: { contains: filters.nome[0], mode: 'insensitive' },
       }),
       ...(filters.codigo && {
-        codigo: { contains: filters.codigo[0], mode: "insensitive" },
+        codigo: { contains: filters.codigo[0], mode: 'insensitive' },
       }),
     };
 
@@ -86,9 +81,7 @@ export const getAllGrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesActi
         subgrupos: true,
       },
     });
-  },
-  "GRUPO_DEFEITO_EQUIPAMENTO"
-);
+  }, 'GRUPO_DEFEITO_EQUIPAMENTO');
 
 // ===== CREATE MANY corrigido =====
 
@@ -107,7 +100,7 @@ export const createManyGrupoDefeitos = async (rawInput: unknown) => {
   const novos = parsed.filter((item) => !existentesSet.has(`${item.nome}-${item.codigo}`));
 
   if (novos.length === 0) {
-    console.log("🚫 Nenhum grupo de defeito novo para cadastrar.");
+    console.log('🚫 Nenhum grupo de defeito novo para cadastrar.');
     return;
   }
 
@@ -115,9 +108,8 @@ export const createManyGrupoDefeitos = async (rawInput: unknown) => {
     data: novos.map((item) => ({
       nome: item.nome,
       codigo: item.codigo,
-      createdBy: "system",
+      createdBy: 'system',
     })),
     skipDuplicates: true,
   });
-
 };

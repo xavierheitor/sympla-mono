@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { userFormSchema } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { userFormSchema } from './schema';
 
 // ========== CREATE ==========
 export const createUser = createPrismaCreateAction(
@@ -16,11 +16,11 @@ export const createUser = createPrismaCreateAction(
     return prisma.user.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     });
   },
-  "USER"
+  'USER',
 );
 
 // ========== UPDATE ==========
@@ -31,11 +31,11 @@ export const updateUser = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString?.() || '',
       },
     });
   },
-  "USER"
+  'USER',
 );
 
 // ========== DELETE (soft delete) ==========
@@ -52,22 +52,21 @@ export const deleteUser = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.user,
-      modelName: "User",
+      modelName: 'User',
     },
-    entityName: "USER",
-  }
+    entityName: 'USER',
+  },
 );
 
 // ========== GET ALL ==========
 export const getAllUsers = createPrismaGetAllAction(
   prisma.user,
-  "USER",
-  ["name", "email"] // ✅ adicionei aqui campos úteis para buscas por search genérico
+  'USER',
+  ['name', 'email'], // ✅ adicionei aqui campos úteis para buscas por search genérico
 );
 
 // ========== GET ALL WITH INCLUDES ==========
-export const getAllUsersWithIncludes = createPrismaGetAllAction(
-  prisma.user,
-  "USER",
-  ["name", "email"]
-);
+export const getAllUsersWithIncludes = createPrismaGetAllAction(prisma.user, 'USER', [
+  'name',
+  'email',
+]);

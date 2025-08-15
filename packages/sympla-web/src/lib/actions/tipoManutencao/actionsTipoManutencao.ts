@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { tipoManutencaoFormSchema } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { tipoManutencaoFormSchema } from './schema';
 
 // ========== CREATE ==========
 export const createTipoManutencao = createPrismaCreateAction(
@@ -16,11 +16,11 @@ export const createTipoManutencao = createPrismaCreateAction(
     return prisma.tipoManutencao.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     });
   },
-  "TIPO_MANUTENCAO"
+  'TIPO_MANUTENCAO',
 );
 
 // ========== UPDATE ==========
@@ -31,11 +31,11 @@ export const updateTipoManutencao = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString?.() || '',
       },
     });
   },
-  "TIPO_MANUTENCAO"
+  'TIPO_MANUTENCAO',
 );
 
 // ========== DELETE (soft delete) ==========
@@ -52,22 +52,22 @@ export const deleteTipoManutencao = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.tipoManutencao,
-      modelName: "TipoManutencao",
+      modelName: 'TipoManutencao',
     },
-    entityName: "TIPO_MANUTENCAO",
-  }
+    entityName: 'TIPO_MANUTENCAO',
+  },
 );
 
 // ========== GET ALL ==========
 export const getAllTipoManutencaos = createPrismaGetAllAction(
   prisma.tipoManutencao,
-  "TIPO_MANUTENCAO",
-  ["nome"]
+  'TIPO_MANUTENCAO',
+  ['nome'],
 );
 
 // ========== GET ALL WITH INCLUDES ==========
 export const getAllTipoManutencaosWithIncludes = createPrismaGetAllAction(
   prisma.tipoManutencao,
-  "TIPO_MANUTENCAO",
-  ["nome"]
+  'TIPO_MANUTENCAO',
+  ['nome'],
 );

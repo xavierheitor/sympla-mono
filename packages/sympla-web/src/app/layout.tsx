@@ -12,12 +12,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-br">
-      <body >
+    <html lang='pt-br'>
+      <body>
         <AntdRegistry>
-          <ThemeProvider>
-            {children}
-          </ThemeProvider>
+          <ThemeProvider>{children}</ThemeProvider>
         </AntdRegistry>
       </body>
     </html>

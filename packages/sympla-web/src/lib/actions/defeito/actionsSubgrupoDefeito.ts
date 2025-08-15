@@ -1,27 +1,27 @@
 'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllWithIncludesAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
+} from '@/lib/server-action/actionFactory';
 import {
   subgrupoDefeitoEquipamentoFormSchema,
   createManySubgrupoDefeitosSchema,
   SubgrupoDefeitoEquipamentoWithRelations,
-} from "./schema";
-import { SubgrupoDefeitoEquipamento } from "@sympla/prisma";
+} from './schema';
+import { SubgrupoDefeitoEquipamento } from '@sympla/prisma';
 
 // ===== CREATE =====
 export const createSubgrupoDefeitoEquipamento = createPrismaCreateAction(
   subgrupoDefeitoEquipamentoFormSchema,
   async (data) =>
     prisma.subgrupoDefeitoEquipamento.create({
-      data: { ...data, createdBy: data.createdBy?.toString?.() || "" },
+      data: { ...data, createdBy: data.createdBy?.toString?.() || '' },
     }),
-  "SUBGRUPO_DEFEITO_EQUIPAMENTO"
+  'SUBGRUPO_DEFEITO_EQUIPAMENTO',
 );
 
 // ===== UPDATE =====
@@ -30,9 +30,9 @@ export const updateSubgrupoDefeitoEquipamento = createPrismaUpdateAction(
   async (data) =>
     prisma.subgrupoDefeitoEquipamento.update({
       where: { id: data.id },
-      data: { ...data, updatedBy: data.updatedBy?.toString?.() || "" },
+      data: { ...data, updatedBy: data.updatedBy?.toString?.() || '' },
     }),
-  "SUBGRUPO_DEFEITO_EQUIPAMENTO"
+  'SUBGRUPO_DEFEITO_EQUIPAMENTO',
 );
 
 // ===== DELETE =====
@@ -45,34 +45,29 @@ export const deleteSubgrupoDefeitoEquipamento = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.subgrupoDefeitoEquipamento,
-      modelName: "SubgrupoDefeitoEquipamento",
+      modelName: 'SubgrupoDefeitoEquipamento',
     },
-    entityName: "SUBGRUPO_DEFEITO_EQUIPAMENTO",
-  }
+    entityName: 'SUBGRUPO_DEFEITO_EQUIPAMENTO',
+  },
 );
 
 // ===== GET ALL =====
-export const getAllSubgrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesAction<SubgrupoDefeitoEquipamento>(
-  async (params) => {
-    const {
-      where = {},
-      orderBy = "nome",
-      orderDir = "asc",
-      filters = {},
-    } = params;
+export const getAllSubgrupoDefeitoEquipamentos =
+  createPrismaGetAllWithIncludesAction<SubgrupoDefeitoEquipamento>(async (params) => {
+    const { where = {}, orderBy = 'nome', orderDir = 'asc', filters = {} } = params;
 
     const finalWhere = {
       ...where,
       deletedAt: null,
       ...(filters.nome && {
-        nome: { contains: filters.nome[0], mode: "insensitive" },
+        nome: { contains: filters.nome[0], mode: 'insensitive' },
       }),
-      ...(filters["grupo.nome"] && {
+      ...(filters['grupo.nome'] && {
         grupo: {
           nome: {
-            in: Array.isArray(filters["grupo.nome"])
-              ? filters["grupo.nome"]
-              : [filters["grupo.nome"]],
+            in: Array.isArray(filters['grupo.nome'])
+              ? filters['grupo.nome']
+              : [filters['grupo.nome']],
           },
         },
       }),
@@ -84,27 +79,25 @@ export const getAllSubgrupoDefeitoEquipamentos = createPrismaGetAllWithIncludesA
       orderBy: prismaOrderBy,
       include: { grupo: true },
     });
-  },
-  "SUBGRUPO_DEFEITO_EQUIPAMENTO"
-);
+  }, 'SUBGRUPO_DEFEITO_EQUIPAMENTO');
 
 // ===== GET ALL WITH INCLUDES =====
-export const getAllSubgrupoDefeitoEquipamentosWithIncludes = createPrismaGetAllWithIncludesAction<SubgrupoDefeitoEquipamentoWithRelations>(
-  async (params) => {
-    const { where = {}, orderBy = "nome", orderDir = "asc", filters = {} } = params;
+export const getAllSubgrupoDefeitoEquipamentosWithIncludes =
+  createPrismaGetAllWithIncludesAction<SubgrupoDefeitoEquipamentoWithRelations>(async (params) => {
+    const { where = {}, orderBy = 'nome', orderDir = 'asc', filters = {} } = params;
 
     const finalWhere = {
       ...where,
       deletedAt: null,
       ...(filters.nome && {
-        nome: { contains: filters.nome[0], mode: "insensitive" },
+        nome: { contains: filters.nome[0], mode: 'insensitive' },
       }),
-      ...(filters["grupo.nome"] && {
+      ...(filters['grupo.nome'] && {
         grupo: {
           nome: {
-            in: Array.isArray(filters["grupo.nome"])
-              ? filters["grupo.nome"]
-              : [filters["grupo.nome"]],
+            in: Array.isArray(filters['grupo.nome'])
+              ? filters['grupo.nome']
+              : [filters['grupo.nome']],
           },
         },
       }),
@@ -112,16 +105,12 @@ export const getAllSubgrupoDefeitoEquipamentosWithIncludes = createPrismaGetAllW
 
     const prismaOrderBy = { [orderBy]: orderDir };
 
-
     return prisma.subgrupoDefeitoEquipamento.findMany({
       where: finalWhere,
       orderBy: prismaOrderBy,
       include: { grupo: true },
     });
-  },
-  "SUBGRUPO_DEFEITO_EQUIPAMENTO"
-);
-
+  }, 'SUBGRUPO_DEFEITO_EQUIPAMENTO');
 
 // ===== CREATE MANY (Lote) =====
 export const createManySubgrupoDefeitos = async (rawInput: unknown) => {
@@ -155,12 +144,10 @@ export const createManySubgrupoDefeitos = async (rawInput: unknown) => {
     },
   });
 
-  const existentesSet = new Set(
-    existentes.map((e) => `${e.nome}-${e.grupoId}`)
-  );
+  const existentesSet = new Set(existentes.map((e) => `${e.nome}-${e.grupoId}`));
 
   const novos = subgruposValidados.filter(
-    (item) => !existentesSet.has(`${item.nome}-${item.grupoId}`)
+    (item) => !existentesSet.has(`${item.nome}-${item.grupoId}`),
   );
 
   if (novos.length === 0) {

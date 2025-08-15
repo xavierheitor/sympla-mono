@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
   createPrismaGetAllWithIncludesAction,
-} from "@/lib/server-action/actionFactory";
-import { kpiFormSchema, KpiWithRelations } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { kpiFormSchema, KpiWithRelations } from './schema';
 
 // ===== CREATE
 
@@ -18,11 +18,11 @@ export const createKpi = createPrismaCreateAction(
     return await prisma.kpi.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString() || "",
+        createdBy: data.createdBy?.toString() || '',
       },
     });
   },
-  "KPI"
+  'KPI',
 );
 
 // ===== UPDATE
@@ -34,11 +34,11 @@ export const updateKpi = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString() || "",
+        updatedBy: data.updatedBy?.toString() || '',
       },
     });
   },
-  "KPI"
+  'KPI',
 );
 
 // ===== DELETE
@@ -56,19 +56,15 @@ export const deleteKpi = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.kpi,
-      modelName: "Kpi",
+      modelName: 'Kpi',
     },
-    entityName: "KPI",
-  }
+    entityName: 'KPI',
+  },
 );
 
 // ===== GET ALL (com paginação e busca nativa)
 
-export const getAllKpis = createPrismaGetAllAction(
-  prisma.kpi,
-  "KPI",
-  ["nome", "descricao"]
-);
+export const getAllKpis = createPrismaGetAllAction(prisma.kpi, 'KPI', ['nome', 'descricao']);
 
 // ===== GET ALL WITH INCLUDES
 
@@ -86,5 +82,5 @@ export const getAllKpisWithIncludes = createPrismaGetAllWithIncludesAction<KpiWi
       include,
     });
   },
-  "KPI"
+  'KPI',
 );

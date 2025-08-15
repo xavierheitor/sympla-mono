@@ -4,19 +4,19 @@ import {
   Regional,
   Subestacao,
   TensaoSubestacao,
-} from "@sympla/prisma";
-import { z } from "zod";
+} from '@sympla/prisma';
+import { z } from 'zod';
 
 export const subestacaoFormSchema = z.object({
   id: z.string().optional(),
-  nome: z.string().min(1, "Nome é obrigatório"),
-  sigla: z.string().min(1, "Sigla é obrigatório"),
+  nome: z.string().min(1, 'Nome é obrigatório'),
+  sigla: z.string().min(1, 'Sigla é obrigatório'),
   localInstalacao: z.string().nullable().optional(),
-  codigoSap: z.string().min(1, "Código SAP é obrigatório"),
+  codigoSap: z.string().min(1, 'Código SAP é obrigatório'),
   propriedade: z.nativeEnum(PropriedadeSubestacao),
   categoria: z.nativeEnum(CategoriaSubestacao),
   tensao: z.nativeEnum(TensaoSubestacao),
-  regionalId: z.string().min(1, "Regional é obrigatório"),
+  regionalId: z.string().min(1, 'Regional é obrigatório'),
 });
 
 export type SubestacaoFormData = {
@@ -24,14 +24,14 @@ export type SubestacaoFormData = {
 } & Required<
   Pick<
     Subestacao,
-    | "nome"
-    | "sigla"
-    | "localInstalacao"
-    | "codigoSap"
-    | "propriedade"
-    | "categoria"
-    | "tensao"
-    | "regionalId"
+    | 'nome'
+    | 'sigla'
+    | 'localInstalacao'
+    | 'codigoSap'
+    | 'propriedade'
+    | 'categoria'
+    | 'tensao'
+    | 'regionalId'
   >
 >;
 
@@ -49,5 +49,5 @@ export const subestacaoLoteSchema = z.array(
     categoria: z.nativeEnum(CategoriaSubestacao),
     tensao: z.nativeEnum(TensaoSubestacao),
     regionalId: z.string().min(1),
-  })
+  }),
 );

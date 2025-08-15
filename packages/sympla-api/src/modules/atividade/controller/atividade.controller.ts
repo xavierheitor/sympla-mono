@@ -26,10 +26,7 @@ export class AtividadeController {
   @Post('upload/:id')
   uploadAtividade(@Param('id') id: string, @Body() data: any) {
     console.log('[ATIVIDADE UPLOAD] ID:', id);
-    console.log(
-      '[ATIVIDADE UPLOAD] JSON recebido:',
-      JSON.stringify(data, null, 2),
-    );
+    console.log('[ATIVIDADE UPLOAD] JSON recebido:', JSON.stringify(data, null, 2));
     return { message: 'ok' };
   }
 }

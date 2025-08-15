@@ -13,14 +13,23 @@
     "prisma:studio": "npm run studio --workspace=@sympla/prisma",
     "start:api": "npm run start:dev --workspace=sympla-api",
     "start:web": "npm run dev --workspace=sympla-web",
-    "build": "npm run build --workspace=sympla-api && npm run build --workspace=sympla-web"
-  },
-  "dependencies": {
-    "jsonwebtoken": "^9.0.2",
-    "next-auth": "^4.24.11"
+    "build": "npm run build --workspace=sympla-api && npm run build --workspace=sympla-web",
+    "dev": "concurrently -k -n api,web \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run start:dev --workspace=sympla-api",
+    "dev:web": "npm run dev --workspace=sympla-web",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:fix": "npm run format && npm run lint:fix",
+    "code:fix": "npm run format:fix",
+    "code:format": "npm run format"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.9"
+    "concurrently": "^8.2.2",
+    "prettier": "^3.4.2",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "npm@10"
 }

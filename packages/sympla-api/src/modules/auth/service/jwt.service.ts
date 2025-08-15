@@ -4,9 +4,8 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtService {
-  private readonly jwtSecret = process.env.JWT_SECRET || 'secret'; // ideal usar variável de ambiente real
-  private readonly refreshSecret =
-    process.env.JWT_REFRESH_SECRET || 'refreshSecret';
+  private readonly jwtSecret = process.env.JWT_SECRET!;
+  private readonly refreshSecret = process.env.JWT_REFRESH_SECRET!;
 
   generateAccessToken(payload: object) {
     return jwt.sign(payload, this.jwtSecret, { expiresIn: '15m' });

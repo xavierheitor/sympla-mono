@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
   createPrismaSetManyRelationAction,
-} from "@/lib/server-action/actionFactory";
-import { usuarioMobileRegionalFormSchema, inputSchema } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { usuarioMobileRegionalFormSchema, inputSchema } from './schema';
 
 // ========== CREATE ==========
 export const createUsuarioMobileRegional = createPrismaCreateAction(
@@ -17,11 +17,11 @@ export const createUsuarioMobileRegional = createPrismaCreateAction(
     return prisma.usuarioMobileRegional.create({
       data: {
         ...data,
-        createdBy: "seed",
+        createdBy: 'seed',
       },
     });
   },
-  "USUARIO_MOBILE_REGIONAL"
+  'USUARIO_MOBILE_REGIONAL',
 );
 
 // ========== UPDATE ==========
@@ -32,11 +32,11 @@ export const updateUsuarioMobileRegional = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: "seed",
+        updatedBy: 'seed',
       },
     });
   },
-  "USUARIO_MOBILE_REGIONAL"
+  'USUARIO_MOBILE_REGIONAL',
 );
 
 // ========== DELETE ==========
@@ -46,55 +46,52 @@ export const deleteUsuarioMobileRegional = createPrismaDeleteAction(
       where: { id },
       data: {
         deletedAt: new Date(),
-        deletedBy: "seed",
+        deletedBy: 'seed',
       },
     });
   },
   {
     defaultCheck: {
       prismaModel: prisma.usuarioMobileRegional,
-      modelName: "UsuarioMobileRegional",
+      modelName: 'UsuarioMobileRegional',
     },
-    entityName: "USUARIO_MOBILE_REGIONAL",
-  }
+    entityName: 'USUARIO_MOBILE_REGIONAL',
+  },
 );
 
 // ========== GET ALL ==========
 export const getAllUsuarioMobileRegionals = createPrismaGetAllAction(
   prisma.usuarioMobileRegional,
-  "USUARIO_MOBILE_REGIONAL"
+  'USUARIO_MOBILE_REGIONAL',
 );
 
 // ========== GET ALL WITH INCLUDES ==========
 export const getAllUsuarioMobileRegionalsWithIncludes = createPrismaGetAllAction(
   prisma.usuarioMobileRegional,
-  "USUARIO_MOBILE_REGIONAL"
+  'USUARIO_MOBILE_REGIONAL',
 );
 
 // ========== SET MANY RELATIONS (TRANSFER) ==========
-export const setRegionaisDoUsuarioMobile = createPrismaSetManyRelationAction(
-  inputSchema,
-  {
-    entityName: "USUARIO_MOBILE_REGIONAL",
-    deleteFn: async (usuarioMobileId, userId, now) => {
-      await prisma.usuarioMobileRegional.updateMany({
-        where: { usuarioMobileId },
-        data: {
-          deletedAt: now,
-          deletedBy: userId,
-        },
-      });
-    },
-    createFn: async (usuarioMobileId, regionalIds, userId) => {
-      await prisma.usuarioMobileRegional.createMany({
-        data: regionalIds.map((regionalId) => ({
-          usuarioMobileId,
-          regionalId,
-          createdBy: userId,
-        })),
-      });
-    },
-    getParentId: (input) => input.usuarioMobileId,
-    getChildIds: (input) => input.regionalIds,
-  }
-);
+export const setRegionaisDoUsuarioMobile = createPrismaSetManyRelationAction(inputSchema, {
+  entityName: 'USUARIO_MOBILE_REGIONAL',
+  deleteFn: async (usuarioMobileId, userId, now) => {
+    await prisma.usuarioMobileRegional.updateMany({
+      where: { usuarioMobileId },
+      data: {
+        deletedAt: now,
+        deletedBy: userId,
+      },
+    });
+  },
+  createFn: async (usuarioMobileId, regionalIds, userId) => {
+    await prisma.usuarioMobileRegional.createMany({
+      data: regionalIds.map((regionalId) => ({
+        usuarioMobileId,
+        regionalId,
+        createdBy: userId,
+      })),
+    });
+  },
+  getParentId: (input) => input.usuarioMobileId,
+  getChildIds: (input) => input.regionalIds,
+});

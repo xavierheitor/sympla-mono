@@ -13,69 +13,76 @@ import { unwrapFetcher } from '@/lib/utils/fetcherUtils';
 import { ActionResult } from '@/lib/types/ActionTypes';
 
 export default function UserPage() {
-    const controller = useCrudController<User>('user');
+  const controller = useCrudController<User>('user');
 
-    const users = useEntityData<User>({
-        key: 'users',
-        fetcher: unwrapFetcher(getAllUsers),
-        paginationEnabled: true,
-    });
+  const users = useEntityData<User>({
+    key: 'users',
+    fetcher: unwrapFetcher(getAllUsers),
+    paginationEnabled: true,
+  });
 
-    const columns = useTableColumnsWithActions<User>(
-        [
-            { title: 'Usuário', dataIndex: 'username', key: 'username' },
-            { title: 'Nome', dataIndex: 'name', key: 'name' },
-            { title: 'Email', dataIndex: 'email', key: 'email' },
-        ],
-        {
-            onEdit: controller.open,
-            onDelete: (item) => controller.exec(() => deleteUser(item.id), 'Usuário excluído com sucesso!').finally(() => users.mutate()),
-        }
-    );
+  const columns = useTableColumnsWithActions<User>(
+    [
+      { title: 'Usuário', dataIndex: 'username', key: 'username' },
+      { title: 'Nome', dataIndex: 'name', key: 'name' },
+      { title: 'Email', dataIndex: 'email', key: 'email' },
+    ],
+    {
+      onEdit: controller.open,
+      onDelete: (item) =>
+        controller
+          .exec(() => deleteUser(item.id), 'Usuário excluído com sucesso!')
+          .finally(() => users.mutate()),
+    },
+  );
 
-    const handleSubmit = async (values: UserFormData) => {
-        const action = async (): Promise<ActionResult<User>> => {
-            const user = controller.editingItem?.id
-                ? await updateUser({ ...values, id: controller.editingItem.id })
-                : await createUser(values);
+  const handleSubmit = async (values: UserFormData) => {
+    const action = async (): Promise<ActionResult<User>> => {
+      const user = controller.editingItem?.id
+        ? await updateUser({ ...values, id: controller.editingItem.id })
+        : await createUser(values);
 
-            return { success: true, data: user.data };
-        };
-
-        controller.exec(action, 'Usuário salvo com sucesso!').finally(() => users.mutate());
+      return { success: true, data: user.data };
     };
 
-    if (users.error) return <p style={{ color: 'red' }}>Erro ao carregar usuários.</p>;
+    controller.exec(action, 'Usuário salvo com sucesso!').finally(() => users.mutate());
+  };
 
-    return (
-        <>
-            <Card
-                title="Usuários"
-                extra={<Button type="primary" onClick={() => controller.open()}>Adicionar</Button>}
-            >
-                <Table<User>
-                    columns={columns}
-                    dataSource={users.data}
-                    loading={users.isLoading}
-                    rowKey="id"
-                    pagination={users.pagination}
-                    onChange={users.handleTableChange}
-                />
-            </Card>
+  if (users.error) return <p style={{ color: 'red' }}>Erro ao carregar usuários.</p>;
 
-            <Modal
-                title={controller.editingItem ? 'Editar Usuário' : 'Novo Usuário'}
-                open={controller.isOpen}
-                onCancel={controller.close}
-                footer={null}
-                destroyOnClose
-            >
-                <UserForm
-                    initialValues={controller.editingItem ?? undefined}
-                    onSubmit={handleSubmit}
-                    loading={controller.loading}
-                />
-            </Modal>
-        </>
-    );
+  return (
+    <>
+      <Card
+        title='Usuários'
+        extra={
+          <Button type='primary' onClick={() => controller.open()}>
+            Adicionar
+          </Button>
+        }
+      >
+        <Table<User>
+          columns={columns}
+          dataSource={users.data}
+          loading={users.isLoading}
+          rowKey='id'
+          pagination={users.pagination}
+          onChange={users.handleTableChange}
+        />
+      </Card>
+
+      <Modal
+        title={controller.editingItem ? 'Editar Usuário' : 'Novo Usuário'}
+        open={controller.isOpen}
+        onCancel={controller.close}
+        footer={null}
+        destroyOnClose
+      >
+        <UserForm
+          initialValues={controller.editingItem ?? undefined}
+          onSubmit={handleSubmit}
+          loading={controller.loading}
+        />
+      </Modal>
+    </>
+  );
 }

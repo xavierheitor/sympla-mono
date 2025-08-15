@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from '@/lib/db/prisma';
 import {
   createPrismaCreateAction,
   createPrismaDeleteAction,
   createPrismaGetAllAction,
   createPrismaUpdateAction,
-} from "@/lib/server-action/actionFactory";
-import { regionalFormSchema } from "./schema";
+} from '@/lib/server-action/actionFactory';
+import { regionalFormSchema } from './schema';
 
 // ===== CREATE =====
 export const createRegional = createPrismaCreateAction(
@@ -16,11 +16,11 @@ export const createRegional = createPrismaCreateAction(
     return prisma.regional.create({
       data: {
         ...data,
-        createdBy: data.createdBy?.toString?.() || "",
+        createdBy: data.createdBy?.toString?.() || '',
       },
     });
   },
-  "REGIONAL"
+  'REGIONAL',
 );
 
 // ===== UPDATE =====
@@ -31,11 +31,11 @@ export const updateRegional = createPrismaUpdateAction(
       where: { id: data.id },
       data: {
         ...data,
-        updatedBy: data.updatedBy?.toString?.() || "",
+        updatedBy: data.updatedBy?.toString?.() || '',
       },
     });
   },
-  "REGIONAL"
+  'REGIONAL',
 );
 
 // ===== DELETE =====
@@ -52,14 +52,11 @@ export const deleteRegional = createPrismaDeleteAction(
   {
     defaultCheck: {
       prismaModel: prisma.regional,
-      modelName: "Regional",
+      modelName: 'Regional',
     },
-    entityName: "REGIONAL",
-  }
+    entityName: 'REGIONAL',
+  },
 );
 
 // ===== GET ALL =====
-export const getAllRegionais = createPrismaGetAllAction(
-  prisma.regional,
-  "REGIONAL"
-);
+export const getAllRegionais = createPrismaGetAllAction(prisma.regional, 'REGIONAL');
